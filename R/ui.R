@@ -364,7 +364,7 @@ ui <- page_navbar(
               div(class="row g-3",
                 div(class="col-md-6",
                   tip_label("Resolución (m)", "Tamaño de píxel del CHM"),
-                  sliderInput("chm_res","",0.1,2,0.5,step=0.1, ticks=TRUE)
+                  sliderInput("chm_res","",0.1,2,0.5,step=0.05, ticks=TRUE)
                 ),
                 div(class="col-md-6",
                   tip_label("Ventana de interpolación (m)", "Area de búsqueda de puntos cercanos para el relleno de huecos"),

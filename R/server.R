@@ -441,7 +441,7 @@ output$met_canopy_area <- renderText({
 })
 
 
-  # Mapa árboles sobre CHM — CORRECCIÓN: usar nombre correcto de columna
+  # Mapa árboles sobre CHM
   output$plot_arb_chm <- renderPlotly({
     req(rv$chm, rv$arboles)
     # Convertir CHM a data frame con nombre estándar

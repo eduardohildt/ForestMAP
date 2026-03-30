@@ -25,7 +25,7 @@ required_packages <- c(
   "parallel",     # Procesamiento paralelo (base R)
   "rstudioapi",   # Integración con RStudio
   "knitr",        # Generación de informes
-  "rmarkdown",     # Renderizado PDF/HTML
+  "rmarkdown",    # Renderizado PDF/HTML
   "fancyhdr"      # Renderizado PDF/HTML
 )
 

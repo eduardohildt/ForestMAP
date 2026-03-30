@@ -1,12 +1,11 @@
 # =============================================================================
-# REPORT GENERATOR MEJORADO - ForestMap INTA
+# GENERADOR DE REPORTE EN PDF - ForestMap INTA
 # =============================================================================
-# Versión mejorada con métricas de gestión forestal para toma de decisiones
 # Autor: Dr. Eduardo Hildt - INTA EEA Montecarlo
-# Versión: 2026.5 MEJORADA
+# Versión: 2026.5
 # =============================================================================
 
-#' Generar informe descriptivo PDF mejorado de análisis LiDAR.
+#' Generar informe descriptivo PDF de análisis LiDAR.
 #'
 #' @param rv ReactiveValues object containing inputs, outputs, statistics, and data.
 #' @param input Shiny input list with user-set parameters.
@@ -18,7 +17,7 @@ generar_informe_descriptivo <- function(rv, input, log_fn = message) {
     stop("ruta_dir inválida para generar informe")
   }
 
-  log_fn("📄 Generando informe descriptivo PDF mejorado...")
+  log_fn("📄 Generando informe descriptivo PDF ...")
 
   # ============================================================================
   # VARIABLES BÁSICAS (originales)
@@ -47,7 +46,7 @@ generar_informe_descriptivo <- function(rv, input, log_fn = message) {
   alt_min_v   <- if (!is.null(rv$arboles)) sprintf("%.1f", min(rv$arboles$Z, na.rm=TRUE))  else "N/D"
 
   # ============================================================================
-  # NUEVAS VARIABLES: MÉTRICAS DE GESTIÓN FORESTAL
+  # MÉTRICAS DE GESTIÓN FORESTAL
   # ============================================================================
   
   # Densidad de árboles por hectárea
@@ -210,7 +209,7 @@ if (!is.null(rv$dem_suav)) {
     print(p_hist); dev.off()
   }
   
-  # NUEVA Figura 6: Cobertura de copas
+  # Figura 6: Cobertura de copas
   if (!is.null(rv$cobertura_copas) && !is.null(rv$cobertura_copas$copas_vect)) {
   fig_path <- file.path(dir_inf, "fig_cobertura.png")
   tryCatch({
@@ -426,6 +425,6 @@ if (!is.null(rv$dem_suav)) {
                     envir=new.env(parent=globalenv()), quiet=TRUE)
   unlink(rmd_p)  # Eliminar el .Rmd temporal
 
-  log_fn(paste("✅ PDF mejorado guardado en:", pdf_p))
+  log_fn(paste("✅ PDF guardado en:", pdf_p))
   invisible(pdf_p)
 }
