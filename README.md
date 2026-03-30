@@ -21,6 +21,11 @@ ForestMAP es una herramienta interactiva basada en el paquete lidR (Roussel et a
 -   **Visualización 3D**: Nubes de puntos y rasters interactivos (Plotly)
 -   **Exportación**: LAZ, GeoTIFF, Shapefile, informes PDF
 
+Los datos de entrada necesarios son:
+- 	**Nueve de puntos LiDAR o fotogramétrica, en formato LAZ**
+-	**Archivo SHP que contenga el área de interés a analizar**
+-   **¡Importante!: Ambos archivos deben contar con el mismo sistema de coordenadas (CRS)**
+
 ------------------------------------------------------------------------
 
 ## Requisitos del Sistema
