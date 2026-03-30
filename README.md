@@ -82,8 +82,8 @@ cd ForestMAP
 
 **Opción A: Script automático** *(recomendado)*
 
-``` bash
-Rscript scripts/install.R
+``` PowerShell o CMD
+start 'C:\Program Files\R\R-4.5.2\bin\x64\Rscript.exe' .\scripts\install.R
 ```
 
 **Opción B: Manual en R**
@@ -101,8 +101,8 @@ install.packages(c(
 
 ### Opción 1: Terminal
 
-``` bash
-Rscript run.R
+``` PowerShell o CMD
+start 'C:\Program Files\R\R-4.5.2\bin\x64\Rscript.exe' .\run.R
 ```
 
 La aplicación se abrirá automáticamente en el navegador en `http://localhost:3838`
