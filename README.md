@@ -74,7 +74,7 @@ parallel, rstudioapi
 ### 1. Clonar Repositorio
 
 ``` bash
-git clone https://github.com/tu-usuario/ForestMAP.git
+git clone https://github.com/eduardohildt/ForestMAP
 cd ForestMAP
 ```
 
