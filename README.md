@@ -1,4 +1,4 @@
-# ForestMAP - Herramienta INTA para Análisis LiDAR y Fotogrametría Forestal
+# ForestMap - Herramienta INTA para Análisis LiDAR y Fotogrametría Forestal
 
 [![R](https://img.shields.io/badge/R-%3E%3D%204.0-blue.svg)](https://www.r-project.org/) [![lidR](https://img.shields.io/badge/powered%20by-lidR-2ecc71.svg)](https://github.com/r-lidar/lidR) [![License](https://img.shields.io/badge/License-INTA-green.svg)](https://inta.gob.ar)
 
