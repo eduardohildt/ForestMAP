@@ -26,7 +26,7 @@ required_packages <- c(
   "rstudioapi",   # Integración con RStudio
   "knitr",        # Generación de informes
   "rmarkdown",    # Renderizado PDF/HTML
-  "fancyhdr"      # Renderizado PDF/HTML
+  "tinytex"       # Paquete que contiene herramientas para renderizas con LaTeX
 )
 
 cat("📦 Verificando", length(required_packages), "paquetes...\n\n")
