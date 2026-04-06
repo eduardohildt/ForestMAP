@@ -55,7 +55,7 @@ shiny, bslib, DT, plotly, htmlwidgets, ggplot2
 lidR, terra, sf, RCSF
 
 # Informes
-knitr, rmarkdown, fancyhdr
+knitr, rmarkdown, tinytex
 
 # Sistema
 parallel, rstudioapi
