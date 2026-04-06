@@ -1,5 +1,5 @@
 # =============================================================================
-# GENERADOR DE REPORTE EN PDF - ForestMap INTA
+# GENERADOR DE REPORTE EN PDF - ForestMap INTA 
 # =============================================================================
 # Autor: Dr. Eduardo Hildt - INTA EEA Montecarlo
 # Versión: 2026.5

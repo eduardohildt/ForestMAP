@@ -1,11 +1,11 @@
 # ForestMap - Herramienta INTA para Análisis LiDAR y Fotogrametría Forestal
 
-[![R](https://img.shields.io/badge/R-%3E%3D%204.0-blue.svg)](https://www.r-project.org/) [![lidR](https://img.shields.io/badge/powered%20by-lidR-2ecc71.svg)](https://github.com/r-lidar/lidR) [![License](https://img.shields.io/badge/License-GLP--3-blue.svg)]
+[![R](https://img.shields.io/badge/R-%3E%3D%204.0-blue.svg)](https://www.r-project.org/) [![lidR](https://img.shields.io/badge/powered%20by-lidR-2ecc71.svg)](https://github.com/r-lidar/lidR) [![License](https://img.shields.io/badge/License-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 > **Análisis de estructura forestal mediante nubes de puntos LiDAR/fotogramétricas**\
 > *Construido sobre lidR: el estándar open-source para procesamiento LiDAR forestal*
 
-**Autor:** Dr. Eduardo Hildt \
+**Autor:** Dr. Eduardo Hildt\
 **Institución:** INTA EEA Montecarlo - Grupo Forestal\
 **Email:** [hildt.eduardo\@inta.gob.ar](mailto:hildt.eduardo@inta.gob.ar)\
 **Versión:** 2026.5
