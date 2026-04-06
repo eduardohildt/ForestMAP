@@ -260,6 +260,8 @@ if (!is.null(rv$dem_suav)) {
     "fontsize: 11pt",
     "geometry: margin=2cm",
     "header-includes:",
+	"  - \\setlength{\\headheight}{14pt}",
+    "  - \\addtolength{\\topmargin}{-2pt}",
     "  - \\usepackage{fancyhdr}",
     "  - \\usepackage{graphicx}",
     "  - \\usepackage{xcolor}",
