@@ -53,4 +53,54 @@ if (length(missing_packages) == 0) {
   cat("   Ejecute 'Rscript run.R' o abra 'app.R' en RStudio.\n\n")
 }
 
+
+# ------------------------------------------------------------------------------
+# Verificar e instalar distribución LaTeX (TinyTeX) si no está disponible
+# ------------------------------------------------------------------------------
+cat("🔍 Verificando instalación de LaTeX...\n")
+
+latex_available <- nchar(Sys.which("xelatex")) > 0 || 
+  nchar(Sys.which("pdflatex")) > 0
+
+if (!latex_available) {
+  cat("📥 LaTeX no detectado. Instalando TinyTeX...\n")
+  if (!requireNamespace("tinytex", quietly = TRUE)) {
+    install.packages("tinytex", repos = "https://cloud.r-project.org")
+  }
+  
+  os <- .Platform$OS.type
+  sysname <- Sys.info()[["sysname"]]
+  
+  # Descargar e instalar manualmente desde GitHub Releases (URL estable)
+  tinytex_version <- "2026.03.02"
+  tmpdir <- tempdir()
+  
+  if (sysname == "Windows") {
+    url  <- paste0("https://github.com/rstudio/tinytex-releases/releases/download/v",
+                   tinytex_version, "/TinyTeX-1-v", tinytex_version, ".zip")
+    dest <- file.path(tmpdir, "TinyTeX-1.zip")
+    download.file(url, dest, mode = "wb")
+    tinytex:::install_prebuilt(dest)
+    
+  } else if (sysname == "Darwin") {
+    url  <- paste0("https://github.com/rstudio/tinytex-releases/releases/download/v",
+                   tinytex_version, "/TinyTeX-1-v", tinytex_version, ".tgz")
+    dest <- file.path(tmpdir, "TinyTeX-1.tgz")
+    download.file(url, dest, mode = "wb")
+    tinytex:::install_prebuilt(dest)
+    
+  } else {
+    url  <- paste0("https://github.com/rstudio/tinytex-releases/releases/download/v",
+                   tinytex_version, "/TinyTeX-1-v", tinytex_version, ".tar.gz")
+    dest <- file.path(tmpdir, "TinyTeX-1.tar.gz")
+    download.file(url, dest, mode = "wb")
+    tinytex:::install_prebuilt(dest)
+  }
+  
+  cat("✅ TinyTeX instalado. Reinicie R antes de generar informes PDF.\n\n")
+} else {
+  cat("✅ LaTeX ya disponible en el sistema.\n\n")
+}
+
 cat("═══════════════════════════════════════════════════════════\n\n")
+
