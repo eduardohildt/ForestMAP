@@ -1,6 +1,6 @@
-# ForestMAP - Herramienta INTA para Análisis LiDAR y Fotogrametría Forestal
+# ForestMap - Herramienta INTA para Análisis LiDAR y Fotogrametría Forestal
 
-[![R](https://img.shields.io/badge/R-%3E%3D%204.0-blue.svg)](https://www.r-project.org/) [![lidR](https://img.shields.io/badge/powered%20by-lidR-2ecc71.svg)](https://github.com/r-lidar/lidR) [![License](https://img.shields.io/badge/License-INTA-green.svg)](https://inta.gob.ar)
+[![R](https://img.shields.io/badge/R-%3E%3D%204.0-blue.svg)](https://www.r-project.org/) [![lidR](https://img.shields.io/badge/powered%20by-lidR-2ecc71.svg)](https://github.com/r-lidar/lidR) [![License](https://img.shields.io/badge/License-GLP--3-blue.svg)]
 
 > **Análisis de estructura forestal mediante nubes de puntos LiDAR/fotogramétricas**\
 > *Construido sobre lidR: el estándar open-source para procesamiento LiDAR forestal*
@@ -11,7 +11,7 @@
 **Versión:** 2026.5
 
 ------------------------------------------------------------------------
-
+	
 ## Descripción
 
 ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada íntegramente sobre el ecosistema [**lidR**](https://github.com/r-lidar/lidR) (Roussel et al., 2020, 2021, 2023), el paquete de referencia mundial para procesamiento de datos LiDAR aerotransportados en aplicaciones forestales.
@@ -74,7 +74,7 @@ parallel, rstudioapi
 ### 1. Clonar Repositorio
 
 ``` bash
-git clone https://github.com/tu-usuario/ForestMAP.git
+git clone https://github.com/eduardohildt/ForestMAP
 cd ForestMAP
 ```
 
@@ -82,8 +82,8 @@ cd ForestMAP
 
 **Opción A: Script automático** *(recomendado)*
 
-``` bash
-Rscript scripts/install.R
+``` PowerShell o CMD
+start 'C:\Program Files\R\R-4.5.2\bin\x64\Rscript.exe' .\scripts\install.R
 ```
 
 **Opción B: Manual en R**
@@ -101,15 +101,15 @@ install.packages(c(
 
 ### Opción 1: Terminal
 
-``` bash
-Rscript run.R
+``` PowerShell o CMD
+start 'C:\Program Files\R\R-4.5.2\bin\x64\Rscript.exe' .\run.R
 ```
 
 La aplicación se abrirá automáticamente en el navegador en `http://localhost:3838`
 
 ### Opción 2: RStudio
 
-1.  Abrir `app.R` en RStudio
+1.  Abrir `run.R` en RStudio
 2.  Clic en **"Run App"** (esquina superior derecha)
 
 ------------------------------------------------------------------------
@@ -287,7 +287,7 @@ netstat -an | findstr 3838  # Windows
 
 ### RStudio: "Object not found"
 
-Ejecutar **completo** desde `app.R` (no ejecutar líneas individuales)
+Ejecutar **completo** desde `run.R` (no ejecutar líneas individuales)
 
 ------------------------------------------------------------------------
 

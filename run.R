@@ -4,10 +4,20 @@
 # Ejecutar desde terminal: Rscript run.R
 # O abrir app.R directamente en RStudio
 # ==============================================================================
-
+  
 cat("\n═══════════════════════════════════════════════════════════\n")
 cat("  ForestMAP - INTA EEA Montecarlo\n")
 cat("═══════════════════════════════════════════════════════════\n\n")
+
+# Detectar ruta del script en ejecución
+if (interactive()) {
+  if ("rstudioapi" %in% rownames(installed.packages())) {
+    script_path <- rstudioapi::getActiveDocumentContext()$path
+    if (script_path != "") {
+      setwd(dirname(normalizePath(script_path)))
+    }
+  }
+}
 
 # Verificar paquetes críticos
 required <- c("shiny", "lidR", "terra", "sf", "RCSF", "plotly")

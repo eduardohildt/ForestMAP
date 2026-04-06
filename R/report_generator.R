@@ -283,11 +283,11 @@ if (!is.null(rv$dem_suav)) {
     "",
     "| Campo | Detalle |",
     "|---|---|",
-    paste0("| Usuario | ", rv$cfg_destinatario, " |"),
+    paste0("| Destinatario | ", rv$cfg_destinatario, " |"),
     paste0("| Fecha de análisis | `r format(Sys.time(), '%Y-%m-%d %H:%M')` |"),
     paste0("| Archivo de nube de puntos | ", nombre_las, " |"),
     paste0("| Área de interés | ", nombre_roi, " |"),
-    paste0("| Autor de la herramienta | ", rv$cfg_autor, " |"),
+    paste0("| Analista | ", rv$cfg_autor, " |"),
     paste0("| Institución | ", rv$cfg_institucion, " |"),
     paste0("| Email | ", rv$cfg_email, " |"),
     "",
@@ -418,7 +418,7 @@ if (!is.null(rv$dem_suav)) {
     "",
     "---",
     "",
-    "*Informe generado automáticamente con la Herramienta INTA para Análisis LiDAR y Fotogrametría Forestal (INTA EEA Montecarlo). Los valores estadísticos corresponden al procesamiento realizado en la fecha indicada.*"
+    "*Informe generado automáticamente con la Herramienta INTA para Análisis LiDAR y Fotogrametría Forestal (ForestMap - INTA EEA Montecarlo). Los valores estadísticos corresponden al procesamiento realizado en la fecha indicada.*"
   ))
 
   rmarkdown::render(rmd_p, output_file=pdf_p,
