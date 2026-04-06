@@ -29,6 +29,9 @@ library(ggplot2)
 library(parallel)
 cat("   ✓ Bibliotecas cargadas\n\n")
 
+# Corrección para sistema de puntuación
+options(OutDec = ".")
+
 # ══════════════════════════════════════════════════════════════════════════════
 # CONFIGURACIÓN GLOBAL
 # ══════════════════════════════════════════════════════════════════════════════
