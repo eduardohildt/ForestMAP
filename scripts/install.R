@@ -102,5 +102,12 @@ if (!latex_available) {
   cat("✅ LaTeX ya disponible en el sistema.\n\n")
 }
 
+# ------------------------------------------------------------------------------
+# Verificar e instalar fancyhdr si no está disponible
+# ------------------------------------------------------------------------------
+if (!tinytex::check_installed("fancyhdr")) {
+  tinytex::tlmgr_update(self = TRUE)
+  tinytex::tlmgr_install("fancyhdr")
+}
 cat("═══════════════════════════════════════════════════════════\n\n")
 
