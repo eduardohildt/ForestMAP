@@ -5,7 +5,7 @@
 > **Análisis de estructura forestal mediante nubes de puntos LiDAR/fotogramétricas**\
 > *Construido sobre lidR: el estándar open-source para procesamiento LiDAR forestal*
 
-**Autor:** Dr. Eduardo Hildt\
+**Autor:** Dr. Eduardo Hildt \
 **Institución:** INTA EEA Montecarlo - Grupo Forestal\
 **Email:** [hildt.eduardo\@inta.gob.ar](mailto:hildt.eduardo@inta.gob.ar)\
 **Versión:** 2026.5
