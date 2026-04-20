@@ -463,19 +463,41 @@ output$met_canopy_area <- renderText({
       )
   })
 
-output$plot_hist_arb <- renderPlot({
+  output$plot_hist_arb <- renderPlot({
     req(rv$arboles)
-    ggplot(data.frame(h=rv$arboles$Z), aes(x=h)) +
-      geom_histogram(bins=30, fill=GREEN, color=BG_CARD, alpha=0.9) +
-      labs(title="Distribución de Alturas de Árboles Detectados",
-           x="Altura del ápice (m)", y="Frecuencia") +
+    df <- data.frame(h = rv$arboles$Z)
+    n  <- nrow(df)
+    
+    # Breaks dinámicos: ~30 bins como ggplot por defecto, alineados a valores redondos
+    rng      <- range(df$h)
+    bin_w    <- pretty(rng, n = 30) |> diff() |> min()
+    h_breaks <- seq(floor(rng[1] / bin_w) * bin_w,
+                    ceiling(rng[2] / bin_w) * bin_w,
+                    by = bin_w)
+    
+    ggplot(df, aes(x = h)) +
+      geom_histogram(breaks = h_breaks, fill = GREEN, color = BG_CARD, alpha = 0.9) +
+      geom_text(stat = "bin", breaks = h_breaks,
+                aes(y = after_stat(count),
+                    label = ifelse(after_stat(count) > 0,
+                                   paste0(round(after_stat(count) / n * 100, 1), "%"),
+                                   "")),
+                vjust = -0.4, size = 4, color = TEXT_PRIMARY) +
+      scale_x_continuous(breaks = h_breaks) +
+      scale_y_continuous(
+        name     = "Frecuencia",
+        sec.axis = sec_axis(~ . / n * 100, name = "Frecuencia relativa (%)")
+      ) +
+      labs(title = "Distribución de Alturas de Árboles Detectados",
+           x = "Altura del ápice (m)") +
       theme_minimal() +
-      theme(plot.background=element_rect(fill=BG_CARD,colour=NA),
-            panel.background=element_rect(fill=BG_CARD,colour=NA),
-            panel.grid=element_line(color=BORDER_COLOR),
-            text=element_text(color=TEXT_PRIMARY),
-            axis.text=element_text(color=TEXT_SECONDARY),
-            plot.title=element_text(color=ACCENT_PRIMARY,face="bold"))
+      theme(plot.background  = element_rect(fill = BG_CARD, colour = NA),
+            panel.background = element_rect(fill = BG_CARD, colour = NA),
+            panel.grid       = element_line(color = BORDER_COLOR),
+            text             = element_text(color = TEXT_PRIMARY),
+            axis.text        = element_text(color = TEXT_SECONDARY),
+            axis.text.x      = element_text(angle = 90, vjust = 0.5, size = 9),
+            plot.title       = element_text(color = ACCENT_PRIMARY, face = "bold"))
   })
 
 
