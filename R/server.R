@@ -29,6 +29,7 @@ server <- function(input, output, session) {
     log_config     = character(0), log_prepro  = character(0),
     log_modelos    = character(0), log_arboles = character(0),
     log_export     = character(0),
+    crs_pendiente  = NULL,
     # Configuración del proyecto (editable)
     cfg_autor      = "Autor del análisis",
     cfg_institucion = "Institución",
@@ -38,6 +39,43 @@ server <- function(input, output, session) {
 
   ts_log <- function(m) paste(format(Sys.time(),"[%H:%M:%S]"), m)
   ag <- function(campo, m) rv[[campo]] <- c(rv[[campo]], ts_log(m))
+
+  # ── Procesamiento interno (reutilizado desde btn_preprocesar y modal CRS) ───
+  ejecutar_preproceso <- function(crs_override = NULL) {
+    rv$log_prepro <- character(0)
+    withProgress(message = "Pre-procesando...", value = 0, {
+      tryCatch({
+        setProgress(0.10, detail = "Cargando...")
+        res <- cargar_recortar_las(rv$ruta_las, rv$ruta_shp,
+                                    buffer_m     = input$buffer_m,
+                                    crs_override = crs_override,
+                                    log_fn       = function(m) ag("log_prepro", m))
+        rv$las_raw   <- res$las
+        rv$roi       <- res$roi
+        rv$dens_orig <- res$dens_orig
+        rv$area_ha   <- res$area_ha
+
+        setProgress(0.40, detail = "Filtrando...")
+        rv$las_filtrado <- filtrar_nube(rv$las_raw, densidad = input$densidad,
+                                         log_fn = function(m) ag("log_prepro", m))
+
+        setProgress(0.70, detail = "Clasificando suelo...")
+        rv$las_clasf <- clasificar_suelo(rv$las_filtrado,
+                          rigidness        = as.integer(input$csf_rigidness),
+                          class_threshold  = input$csf_threshold,
+                          cloth_resolution = input$csf_cloth_res,
+                          sloop_smooth     = input$csf_sloop_smooth,
+                          log_fn           = function(m) ag("log_prepro", m))
+
+        setProgress(1)
+        rv$crs_pendiente <- NULL
+        showNotification("✅ Pre-procesamiento completado.", type = "message")
+      }, error = function(e) {
+        ag("log_prepro", paste("❌ ERROR:", conditionMessage(e)))
+        showNotification(paste("Error:", conditionMessage(e)), type = "error")
+      })
+    })
+  }
 
   # ── Guardar Configuración del Proyecto ───────────────────────────────────────
   observeEvent(input$btn_guardar_cfg, {
@@ -155,35 +193,61 @@ server <- function(input, output, session) {
   # ── E2: Pre-procesamiento ───────────────────────────────────────────────
   observeEvent(input$btn_preprocesar, {
     req(rv$ruta_las, rv$ruta_shp, rv$ruta_dir)
-    rv$log_prepro <- character(0)
-    withProgress(message="Pre-procesando...", value=0, {
-      tryCatch({
-        setProgress(0.10, detail="Cargando...")
-        res <- cargar_recortar_las(rv$ruta_las, rv$ruta_shp,
-                                    buffer_m=input$buffer_m,
-                                    log_fn=function(m) ag("log_prepro",m))
-        rv$las_raw   <- res$las
-        rv$roi       <- res$roi
-        rv$dens_orig <- res$dens_orig
-        rv$area_ha   <- res$area_ha
 
-        setProgress(0.40, detail="Filtrando...")
-        rv$las_filtrado <- filtrar_nube(rv$las_raw, densidad=input$densidad,
-                                         log_fn=function(m) ag("log_prepro",m))
-        setProgress(0.70, detail="Clasificando suelo...")
-        rv$las_clasf <- clasificar_suelo(rv$las_filtrado,
-                          rigidness=as.integer(input$csf_rigidness),
-                          class_threshold=input$csf_threshold,
-                          cloth_resolution=input$csf_cloth_res,
-                          sloop_smooth=input$csf_sloop_smooth,
-                          log_fn=function(m) ag("log_prepro",m))
-        setProgress(1)
-        showNotification("✅ Pre-procesamiento completado.", type="message")
-      }, error=function(e){
-        ag("log_prepro", paste("❌ ERROR:", conditionMessage(e)))
-        showNotification(paste("Error:", conditionMessage(e)), type="error")
-      })
-    })
+    crs_info <- tryCatch(
+      verificar_crs_las(rv$ruta_las, rv$ruta_shp),
+      error = function(e) {
+        ag("log_prepro", paste("Advertencia al verificar CRS:", conditionMessage(e)))
+        list(estado = "ok")
+      }
+    )
+
+    if (crs_info$estado == "sin_crs") {
+      rv$crs_pendiente <- crs_info
+      epsg_shp_str <- if (!is.na(crs_info$epsg_shp)) as.character(crs_info$epsg_shp) else "desconocido"
+      epsg_default  <- if (!is.na(crs_info$epsg_shp)) crs_info$epsg_shp else 22185L
+      showModal(modalDialog(
+        title = "⚠️ Nube de puntos sin proyección",
+        tags$p("El archivo LAS/LAZ no tiene sistema de referencia de coordenadas (CRS) asignado. ",
+               "Para continuar, ingrese el código EPSG que corresponde a los datos del LAS."),
+        tags$p("El SHP cargado utiliza ", tags$strong(paste0("EPSG:", epsg_shp_str)), ". ",
+               "Si ambos archivos comparten la misma proyección, use ese mismo código."),
+        numericInput("modal_epsg_las",
+                     label = "Código EPSG:",
+                     value = epsg_default,
+                     min   = 1,
+                     max   = 99999,
+                     step  = 1),
+        tags$p(style = "font-size:12px; color:#666; margin-top:8px;",
+               "Consulte ", tags$a("epsg.io", href = "https://epsg.io/", target = "_blank"),
+               " para identificar el código EPSG de su sistema de referencia."),
+        footer = tagList(
+          modalButton("Cancelar"),
+          actionButton("btn_modal_confirmar_crs", "Confirmar y continuar",
+                       class = "btn btn-success")
+        ),
+        easyClose = FALSE
+      ))
+
+    } else if (crs_info$estado == "mismatch") {
+      ag("log_prepro",
+         sprintf("⚠️  CRS distintos — LAS: EPSG:%s | SHP: EPSG:%s. El ROI será reproyectado.",
+                 if (!is.na(crs_info$epsg_las)) crs_info$epsg_las else "?",
+                 if (!is.na(crs_info$epsg_shp)) crs_info$epsg_shp else "?"))
+      ejecutar_preproceso()
+
+    } else {
+      ejecutar_preproceso()
+    }
+  })
+
+  # ── Confirmación del modal de CRS ────────────────────────────────────────
+  observeEvent(input$btn_modal_confirmar_crs, {
+    req(rv$crs_pendiente)
+    removeModal()
+    epsg_elegido <- as.integer(input$modal_epsg_las)
+    ag("log_prepro", sprintf("📐 CRS asignado por el usuario: EPSG:%d", epsg_elegido))
+    ejecutar_preproceso(crs_override = epsg_elegido)
   })
   output$log_prepro    <- renderText(paste(rv$log_prepro, collapse="\n"))
   output$met_pts_orig  <- renderText(if(is.null(rv$las_raw))      "—" else format(nrow(rv$las_raw@data),     big.mark="."))

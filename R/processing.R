@@ -19,25 +19,76 @@ crear_estructura_carpetas <- function(carpeta_trabajo) {
 # ──────────────────────────────────────────────────────────────────────────────
 # CARGA Y PREPROCESAMIENTO
 # ──────────────────────────────────────────────────────────────────────────────
-cargar_recortar_las <- function(ruta_las, ruta_shp, buffer_m = 20, log_fn = message) {
+
+# Verifica el estado del CRS del LAS comparado con el SHP.
+# Lee solo el encabezado (rápido, no carga puntos).
+# Retorna lista con $estado: "sin_crs" | "mismatch" | "ok"
+verificar_crs_las <- function(ruta_las, ruta_shp) {
+  hdr <- readLASheader(ruta_las)
+  roi <- vect(ruta_shp)
+
+  wkt_las <- tryCatch(sf::st_crs(hdr)$wkt, error = function(e) NULL)
+  las_tiene_crs <- !is.null(wkt_las) && !is.na(wkt_las) && nchar(trimws(wkt_las)) > 0
+
+  epsg_shp <- tryCatch(
+    as.integer(crs(roi, describe = TRUE)$code),
+    error = function(e) NA_integer_
+  )
+
+  if (!las_tiene_crs) {
+    return(list(estado = "sin_crs", crs_shp = crs(roi), epsg_shp = epsg_shp))
+  }
+
+  misma_crs <- isTRUE(sf::st_crs(hdr) == sf::st_crs(roi))
+  epsg_las  <- tryCatch(as.integer(sf::st_crs(hdr)$epsg), error = function(e) NA_integer_)
+
+  if (!misma_crs) {
+    return(list(
+      estado   = "mismatch",
+      crs_shp  = crs(roi),
+      epsg_shp = epsg_shp,
+      epsg_las = epsg_las
+    ))
+  }
+
+  list(estado = "ok")
+}
+
+cargar_recortar_las <- function(ruta_las, ruta_shp, buffer_m = 20,
+                                crs_override = NULL, log_fn = message) {
   log_fn("📂 Cargando nube de puntos...")
   las <- readLAS(ruta_las, select = "xyznr")
-  
+
   bb   <- ext(las)
   area <- (bb[2]-bb[1]) * (bb[4]-bb[3])
   dens_orig <- round(nrow(las@data) / as.numeric(area), 1)
   log_fn(sprintf("✅ Nube cargada: %s pts | densidad ≈ %.1f pts/m²",
                  format(nrow(las@data), big.mark="."), dens_orig))
-  
+
   log_fn("🗺️  Cargando área de interés...")
   roi <- vect(ruta_shp)
   area_roi_ha <- round(as.numeric(expanse(roi, unit="ha")), 2)
   log_fn(sprintf("   Área de interés: %.2f ha", area_roi_ha))
-  
+
+  # Asignar CRS elegido por el usuario si el LAS no tenía proyección
+  if (!is.null(crs_override)) {
+    log_fn(sprintf("📐 Asignando CRS al LAS: EPSG:%d", as.integer(crs_override)))
+    projection(las) <- crs(paste0("epsg:", as.integer(crs_override)))
+  }
+
+  # Si ambos tienen CRS pero difieren, reproyectar el ROI al CRS del LAS
+  wkt_las <- tryCatch(sf::st_crs(las)$wkt, error = function(e) NULL)
+  las_tiene_crs <- !is.null(wkt_las) && !is.na(wkt_las) && nchar(trimws(wkt_las)) > 0
+  if (las_tiene_crs && !isTRUE(sf::st_crs(las) == sf::st_crs(roi))) {
+    log_fn("⚠️  CRS distintos. Reproyectando área de interés al CRS del LAS...")
+    roi <- project(roi, crs(las))
+    log_fn("   Reproyección completada.")
+  }
+
   log_fn(sprintf("✂️  Recortando con buffer de %d m...", buffer_m))
   las_r <- clip_roi(las = las, geometry = st_as_sf(buffer(roi, buffer_m)))
   log_fn(sprintf("✅ Nube recortada: %s pts", format(nrow(las_r@data), big.mark=".")))
-  
+
   list(las = las_r, roi = roi, dens_orig = dens_orig, area_ha = area_roi_ha)
 }
 
