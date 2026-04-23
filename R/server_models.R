@@ -96,7 +96,7 @@ register_models <- function(input, output, session, rv, ag, lang) {
          col  = terrain.colors(50),
          mar  = c(3, 1, 3, 5))
     plot(rv$curvas, add = TRUE, col = "black", lwd = 0.8)
-  }, height = 530)
+  }, height = 640)
 
   output$plot_hist_z <- renderPlot({
     req(rv$datos_norm)

@@ -448,16 +448,16 @@ ui <- page_navbar(
           # Pestañas de visualización
           navset_card_tab(
             nav_panel(value="inner_prepro_log", "📊 Log de procesamiento",
-              div(class="log-box", style="height:420px;",
+              div(class="log-box", style="height:480px;",
                 verbatimTextOutput("log_prepro"))
             ),
             nav_panel(value="inner_prepro_cloud", "☁️ Nube original",
               div(id="tip_cloud_3d", class="tip-box mb-2","🖱️ Girar: clic+arrastrar · Zoom: rueda · Trasladar: clic derecho"),
-              plotlyOutput("plot3d_orig",height="390px")
+              plotlyOutput("plot3d_orig",height="480px")
             ),
             nav_panel(value="inner_prepro_classified", "🗺️ Nube clasificada",
               div(id="tip_classified", class="tip-box mb-2","🎨 Colores: suelo vs. vegetación"),
-              plotlyOutput("plot3d_clasf",height="390px")
+              plotlyOutput("plot3d_clasf",height="480px")
             )
           )
         )
@@ -516,30 +516,30 @@ ui <- page_navbar(
               div(class="row g-2",
                 div(class="col-md-6",
                   tags$small(id="lbl_dem_raw", style=paste0("color:",ACCENT_PRIMARY,";font-weight:600;"),"DEM bruto"),
-                  plotlyOutput("plot_dem_bruto",height="360px")),
+                  plotlyOutput("plot_dem_bruto",height="640px")),
                 div(class="col-md-6",
                   tags$small(id="lbl_dem_smooth", style=paste0("color:",ACCENT_PRIMARY,";font-weight:600;"),"DEM suavizado"),
-                  plotlyOutput("plot_dem_suav",height="360px"))
+                  plotlyOutput("plot_dem_suav",height="640px"))
               )
             ),
             nav_panel(value="inner_mod_contours", "📏 Curvas nivel",
              div(id="tip_mod_contours", class="tip-box mb-2","Curvas de nivel graficadas sobre el DEM"),
-              plotOutput("plot_curvas",height="480px")
+              plotOutput("plot_curvas",height="640px")
             ),
             nav_panel(value="inner_mod_hillshade", "🌓 Relieve sombreado",
               div(id="tip_mod_hillshade", class="tip-box mb-2","Sombreado del relieve según ángulo solar."),
-              plotlyOutput("plot_hillshade",height="480px")
+              plotlyOutput("plot_hillshade",height="640px")
             ),
             nav_panel(value="inner_mod_chm", "🌿 CHM — Modelo de altura de copas",
               div(id="tip_mod_chm", class="tip-box mb-2","Gris=suelo · Azul=baja · Verde=media · Amarillo=alta · Rojo=emergentes"),
-              plotlyOutput("plot_chm",height="480px")
+              plotlyOutput("plot_chm",height="640px")
             ),
             nav_panel(value="inner_mod_profile", "📊 Perfil vertical",
              div(id="tip_mod_profile", class="tip-box mb-2","Distribución vertical de las alturas en la nube de puntos"),
-              plotOutput("plot_hist_z",height="400px")
+              plotOutput("plot_hist_z",height="640px")
             ),
             nav_panel(value="inner_mod_log", "📝 Log",
-              div(class="log-box", style="height:440px;",
+              div(class="log-box", style="height:640px;",
                 verbatimTextOutput("log_modelos"))
             )
           )
@@ -609,51 +609,48 @@ ui <- page_navbar(
             )
           ),
           
-          # Métricas
-          div(class="row g-2 mt-3",
-            div(class="col-6",
-              div(class="metric-card",
-                div(class="metric-value",textOutput("met_n_arb")),
-                div(id="lbl_trees_detected", class="metric-label","🌲 Árboles detectados"))
-            ),
-            div(class="col-6",
-              div(class="metric-card",
-                div(class="metric-value", textOutput("met_dens_arb")),
-                div(id="lbl_trees_density", class="metric-label","árb/ha"))
-            ),
-            div(class="col-6",
-              div(class="metric-card",
-                div(class="metric-value", style="font-size:20px;", textOutput("met_alt_med")),
-                div(id="lbl_trees_avg_height", class="metric-label","Altura media (m)"))
-            ),
-            div(class="col-6",
-              div(class="metric-card",
-                div(class="metric-value", style="font-size:20px;", textOutput("met_alt_max")),
-                div(id="lbl_trees_max_height", class="metric-label","Altura máx (m)"))
-            )
-          ),
-          
           # Botón ejecutar
           div(class="d-grid mt-3",
             actionButton("btn_arboles","▶  Detectar árboles",
               class="btn-run w-100", style="padding:12px;font-size:15px;"))
         ),
         
-        # Columna derecha: Visualizaciones
+        # Columna derecha: Resultados
         div(class="col-lg-8",
+          # Métricas
+          div(class="row g-2 mb-3",
+            div(class="col-md-3",
+             div(class="metric-card",
+                div(class="metric-value",textOutput("met_n_arb")),
+                div(id="lbl_trees_detected", class="metric-label","🌲 Árboles detectados"))),
+            div(class="col-md-3",
+              div(class="metric-card",
+                div(class="metric-value", textOutput("met_dens_arb")),
+                div(id="lbl_trees_density", class="metric-label","árb/ha"))),
+            div(class="col-md-3",
+              div(class="metric-card",
+                div(class="metric-value", style="font-size:20px;", textOutput("met_alt_med")),
+                div(id="lbl_trees_avg_height", class="metric-label","Altura media (m)"))),
+            div(class="col-md-3",
+              div(class="metric-card",
+                div(class="metric-value", style="font-size:20px;", textOutput("met_alt_max")),
+                div(id="lbl_trees_max_height", class="metric-label","Altura máx (m)")))
+          ),
+
+        # Columna derecha: Visualizaciones
           navset_card_tab(
             nav_panel(value="inner_arb_map", "📍 Mapa de ápices",
               div(id="tip_arb_apex", class="tip-box mb-2","Cruces rojas = ápices sobre CHM. Zoom con rueda o selección."),
-              plotlyOutput("plot_arb_chm",height="460px")
+              plotlyOutput("plot_arb_chm",height="480px")
             ),
             nav_panel(value="inner_arb_dist", "📊 Distribución",
-              plotOutput("plot_hist_arb",height="280px"),
+              plotOutput("plot_hist_arb",height="480px"),
               hr(),
 
             ),
             nav_panel(value="inner_arb_canopy", "🌳 Cobertura de copas",
               div(id="tip_arb_canopy", class="tip-box mb-2","Análisis del área cubierta por las copas usando el CHM y el umbral de altura configurado."),
-              plotlyOutput("plot_canopy_coverage",height="320px"),
+              plotlyOutput("plot_canopy_coverage",height="480px"),
               hr(),
               div(class="row g-2",
                 div(class="col-6",
