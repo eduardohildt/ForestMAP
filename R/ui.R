@@ -791,7 +791,7 @@ ui <- page_navbar(
   ),
 
   footer = tags$footer(
-    style=paste0("position:fixed; bottom:0; left:0; right:0; width:100%; background:",DEEP,"; border-top:1px solid ",BORDER,"; padding:16px 20px; text-align:center; font-size:12px; color:",MUTED,"; z-index:1000; box-shadow:0 -2px 8px rgba(0,0,0,0.1);"),
+    style=paste0("position:fixed; bottom:0; left:0; right:0; width:100%; background:",DEEP,"; border-top:1px solid ",BORDER,"; padding:8px 20px; text-align:center; font-size:12px; color:",MUTED,"; z-index:1000; box-shadow:0 -2px 8px rgba(0,0,0,0.1);"),
     tags$div(
       tags$span(id="footer_main_text", "INTA ForestMap — Análisis integral de relevamientos aéreos — Dr. Eduardo Hildt — INTA EEA Montecarlo — "),
       tags$a(href="mailto:hildt.eduardo@inta.gob.ar", "Contacto: hildt.eduardo@inta.gob.ar", style=paste0("color:",TEXTO_PIE,";")),
