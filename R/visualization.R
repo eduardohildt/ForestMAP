@@ -17,7 +17,7 @@ raster_to_df <- function(r) {
 # ──────────────────────────────────────────────────────────────────────────────
 # HEATMAPS 2D PLOTLY
 # ──────────────────────────────────────────────────────────────────────────────
-plotly_raster <- function(df, titulo, colores, legend_title = "Valor") {
+plotly_raster <- function(df, titulo, colores, legend_title = "Valor", lang = "es") {
   plot_ly(df, x = ~x, y = ~y, z = ~valor,
           type = "heatmap",
           colorscale = colores,
@@ -29,8 +29,8 @@ plotly_raster <- function(df, titulo, colores, legend_title = "Valor") {
       title         = list(text=titulo, font=list(color=ACCENT_PRIMARY, size=13)),
       paper_bgcolor = BG_CARD,
       plot_bgcolor  = BG_CARD,
-      xaxis = list(title="X (m)", color=TEXT_PRIMARY, scaleanchor="y", scaleratio=1),
-      yaxis = list(title="Y (m)", color=TEXT_PRIMARY),
+      xaxis = list(title = tr("plot.axis.x_m", lang), color=TEXT_PRIMARY, scaleanchor="y", scaleratio=1),
+      yaxis = list(title = tr("plot.axis.y_m", lang), color=TEXT_PRIMARY),
       margin   = list(l=50,r=20,t=40,b=50),
       dragmode = "zoom"
     ) |>
@@ -46,20 +46,20 @@ plotly_raster <- function(df, titulo, colores, legend_title = "Valor") {
 # VISOR 3D NUBES DE PUNTOS
 # ──────────────────────────────────────────────────────────────────────────────
 plotly_nube_3d <- function(las_obj, max_pts = 80000,
-                           color_var = "Z", titulo = "Nube de Puntos") {
+                           color_var = "Z", titulo = "Nube de Puntos", lang = "es") {
   df <- as.data.frame(las_obj@data)
   if (nrow(df) > max_pts) df <- df[sample(nrow(df), max_pts), ]
-  
+
   if (color_var == "Z") {
     col_vals <- df$Z
-    col_name <- "Elevación (m)"
+    col_name <- tr("plot.colorbar.elevation", lang)
     pal      <- PAL_CHM
   } else {
     col_vals <- ifelse(df$Classification == 2L, 0, 1)
-    col_name <- "Clase"
+    col_name <- tr("plot.colorbar.class", lang)
     pal      <- PAL_TERRENO_VEGETACION
   }
-  
+
   plot_ly(
     x = ~df$X, y = ~df$Y, z = ~df$Z,
     type   = "scatter3d", mode = "markers",
@@ -79,11 +79,11 @@ plotly_nube_3d <- function(las_obj, max_pts = 80000,
       paper_bgcolor = BG_CARD,
       scene = list(
         bgcolor    = BG_CARD,
-        xaxis      = list(title = "X (m)", color = TEXT_PRIMARY,
+        xaxis      = list(title = tr("plot.axis.x_m", lang), color = TEXT_PRIMARY,
                           gridcolor = BORDER_COLOR, zerolinecolor = BORDER_COLOR),
-        yaxis      = list(title = "Y (m)", color = TEXT_PRIMARY,
+        yaxis      = list(title = tr("plot.axis.y_m", lang), color = TEXT_PRIMARY,
                           gridcolor = BORDER_COLOR, zerolinecolor = BORDER_COLOR),
-        zaxis      = list(title = "Z (m)", color = TEXT_PRIMARY,
+        zaxis      = list(title = tr("plot.axis.z_m", lang), color = TEXT_PRIMARY,
                           gridcolor = BORDER_COLOR, zerolinecolor = BORDER_COLOR),
         camera     = list(eye = list(x = 1.4, y = -1.4, z = 1.1)),
         aspectmode = "data"
@@ -95,9 +95,11 @@ plotly_nube_3d <- function(las_obj, max_pts = 80000,
 # ──────────────────────────────────────────────────────────────────────────────
 # HELPERS UI
 # ──────────────────────────────────────────────────────────────────────────────
-tip_label <- function(label_text, tip_text) {
+tip_label <- function(label_text, tip_text, label_id = NULL) {
+  lspan <- tags$span(style = paste0("color:", TEXT_PRIMARY, "; font-size:12px;"), label_text)
+  if (!is.null(label_id)) lspan$attribs$id <- label_id
   tags$div(style = "margin-bottom:2px;",
-    tags$span(style = paste0("color:", TEXT_PRIMARY, "; font-size:12px;"), label_text),
+    lspan,
     tags$span(style = "cursor:help; margin-left:5px;",
               title = tip_text,
               tags$span(style = paste0("color:", GOLD, "; font-size:11px;

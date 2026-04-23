@@ -16,6 +16,7 @@ cat("═════════════════════════
 # ══════════════════════════════════════════════════════════════════════════════
 cat("📦 Cargando bibliotecas...\n")
 library(shiny)
+library(shiny.i18n)
 library(rstudioapi)
 library(bslib)
 library(DT)
@@ -81,6 +82,11 @@ cargar_archivo <- function(nombre_archivo, obligatorio = TRUE) {
 # ══════════════════════════════════════════════════════════════════════════════
 # CARGAR COMPONENTES
 # ══════════════════════════════════════════════════════════════════════════════
+cat("🌐 Cargando sistema de traducción...\n")
+cargar_archivo("R/i18n.R",             obligatorio = TRUE)
+cargar_archivo("R/utils_translation.R", obligatorio = TRUE)
+cat("\n")
+
 cat("🎨 Cargando paleta de colores...\n")
 cargar_archivo("R/colors_light.R", obligatorio = TRUE)
 cat("\n")
@@ -100,7 +106,14 @@ cargar_archivo("R/ui.R", obligatorio = TRUE)
 cat("\n")
 
 cat("⚙️  Cargando lógica del servidor...\n")
-cargar_archivo("R/server.R", obligatorio = TRUE)
+cargar_archivo("R/server_helpers.R",       obligatorio = TRUE)
+cargar_archivo("R/server_config.R",        obligatorio = TRUE)
+cargar_archivo("R/server_presets.R",       obligatorio = TRUE)
+cargar_archivo("R/server_preprocessing.R", obligatorio = TRUE)
+cargar_archivo("R/server_models.R",        obligatorio = TRUE)
+cargar_archivo("R/server_trees.R",         obligatorio = TRUE)
+cargar_archivo("R/server_export.R",        obligatorio = TRUE)
+cargar_archivo("R/server.R",               obligatorio = TRUE)
 cat("\n")
 
 # ══════════════════════════════════════════════════════════════════════════════

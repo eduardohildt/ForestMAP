@@ -20,9 +20,11 @@ if (!exists("page_navbar")) {
 
 # Helper UI: Etiqueta con tooltip (normalmente viene de visualization.R)
 if (!exists("tip_label")) {
-  tip_label <- function(label_text, tip_text) {
+  tip_label <- function(label_text, tip_text, label_id = NULL) {
+    lspan <- tags$span(style = paste0("color:", TEXT_PRIMARY, "; font-size:12px;"), label_text)
+    if (!is.null(label_id)) lspan$attribs$id <- label_id
     tags$div(style = "margin-bottom:2px;",
-      tags$span(style = paste0("color:", TEXT_PRIMARY, "; font-size:12px;"), label_text),
+      lspan,
       tags$span(style = "cursor:help; margin-left:5px;",
                 title = tip_text,
                 tags$span(style = paste0("color:", GOLD, "; font-size:11px;
@@ -33,7 +35,9 @@ if (!exists("tip_label")) {
 }
 
 ui <- page_navbar(
-  title = "INTA ForestMap",
+  id       = "main_nav",
+  title    = "INTA ForestMap",
+  fillable = FALSE,
 	theme = bs_theme(
 	  version     = 5,
 	  bg          = BG_PRIMARY,      # #f8faf8 (fondo claro)
@@ -94,7 +98,142 @@ ui <- page_navbar(
       font-size:11px;color:",TEXT_SECONDARY,";border-left:3px solid ",PURPLE,";}
     .nav-link{font-size:15px;font-weight:500;padding:8px 16px !important;}
         .navbar-nav .nav-link.active{font-weight:600;}
-  ")))),
+    .nav-link.tab-locked{pointer-events:none !important;opacity:.45 !important;cursor:not-allowed !important;}
+    .pipeline-block{border-left:4px solid ",BORDER_COLOR,";padding-left:18px;margin-bottom:28px;}
+    .pipeline-block.block-complete{border-left-color:",STATUS_SUCCESS,";}
+    .pipeline-step-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+    .pipeline-step-title{display:flex;align-items:center;gap:10px;}
+    .step-badge{display:inline-flex;align-items:center;justify-content:center;
+      width:32px;height:32px;border-radius:50%;background:",ACCENT_PRIMARY,";
+      color:",BG_CARD,";font-weight:700;font-size:14px;flex-shrink:0;}
+    .step-status-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;
+      letter-spacing:.5px;text-transform:uppercase;}
+    .step-status-badge.status-complete{background:rgba(45,122,61,.12);color:",STATUS_SUCCESS,";
+      border:1px solid rgba(45,122,61,.35);}
+    .step-status-badge.status-pending{background:rgba(200,127,10,.12);color:",STATUS_WARNING,";
+      border:1px solid rgba(200,127,10,.35);}
+    .file-meta-card{background:",BG_PRIMARY,";border:1px solid ",BORDER_COLOR,";
+      border-radius:8px;padding:14px 16px;margin-top:10px;}
+    .file-meta-row{display:flex;justify-content:space-between;align-items:baseline;
+      padding:5px 0;border-bottom:1px solid ",BORDER_COLOR,";font-size:12.5px;}
+    .file-meta-row:last-child{border-bottom:none;}
+    .file-meta-label{color:",TEXT_MUTED,";font-weight:500;}
+    .file-meta-value{color:",TEXT_PRIMARY,";font-weight:600;text-align:right;max-width:65%;word-break:break-all;}
+    .file-meta-value.warn{color:",STATUS_WARNING,";}
+    .proyecto-data-table{width:100%;font-size:13px;}
+    .proyecto-data-table td:first-child{color:",TEXT_MUTED,";font-weight:500;width:42%;
+      padding:5px 8px 5px 0;vertical-align:top;}
+    .proyecto-data-table td:last-child{color:",TEXT_PRIMARY,";font-weight:600;}
+    .cta-block{background:linear-gradient(135deg,",BG_CARD,",",BG_DARK,");
+      border:2px solid ",ACCENT_PRIMARY,";border-radius:12px;padding:28px 24px;
+      text-align:center;margin-top:8px;}
+    .cta-block h4{color:",ACCENT_PRIMARY,";font-weight:700;margin-bottom:6px;}
+    .cta-block p{color:",TEXT_MUTED,";font-size:13.5px;margin-bottom:20px;}
+    .btn-cambiar{background:transparent;border:1px solid ",BORDER_COLOR,";color:",TEXT_MUTED,";
+      font-size:12px;padding:4px 12px;border-radius:5px;cursor:pointer;margin-top:8px;}
+    .btn-cambiar:hover{border-color:",ACCENT_PRIMARY,";color:",ACCENT_PRIMARY,";}
+    .csf-scenario-card{border:2px solid ",BORDER_COLOR,";border-radius:8px;padding:8px 6px;
+      text-align:center;cursor:pointer;transition:all .2s;background:",BG_CARD,";
+      user-select:none;height:100%;}
+    .csf-scenario-card:hover{border-color:",ACCENT_PRIMARY,";background:",BG_DARK,";}
+    .csf-scenario-card.csf-selected{border-color:",ACCENT_PRIMARY,";
+      background:rgba(45,122,61,.08);box-shadow:0 0 0 3px rgba(45,122,61,.18);}
+    .csf-scenario-title{font-weight:700;font-size:12px;color:",TEXT_PRIMARY,";margin:2px 0 1px;}
+    .csf-scenario-desc{font-size:10px;color:",TEXT_MUTED,";line-height:1.2;}
+    #ui_dem_res_cards,#ui_cn_equidist_cards,#ui_dem_win_min_cards,
+    #ui_dem_win_mean_cards,#ui_chm_res_cards,#ui_chm_subcirc_cards{
+      margin:0 !important;padding:0 !important;display:block;}
+    .csf-custom-badge{font-size:10px;font-weight:600;color:",STATUS_WARNING,";
+      background:rgba(200,127,10,.1);border:1px solid rgba(200,127,10,.3);
+      border-radius:10px;padding:3px 10px;display:inline-block;}
+    .knob-container{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;}
+    .knob-title{font-size:11px;font-weight:700;text-transform:uppercase;
+      letter-spacing:1px;color:",TEXT_MUTED,";margin-bottom:2px;}
+    .knob-svg{cursor:grab;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15));}
+    .knob-svg:active{cursor:grabbing;}
+    .knob-needle{transition:transform .45s cubic-bezier(.34,1.56,.64,1);
+      transform-origin:45px 45px;}
+    .knob-levels{display:flex;justify-content:space-between;width:90px;
+      font-size:10px;font-weight:600;color:",TEXT_MUTED,";margin-top:2px;}
+    .knob-level{text-align:center;width:22px;}
+    .knob-level.active{color:",ACCENT_PRIMARY,";}
+    .knob-status{font-size:18px;font-weight:800;color:",ACCENT_PRIMARY,";
+      letter-spacing:.5px;margin-top:2px;}
+    .knob-speed{font-size:11px;color:",TEXT_MUTED,";margin-top:1px;}
+    .knob-sep{width:100%;border:none;border-top:1px solid ",BORDER_COLOR,";margin:14px 0;}
+    .density-card{border:2px solid ",BORDER_COLOR,";border-radius:8px;padding:7px 5px;
+      text-align:center;cursor:pointer;transition:all .2s;background:",BG_CARD,";
+      user-select:none;height:100%;color:",TEXT_MUTED,";}
+    .density-card:hover{border-color:",ACCENT_PRIMARY,";background:",BG_DARK,";}
+    .density-card.density-selected{border-color:",ACCENT_PRIMARY,";
+      background:rgba(45,122,61,.08);box-shadow:0 0 0 3px rgba(45,122,61,.18);
+      color:",ACCENT_PRIMARY,";}
+    .density-dots-area{height:28px;display:flex;align-items:center;justify-content:center;
+      margin-bottom:3px;}
+    .density-card-title{font-weight:700;font-size:12px;color:",TEXT_PRIMARY,";margin-bottom:1px;}
+    .density-card-desc{font-size:10px;color:",TEXT_MUTED,";line-height:1.3;}
+    #lang_select{font-size:0.82rem;padding:2px 6px;border-radius:4px;
+      background:",BG_CARD," !important;border-color:",BORDER_COLOR," !important;
+      color:",TEXT_PRIMARY," !important;width:80px;}
+  "))),
+  tags$script(HTML("
+    function tabSetEnabled(tabId, enabled) {
+      var el = document.querySelector('.nav-link[data-value=\"' + tabId + '\"]');
+      if (!el) return;
+      if (enabled) { el.classList.remove('tab-locked'); }
+      else         { el.classList.add('tab-locked');    }
+    }
+    Shiny.addCustomMessageHandler('tabEnable',  function(id) { tabSetEnabled(id, true);  });
+    Shiny.addCustomMessageHandler('tabDisable', function(id) { tabSetEnabled(id, false); });
+    Shiny.addCustomMessageHandler('btnDisable', function(id) {
+      var el = document.getElementById(id); if (el) el.disabled = true;
+    });
+    Shiny.addCustomMessageHandler('btnEnable', function(id) {
+      var el = document.getElementById(id); if (el) el.disabled = false;
+    });
+    Shiny.addCustomMessageHandler('update_nav_labels', function(labels) {
+      var tabs = {
+        'tab_config':    labels.config,
+        'tab_prepro':    labels.data,
+        'tab_modelos':   labels.models,
+        'tab_arboles':   labels.trees,
+        'tab_exportar':  labels.export,
+        'tab_referencias': labels.about
+      };
+      Object.keys(tabs).forEach(function(id) {
+        var link = document.querySelector('.nav-link[data-value=\"' + id + '\"]');
+        if (!link) return;
+        link.childNodes.forEach(function(node) {
+          if (node.nodeType === 3 && node.textContent.trim().length > 0)
+            node.textContent = tabs[id];
+        });
+      });
+    });
+    Shiny.addCustomMessageHandler('update_ui_text', function(d) {
+      Object.keys(d).forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = d[id];
+      });
+    });
+    Shiny.addCustomMessageHandler('update_nav_tabs', function(d) {
+      Object.keys(d).forEach(function(val) {
+        var link = document.querySelector('.nav-link[data-value=\"' + val + '\"]');
+        if (!link) return;
+        link.childNodes.forEach(function(node) {
+          if (node.nodeType === 3 && node.textContent.trim().length > 0)
+            node.textContent = d[val];
+        });
+      });
+    });
+    $(document).ready(function() {
+      ['tab_prepro','tab_modelos', 'tab_arboles', 'tab_exportar'].forEach(function(id) {
+        tabSetEnabled(id, false);
+      });
+      var btnC = document.getElementById('btn_continuar');
+      if (btnC) btnC.disabled = true;
+    });
+  "))
+),
 
 
 
@@ -104,205 +243,220 @@ ui <- page_navbar(
     div(class="container-fluid py-4",
       # Banner superior
       div(class="row justify-content-center mb-4",
-        div(class="col-12",
+        div(class="col-lg-7 mx-auto",
           div(class="info-banner text-center",
-            tags$h2(style=paste0("color:",GREEN,";font-weight:800;letter-spacing:-1px;"),
+            tags$h2(id="h2_banner_title", style=paste0("color:",GREEN,";font-weight:800;letter-spacing:-1px;"),
                     "Análisis integral de relevamientos aéreos"),
-            tags$p(style=paste0("color:",MUTED,";font-size:15px;margin:4px 0 0;"),
+            tags$p(id="p_banner_subtitle", style=paste0("color:",MUTED,";font-size:15px;margin:4px 0 0;"),
                    "Aplicado a paisajes productivos forestales")
           )
         )
       ),
-      # Layout de dos columnas: Izquierda = Proyecto (40%) | Derecha = Carga de archivos (60%)
-      # RESPONSIVO: col-12 en móvil, col-lg-5/7 en desktop
-      div(class="row g-3",
-        # COLUMNA IZQUIERDA: Configuración del proyecto
-        div(class="col-12 col-lg-5",
-          card(card_header(tags$h5(class="card-title","⚙️ Configuración del proyecto")),
-            card_body(
-              div(class="row g-3",
-                div(class="col-12 col-md-6",
-                  tags$label(style=paste0("color:",GREEN,";font-size:11px;font-weight:600;"),
-                             "Autor"),
-                  textInput("cfg_autor", "", value="Autor del análisis", 
-                            placeholder="Ingrese el autor"),
-                  
-                  tags$label(style=paste0("color:",GREEN,";font-size:11px;font-weight:600;margin-top:8px;"),
-                             "Institución"),
-                  textInput("cfg_institucion", "", value="Institución", 
-                            placeholder="Ingrese la institución")
-                ),
-                div(class="col-12 col-md-6",
-                  tags$label(style=paste0("color:",GREEN,";font-size:11px;font-weight:600;"),
-                             "Email"),
-                  textInput("cfg_email", "", value="email@email.com", 
-                            placeholder="Ingrese el email"),
-                  
-                  tags$label(style=paste0("color:",GREEN,";font-size:11px;font-weight:600;margin-top:8px;"),
-                             "Destinatario"),
-                  textInput("cfg_destinatario", "", value="Destinatario del informe", 
-                            placeholder="Ingrese el destinatario")
-                )
-              ),
-              div(style="margin-top:12px;",
-                actionButton("btn_guardar_cfg","💾  Guardar",class="btn btn-sm btn-outline-success w-100"))
-            )
-          )
-        ),
-        
-        # COLUMNA DERECHA: Carga de archivos
-        div(class="col-12 col-lg-7",
-          card(card_header(tags$h5(class="card-title","📁 Selección de archivos")),
-            card_body(
-              # Sección 1: LAS/LAZ
-              div(class="row g-2 mb-2",
-                div(class="col-12 col-lg-8",
-                  actionButton("btn_las", "📂  Seleccionar LAS/LAZ",
-                    class = "btn btn-outline-success w-100 mb-1"),
-                  verbatimTextOutput("txt_ruta_las"),
 
-                ),
-                div(class="col-12 col-lg-4",
-                  div(class="metric-card",
-                    div(class="metric-value",textOutput("met_las")),
-                    div(class="metric-label","📁 LAS/LAZ"))
-                )
-              ),
-              # Sección 2: SHP
-              div(class="row g-2 mb-2",
-                div(class="col-12 col-lg-8",
-                  actionButton("btn_shp", "🗺️  Seleccionar área (SHP)",
-                    class = "btn btn-outline-info w-100 mb-1"),
-                  verbatimTextOutput("txt_ruta_shp"),
+      # Pipeline centrado
+      div(class="row justify-content-center",
+        div(class="col-lg-7 mx-auto",
 
-                ),
-                div(class="col-12 col-lg-4",
-                  div(class="metric-card",
-                    div(class="metric-value",textOutput("met_shp")),
-                    div(class="metric-label","🗺️ Área"))
-                )
+          # ── BLOQUE 0: PROYECTO ─────────────────────────────────────────────
+          div(class="pipeline-block block-complete",
+            div(class="pipeline-step-header",
+              div(class="pipeline-step-title",
+                tags$span(class="step-badge", "P"),
+                tags$h5(id="h5_project_step", style=paste0("margin:0;color:",TEXT_PRIMARY,";font-weight:700;"),
+                        "Proyecto")
               ),
-              
-              # Sección 4: Salida
-              div(class="row g-2 mb-2",
-                div(class="col-12 col-lg-8",
-                  actionButton("btn_dir","🗂️  Carpeta de salida",
-                    class="btn btn-outline-secondary w-100 mb-1"),
-                  verbatimTextOutput("txt_ruta_dir")
-                ),
-                div(class="col-12 col-lg-4",
-                  div(class="metric-card",
-                    div(class="metric-value",textOutput("met_dir")),
-                    div(class="metric-label","📂 Salida"))
+              tags$span(id="span_project_badge", class="step-status-badge status-complete", "✔ Configurado")
+            ),
+            card(
+              card_body(class="p-3",
+                uiOutput("cfg_proyecto_html"),
+                div(class="mt-3",
+                  actionButton("btn_abrir_cfg", "Editar datos del proyecto",
+                    class = "btn btn-outline-secondary btn-sm")
                 )
               )
             )
+          ),
+
+          # ── BLOQUE 1: LAS/LAZ ──────────────────────────────────────────────
+          div(class="pipeline-block",
+            div(class="pipeline-step-header",
+              div(class="pipeline-step-title",
+                tags$span(class="step-badge", "1"),
+                tags$h5(id="h5_step_las", style=paste0("margin:0;color:",TEXT_PRIMARY,";font-weight:700;"),
+                        "Nube de puntos LiDAR o fotogramétrica (LAS/LAZ)")
+              ),
+              uiOutput("cfg_las_badge")
+            ),
+            card(
+              card_body(class="p-3",
+                uiOutput("cfg_las_ui")
+              )
+            )
+          ),
+
+          # ── BLOQUE 2: ÁREA SHP ─────────────────────────────────────────────
+          div(class="pipeline-block",
+            div(class="pipeline-step-header",
+              div(class="pipeline-step-title",
+                tags$span(class="step-badge", "2"),
+                tags$h5(id="h5_step_shp", style=paste0("margin:0;color:",TEXT_PRIMARY,";font-weight:700;"),
+                        "Área de interés para el análisis (SHP)")
+              ),
+              uiOutput("cfg_shp_badge")
+            ),
+            card(
+              card_body(class="p-3",
+                uiOutput("cfg_shp_ui")
+              )
+            )
+          ),
+
+          # ── BLOQUE 3: CARPETA DE SALIDA ────────────────────────────────────
+          div(class="pipeline-block",
+            div(class="pipeline-step-header",
+              div(class="pipeline-step-title",
+                tags$span(class="step-badge", "3"),
+                tags$h5(id="h5_step_dir", style=paste0("margin:0;color:",TEXT_PRIMARY,";font-weight:700;"),
+                        "Carpeta de salida para resultados")
+              ),
+              uiOutput("cfg_dir_badge")
+            ),
+            card(
+              card_body(class="p-3",
+                uiOutput("cfg_dir_ui")
+              )
+            )
+          ),
+
+          # ── BLOQUE FINAL: ACCIÓN ───────────────────────────────────────────
+          div(class="cta-block",
+            tags$h4(id="h4_cta_title", "Todo listo para continuar"),
+            tags$p(id="p_cta_desc", "Revisa la información y continúa con el siguiente paso."),
+            actionButton("btn_continuar", "Continuar →",
+              class = "btn-run",
+              style = "padding:12px 36px;font-size:16px;")
           )
-        )
-      )
-    )
+
+        )  # end col-lg-7
+      )  # end row
+    )  # end container-fluid
   ),
 
   # ── 2: CARGA DE DATOS ────────────────────────────────────────────────────────
   nav_panel(tagList(tags$span(class="stage-badge","2"),"Carga de datos"),
     value="tab_prepro",
-    div(class="container-fluid py-4",
-      div(class="row g-3",
-        # Columna izquierda: Parámetros (más ancha)
-        div(class="col-lg-5",
+    div(class="container-fluid py-3",
+      div(class="row g-2",
+        # Columna izquierda: Parámetros
+        div(class="col-lg-4",
           # Parámetros generales
-          card(card_header(tags$h5(class="card-title","⚙️ Parámetros generales")),
-            card_body(
-              div(class="row g-3",
-                div(class="col-md-4",
-                  tip_label("Núcleos CPU", paste0("0 = todos (", N_CORES_MAX, ")")),
-                  sliderInput("n_hilos","",0,N_CORES_MAX,2,step=1)
+          card(class="mb-2", card_header(tags$h5(id="h5_subsample_header", class="card-title mb-0","⚙️ Submuestreo de la nube de puntos")),
+            card_body(class="p-2",
+              # ── Densidad de nube ────────────────────────────────────────
+              tags$p(id="p_subsample_desc", style=paste0("color:",TEXT_SECONDARY,";font-size:12px;margin-bottom:3px;"),
+                "Elige cuántos puntos por m² se cargarán. Mayor densidad = mayor fidelidad y más tiempo de procesamiento."),
+              div(class="mb-1", uiOutput("densidad_ui")),
+              # ── Método de submuestreo + Configuración avanzada ──────────
+              div(class="row g-2 mb-0",
+                div(class="col",
+                  div(class="card h-100",
+                    div(class="card-header py-1",
+                      tags$h6(id="h6_method_header", style="margin:0;font-size:12px;font-weight:700;", "Método de submuestreo")
+                    ),
+                    div(class="card-body py-1 px-2",
+                      radioButtons("decimate_tipo", label=NULL,
+                        choices=c("Aleatorio"="aleatorio","Uniforme"="uniforme"),
+                        selected="aleatorio", inline=TRUE)
+                    )
+                  )
                 ),
-                div(class="col-md-4",
-                  tip_label("Área buffer (m)", "Extensión perimetral del área a recortar"),
-                  sliderInput("buffer_m","",0,75,20,step=5)
-                ),
-                div(class="col-md-4",
-                  tip_label("Densidad objetivo (pts/m²)", "Densidad deseada para el submuestreo aleatorio de la nube de puntos"),
-                  sliderInput("densidad","",2,200,10,step=1)
+                div(class="col",
+                  div(class="card h-100",
+                    div(class="card-body d-flex align-items-center justify-content-center p-1",
+                      actionButton("btn_densidad_avanzado", "⚙ Configuración avanzada",
+                        class="btn-outline-secondary btn-sm w-100")
+                    )
+                  )
                 )
+              ),
+              tags$p(id="p_method_tip", class="mt-1 mb-0", style=paste0("color:",TEXT_SECONDARY,";font-size:11px;"),
+                "Tipos de submuestreo: Aleatorio respeta la distribución original. Uniforme logra una distribución homogénea."),
+              # ── Entradas ocultas ─────────────────────────────────────────
+              div(style="display:none;",
+                numericInput("buffer_m", "", value=10, min=1, max=200),
+                numericInput("densidad", "", value=25, min=1, max=500)
               )
             )
           ),
           # Clasificación del suelo
-          card(card_header(tags$h5(class="card-title","🏔️ Clasificación del suelo (Algoritmo CSF)")),
-            card_body(
-              div(class="tip-box mb-3",
-                "El algoritmo CSF simula una malla que cae sobre los puntos bajos del terreno para separar suelo de vegetación."),
-              
-              div(class="row g-3",
-                div(class="col-md-6",
-                  tip_label("Rigidez de la malla", "Según topografía. Una malla más suave captura mejor el micro relieve, mientras que una mas tensa interpola mejor áreas donde no se observó el terreno"),
-                  selectInput("csf_rigidness","",
-                    choices=c("1 — Quebrado"=1,
-                              "2 — Ondulado (común)"=2,
-                              "3 — Llano"=3),
-                    selected=2)
-                ),
-                div(class="col-md-6",
-                  tip_label("Umbral (m)", "Altura para considerar que un punto corresponde al terreno"),
-                  sliderInput("csf_threshold","",0.05,2,0.5, step=0.05)
-                )
+          card(class="mb-2", card_header(tags$h5(id="h5_csf_header", class="card-title mb-0","🏔️ Clasificación del suelo (Algoritmo CSF)")),
+            card_body(class="p-2",
+              tags$p(id="p_csf_desc", style=paste0("color:",TEXT_SECONDARY,";font-size:12px;margin-bottom:3px;"),
+                "Seleccioná el tipo de relieve predominante. El algoritmo CSF modela una malla que se adapta al terreno para separar suelo de vegetación."),
+
+              # Selector de escenario (renderizado desde server)
+              uiOutput("csf_scenario_ui"),
+
+              # Badge de configuración personalizada
+              uiOutput("csf_custom_badge_ui"),
+
+              # Botón configuración avanzada
+              div(class="d-grid mt-1",
+                actionButton("btn_csf_avanzado",
+                  tagList(tags$span(style="font-size:13px;", "⚙️"), " Configuración avanzada (opcional)"),
+                  class = "btn btn-outline-secondary btn-sm")
               ),
-              
-              div(class="row g-3",
-                div(class="col-md-6",
-                  tip_label("Resolución de la malla (m)", "Una mayor resolución (menor valor) captura mejor el micro relieve. Recomendado: 1  a 2 m"),
-                  sliderInput("csf_cloth_res","",0.5,5,1,step=0.25)
-                ),
-                div(class="col-md-6",
-                  tags$br(),
-                  tip_label("Suavizado de pendientes abruptas", "Activarlo si el terreno presenta cambios abruptos de nivel (terrazas, terraplenes, albardones)"),
-                  checkboxInput("csf_sloop_smooth","Suavizar pendientes",value=FALSE)
-                )
+
+              # Inputs CSF ocultos — compatibilidad con btn_preprocesar
+              tags$div(style = "display:none;",
+                selectInput("csf_rigidness","",choices=c("1"=1,"2"=2,"3"=3),selected=2),
+                sliderInput("csf_threshold","",0.05,2,0.5,step=0.05),
+                sliderInput("csf_cloth_res","",0.5,5,1,step=0.25),
+                checkboxInput("csf_sloop_smooth","",value=FALSE)
               )
             )
           ),
           # Botón ejecutar
-          div(class="d-grid mt-3",
+          div(class="d-grid",
             actionButton("btn_preprocesar","▶  Ejecutar carga y clasificación",
-              class="btn-run w-100", style="padding:12px;font-size:15px;"))
+              class="btn-run w-100", style="padding:10px;font-size:15px;"))
         ),
         
         # Columna derecha: Resultados
-        div(class="col-lg-7",
+        div(class="col-lg-8",
           # Métricas
           div(class="row g-2 mb-3",
             div(class="col-md-3",
               div(class="metric-card",
                 div(class="metric-value",textOutput("met_pts_orig")),
-                div(class="metric-label","Puntos cargados"))),
+                div(id="lbl_pts_loaded", class="metric-label","Puntos cargados"))),
             div(class="col-md-3",
               div(class="metric-card",
                 div(class="metric-value",textOutput("met_pts_filt")),
-                div(class="metric-label","Filtrados"))),
+                div(id="lbl_pts_filtered", class="metric-label","Filtrados"))),
             div(class="col-md-3",
               div(class="metric-card",
                 div(class="metric-value",textOutput("met_pts_suelo")),
-                div(class="metric-label","Suelo"))),
+                div(id="lbl_pts_soil", class="metric-label","Suelo"))),
             div(class="col-md-3",
               div(class="metric-card",
                 div(class="metric-value",textOutput("met_pts_veg")),
-                div(class="metric-label","Vegetación")))
+                div(id="lbl_pts_veg", class="metric-label","Vegetación")))
           ),
           
           # Pestañas de visualización
           navset_card_tab(
-            nav_panel("📊 Log de procesamiento",
+            nav_panel(value="inner_prepro_log", "📊 Log de procesamiento",
               div(class="log-box", style="height:420px;",
                 verbatimTextOutput("log_prepro"))
             ),
-            nav_panel("☁️ Nube original",
-              div(class="tip-box mb-2","🖱️ Girar: clic+arrastrar · Zoom: rueda · Trasladar: clic derecho"),
+            nav_panel(value="inner_prepro_cloud", "☁️ Nube original",
+              div(id="tip_cloud_3d", class="tip-box mb-2","🖱️ Girar: clic+arrastrar · Zoom: rueda · Trasladar: clic derecho"),
               plotlyOutput("plot3d_orig",height="390px")
             ),
-            nav_panel("🗺️ Nube clasificada",
-              div(class="tip-box mb-2","🎨 Colores: suelo vs. vegetación"),
+            nav_panel(value="inner_prepro_classified", "🗺️ Nube clasificada",
+              div(id="tip_classified", class="tip-box mb-2","🎨 Colores: suelo vs. vegetación"),
               plotlyOutput("plot3d_clasf",height="390px")
             )
           )
@@ -314,103 +468,77 @@ ui <- page_navbar(
   # ── 3: MODELOS DIGITALES ─────────────────────────────────────────────────────
   nav_panel(tagList(tags$span(class="stage-badge","3"),"Modelos digitales"),
     value="tab_modelos",
-    div(class="container-fluid py-4",
-      div(class="row g-3",
+    div(class="container-fluid py-2",
+      div(class="row g-2",
         # Columna izquierda: Parámetros
         div(class="col-lg-4",
-          # DEM
-          card(card_header(tags$h5(class="card-title","🏔️ DEM — Modelo de elevación")),
-            card_body(
-              div(class="row g-3",
-                div(class="col-md-4",
-                  tip_label("Resolución DEM (m)", "Tamaño píxel deseado para el DEM"),
-                  sliderInput("dem_res","",0.25,10,1,step=0.25,ticks=TRUE)
-                ),
-                div(class="col-md-4",
-                  tip_label("Filtro de minimización (px)", "Filtro de minimización para eliminar pixeles altos por vegetación baja (impar)"),
-                  sliderInput("dem_win_min","",3,15,3,step=2,ticks=TRUE)
-                ),
-                div(class="col-md-4",
-                  tip_label("Filtro de media (px)", "Filtro focal para suavizar el DEM (impar)"),
-                  sliderInput("dem_win_mean","",3,81,9,step=2,ticks=TRUE)
-                )
-              )
+          # Bloque A: DEM + Curvas
+          card(class="mb-0", card_header(class="py-0 px-2", tags$h5(id="h5_dem_header", class="card-title mb-0","🏔️ Modelo digital de elevación (DEM)")),
+            card_body(class="p-4",
+              # Cards visibles en la pantalla principal
+              tags$p(id="p_dem_res_label", class="fw-semibold mb-0", "Resolución del DEM (m)"),
+              uiOutput("ui_dem_res_cards"),
+              tags$p(id="p_cn_equidist_label", class="fw-semibold mb-0", "Equidistancia de las curvas de nivel (m)"),
+              uiOutput("ui_cn_equidist_cards"),
+              tags$p(id="p_dem_win_min_label", class="fw-semibold mb-0", "Filtrado de la vegetación baja"),
+              uiOutput("ui_dem_win_min_cards"),
+              tags$p(id="p_dem_win_mean_label", class="fw-semibold mb-0", "Suavizado del DEM y las curvas de nivel"),
+              uiOutput("ui_dem_win_mean_cards"),
+              actionButton("btn_dem_avanzado", "⚙️ Configuración avanzada",
+                class = "btn btn-outline-secondary w-100 mt-1")
             )
           ),
-          
-          # Curvas y Hillshade
-          card(card_header(tags$h5(class="card-title","📏 Curvas de nivel y sombreado")),
-            card_body(
-              div(class="row g-3",
-                div(class="col-md-4",
-                  tip_label("Equidistancia curvas (m)", "Separación entre curvas de nivel"),
-                  sliderInput("cn_equidist","", 0.1, 10, 1, step=0.1, ticks=TRUE)
-                ),
-                div(class="col-md-4",
-                  tip_label("Ángulo solar (°)", "Elevación"),
-                  sliderInput("hs_angulo","",10,80,45,step=5,ticks=TRUE)
-                ),
-                div(class="col-md-4",
-                  tip_label("Azimut (°)", "Dirección"),
-                  sliderInput("hs_azimut","",0,360,315,step=15,ticks=TRUE)
-                )
-              )
+
+          # Bloque B: CHM
+          card(class="mb-2", card_header(class="py-1 px-2", tags$h5(id="h5_chm_header", class="card-title mb-0","🌿 Modelo de altura de copas (CHM)")),
+            card_body(class="p-2",
+              # Cards visibles en la pantalla principal
+              tags$p(id="p_chm_res_label", class="fw-semibold mb-0", "Resolución del CHM (m)"),
+              uiOutput("ui_chm_res_cards"),
+              tags$p(id="p_chm_gap_label", class="fw-semibold mb-0", "Relleno de huecos"),
+              uiOutput("ui_chm_subcirc_cards"),
+              actionButton("btn_chm_avanzado", "⚙️ Configuración avanzada",
+                class = "btn btn-outline-secondary w-100 mt-1")
             )
           ),
-          
-          # CHM
-          card(card_header(tags$h5(class="card-title","🌿 CHM — Modelo de altura de copas")),
-            card_body(
-              div(class="row g-3",
-                div(class="col-md-6",
-                  tip_label("Resolución (m)", "Tamaño de píxel del CHM"),
-                  sliderInput("chm_res","",0.1,2,0.5,step=0.05, ticks=TRUE)
-                ),
-                div(class="col-md-6",
-                  tip_label("Ventana de interpolación (m)", "Area de búsqueda de puntos cercanos para el relleno de huecos"),
-                  sliderInput("chm_subcirc","",0,0.5,0.025,0.005,ticks=TRUE)
-                )
-              )
-            )
-          ),
-          
+
           # Botón ejecutar
-          div(class="d-grid mt-3",
+          div(class="d-grid",
             actionButton("btn_modelos","▶  Generar todos los modelos",
-              class="btn-run w-100", style="padding:12px;font-size:15px;"))
+              class="btn-run w-100", style="padding:10px;font-size:15px;"))
         ),
         
         # Columna derecha: Visualizaciones
         div(class="col-lg-8",
           navset_card_tab(
-            nav_panel("🗺️ DEM",
-              div(class="tip-box mb-2","Zoom con rueda o selección. Botón 🏠 para restablecer."),
+            nav_panel(value="inner_mod_dem", "🗺️ DEM",
+              div(id="tip_mod_dem", class="tip-box mb-2","Zoom con rueda o selección. Botón 🏠 para restablecer."),
               div(class="row g-2",
                 div(class="col-md-6",
-                  tags$small(style=paste0("color:",ACCENT_PRIMARY,";font-weight:600;"),"DEM bruto"),
+                  tags$small(id="lbl_dem_raw", style=paste0("color:",ACCENT_PRIMARY,";font-weight:600;"),"DEM bruto"),
                   plotlyOutput("plot_dem_bruto",height="360px")),
                 div(class="col-md-6",
-                  tags$small(style=paste0("color:",ACCENT_PRIMARY,";font-weight:600;"),"DEM suavizado"),
+                  tags$small(id="lbl_dem_smooth", style=paste0("color:",ACCENT_PRIMARY,";font-weight:600;"),"DEM suavizado"),
                   plotlyOutput("plot_dem_suav",height="360px"))
               )
             ),
-            nav_panel("📏 Curvas nivel",
-             div(class="tip-box mb-2","Curvas de nivel graficadas sobre el DEM"),
+            nav_panel(value="inner_mod_contours", "📏 Curvas nivel",
+             div(id="tip_mod_contours", class="tip-box mb-2","Curvas de nivel graficadas sobre el DEM"),
               plotOutput("plot_curvas",height="480px")
             ),
-            nav_panel("🌓 Relieve sombreado",
-              div(class="tip-box mb-2","Sombreado del relieve según ángulo solar."),
+            nav_panel(value="inner_mod_hillshade", "🌓 Relieve sombreado",
+              div(id="tip_mod_hillshade", class="tip-box mb-2","Sombreado del relieve según ángulo solar."),
               plotlyOutput("plot_hillshade",height="480px")
             ),
-            nav_panel("🌿 CHM — Modelo de altura de copas",
-              div(class="tip-box mb-2","Gris=suelo · Azul=baja · Verde=media · Amarillo=alta · Rojo=emergentes"),
+            nav_panel(value="inner_mod_chm", "🌿 CHM — Modelo de altura de copas",
+              div(id="tip_mod_chm", class="tip-box mb-2","Gris=suelo · Azul=baja · Verde=media · Amarillo=alta · Rojo=emergentes"),
               plotlyOutput("plot_chm",height="480px")
             ),
-            nav_panel("📊 Perfil vertical",
-             div(class="tip-box mb-2","Distribución vertical de las alturas en la nube de puntos"),
+            nav_panel(value="inner_mod_profile", "📊 Perfil vertical",
+             div(id="tip_mod_profile", class="tip-box mb-2","Distribución vertical de las alturas en la nube de puntos"),
               plotOutput("plot_hist_z",height="400px")
             ),
-            nav_panel("📝 Log",
+            nav_panel(value="inner_mod_log", "📝 Log",
               div(class="log-box", style="height:440px;",
                 verbatimTextOutput("log_modelos"))
             )
@@ -427,50 +555,81 @@ ui <- page_navbar(
       div(class="row g-3",
         # Columna izquierda: Parámetros
         div(class="col-lg-4",
-          card(card_header(tags$h5(class="card-title","🌲 Detección de ápices")),
+          card(card_header(tags$h5(id="h5_trees_header", class="card-title","🌲 Detección de ápices")),
             card_body(
-              div(class="tip-box mb-3",
+              div(id="div_trees_desc", class="tip-box mb-3",
                 "El algoritmo busca el punto más alto en ventanas móviles. Cada máximo representa un árbol."),
-              
-              div(class="row g-3",
-                div(class="col-md-6",
-                  tip_label("Diámetro de la ventana (m)", "Diámetro de la ventana de búsqueda, similar al tamaño de la copa de los árboles"),
-                  sliderInput("lmf_ws","",1,10,4,step=0.5)
-                ),
-                div(class="col-md-6",
-                  tip_label("Altura mínima de los árboles (m)", "Evita buscar árboles muy bajos. Reduce falsos positivos y agiliza la búsqueda"),
-                  sliderInput("lmf_hmin","",1,40,10,step=1)
+
+              tags$p(id="p_lmf_ws_label", class="fw-semibold mb-0", "Diámetro de la ventana de búsqueda (m)"),
+              uiOutput("ui_lmf_ws_cards"),
+
+              tags$p(id="p_lmf_hmin_label", class="fw-semibold mb-0 mt-2", "Altura mínima de los árboles (m)"),
+              uiOutput("ui_lmf_hmin_cards"),
+
+              tags$p(id="p_canopy_cutoff_label", class="fw-semibold mb-0 mt-2", "Altura de corte para cobertura (m)"),
+              uiOutput("ui_canopy_cutoff_cards"),
+
+              # Modal con sliders exactos
+              tags$div(class="modal fade", id="modalArbConfig", tabindex="-1",
+                `aria-labelledby`="modalArbConfigLabel", `aria-hidden`="true",
+                tags$div(class="modal-dialog",
+                  tags$div(class="modal-content",
+                    tags$div(class="modal-header",
+                      tags$h5(class="modal-title", id="modalArbConfigLabel", "Configuración avanzada — Árboles"),
+                      tags$button(type="button", class="btn-close", `data-bs-dismiss`="modal", `aria-label`="Cerrar")
+                    ),
+                    tags$div(class="modal-body",
+                      div(class="row g-3",
+                        div(class="col-12",
+                          tip_label("Diámetro de la ventana (m)", "Diámetro de la ventana de búsqueda, similar al tamaño de la copa de los árboles", label_id="tip_lbl_lmf_ws"),
+                          sliderInput("modal_lmf_ws", NULL, min=1, max=10, value=4, step=0.5, ticks=TRUE)
+                        ),
+                        div(class="col-12",
+                          tip_label("Altura mínima de los árboles (m)", "Evita buscar árboles muy bajos. Reduce falsos positivos y agiliza la búsqueda", label_id="tip_lbl_lmf_hmin"),
+                          sliderInput("modal_lmf_hmin", NULL, min=1, max=40, value=10, step=1, ticks=TRUE)
+                        ),
+                        div(class="col-12",
+                          tip_label("Altura de corte para cobertura (m)", "Umbral para clasificar áreas cubiertas por copas. Las áreas del CHM por encima de este valor se consideran cubiertas", label_id="tip_lbl_canopy_cutoff"),
+                          sliderInput("modal_canopy_cutoff", NULL, min=0, max=20, value=4, step=0.5, ticks=TRUE)
+                        )
+                      )
+                    ),
+                    tags$div(class="modal-footer",
+                      actionButton("btn_arb_config_aplicar", "Aplicar", class="btn btn-primary"),
+                      tags$button(id="btn_arb_modal_close", type="button", class="btn btn-secondary", `data-bs-dismiss`="modal", "Cerrar")
+                    )
+                  )
                 )
               ),
-              
-              div(class="row g-3",
-                div(class="col-12",
-                  tip_label("Altura de corte para cobertura (m)", "Umbral para clasificar áreas cubiertas por copas. Las áreas del CHM por encima de este valor se consideran cubiertas"),
-                  sliderInput("canopy_height_cutoff","",0,20,4,step=0.5)
-                )
-              ),
-              
-              div(class="tip-box", style="font-size:10px;",
-                "💡 Si se detectan demasiados árboles, incrementar el Tamaño de la ventana o la altura mínima")
+              # Botón para abrir el modal
+              tags$button(id="btn_arb_open_modal",
+                type="button", class="btn btn-outline-secondary w-100 mt-2",
+                `data-bs-toggle`="modal", `data-bs-target`="#modalArbConfig",
+                "⚙️ Configuración avanzada")
             )
           ),
           
           # Métricas
           div(class="row g-2 mt-3",
-            div(class="col-12",
+            div(class="col-6",
               div(class="metric-card",
                 div(class="metric-value",textOutput("met_n_arb")),
-                div(class="metric-label","🌲 Árboles detectados"))
+                div(id="lbl_trees_detected", class="metric-label","🌲 Árboles detectados"))
+            ),
+            div(class="col-6",
+              div(class="metric-card",
+                div(class="metric-value", textOutput("met_dens_arb")),
+                div(id="lbl_trees_density", class="metric-label","árb/ha"))
             ),
             div(class="col-6",
               div(class="metric-card",
                 div(class="metric-value", style="font-size:20px;", textOutput("met_alt_med")),
-                div(class="metric-label","Altura media (m)"))
+                div(id="lbl_trees_avg_height", class="metric-label","Altura media (m)"))
             ),
             div(class="col-6",
               div(class="metric-card",
                 div(class="metric-value", style="font-size:20px;", textOutput("met_alt_max")),
-                div(class="metric-label","Altura máx (m)"))
+                div(id="lbl_trees_max_height", class="metric-label","Altura máx (m)"))
             )
           ),
           
@@ -483,33 +642,33 @@ ui <- page_navbar(
         # Columna derecha: Visualizaciones
         div(class="col-lg-8",
           navset_card_tab(
-            nav_panel("📍 Mapa de ápices",
-              div(class="tip-box mb-2","Cruces rojas = ápices sobre CHM. Zoom con rueda o selección."),
+            nav_panel(value="inner_arb_map", "📍 Mapa de ápices",
+              div(id="tip_arb_apex", class="tip-box mb-2","Cruces rojas = ápices sobre CHM. Zoom con rueda o selección."),
               plotlyOutput("plot_arb_chm",height="460px")
             ),
-            nav_panel("📊 Distribución",
+            nav_panel(value="inner_arb_dist", "📊 Distribución",
               plotOutput("plot_hist_arb",height="280px"),
               hr(),
 
             ),
-            nav_panel("🌳 Cobertura de copas",
-              div(class="tip-box mb-2","Análisis del área cubierta por las copas usando el CHM y el umbral de altura configurado."),
+            nav_panel(value="inner_arb_canopy", "🌳 Cobertura de copas",
+              div(id="tip_arb_canopy", class="tip-box mb-2","Análisis del área cubierta por las copas usando el CHM y el umbral de altura configurado."),
               plotlyOutput("plot_canopy_coverage",height="320px"),
               hr(),
               div(class="row g-2",
                 div(class="col-6",
                   div(class="metric-card",
                     div(class="metric-value", style="font-size:18px;", textOutput("met_canopy_area")),
-                    div(class="metric-label","Área copas (ha)"))
+                    div(id="lbl_canopy_area", class="metric-label","Área copas (ha)"))
                 ),
                 div(class="col-6",
                   div(class="metric-card",
                     div(class="metric-value", style="font-size:18px;", textOutput("met_canopy_pct")),
-                    div(class="metric-label","% Cubierto"))
+                    div(id="lbl_canopy_pct", class="metric-label","% Cubierto"))
                 )
               )
             ),
-            nav_panel("📝 Log",
+            nav_panel(value="inner_arb_log", "📝 Log",
               div(class="log-box", style="height:480px;",
                 verbatimTextOutput("log_arboles"))
             )
@@ -530,7 +689,7 @@ ui <- page_navbar(
             div(class="col-md-4",
               card(
                 card_body(
-                  tags$h6(style=paste0("color:",ACCENT_PRIMARY,";font-weight:700;margin-bottom:12px;"),
+                  tags$h6(id="h6_export_clouds", style=paste0("color:",ACCENT_PRIMARY,";font-weight:700;margin-bottom:12px;"),
                     "☁️ Nubes de puntos"),
                   tags$ul(style=paste0("color:",TEXT_SECONDARY,";font-size:13px;list-style:none;padding:0;"),
                     tags$li(style="padding:4px 0;","✓ puntos_clasificados.laz"),
@@ -541,7 +700,7 @@ ui <- page_navbar(
             div(class="col-md-4",
               card(
                 card_body(
-                  tags$h6(style=paste0("color:",ACCENT_PRIMARY,";font-weight:700;margin-bottom:12px;"),
+                  tags$h6(id="h6_export_raster", style=paste0("color:",ACCENT_PRIMARY,";font-weight:700;margin-bottom:12px;"),
                     "🗺️ Modelos raster"),
                   tags$ul(style=paste0("color:",TEXT_SECONDARY,";font-size:13px;list-style:none;padding:0;"),
                     tags$li(style="padding:4px 0;","✓ DEM.tif"),
@@ -553,7 +712,7 @@ ui <- page_navbar(
             div(class="col-md-4",
               card(
                 card_body(
-                  tags$h6(style=paste0("color:",ACCENT_PRIMARY,";font-weight:700;margin-bottom:12px;"),
+                  tags$h6(id="h6_export_vector", style=paste0("color:",ACCENT_PRIMARY,";font-weight:700;margin-bottom:12px;"),
                     "📐 Capas vectoriales"),
                   tags$ul(style=paste0("color:",TEXT_SECONDARY,";font-size:13px;list-style:none;padding:0;"),
                     tags$li(style="padding:4px 0;","✓ Curvas_Nivel.shp"),
@@ -586,7 +745,7 @@ ui <- page_navbar(
           ),
           
           # Log
-          card(card_header(tags$h5(class="card-title","📝 Log de exportación")),
+          card(card_header(tags$h5(id="h5_export_log", class="card-title","📝 Log de exportación")),
             card_body(
               div(class="log-box", style="height:300px;",
                 verbatimTextOutput("log_exportar"))
@@ -602,107 +761,27 @@ ui <- page_navbar(
     div(class="container-fluid py-4",
       div(class="row justify-content-center",
         div(class="col-lg-10",
-          card(card_header(tags$h5(class="card-title","📚 Referencias bibliográficas")),
-            card_body(
-              div(class="ref-box",
-                tags$b(style=paste0("color:",PURPLE,";"),"Paquete lidR"),tags$br(),
-                tags$p(style="margin:4px 0 0;",
-                  "Roussel J-R, Auty D, Coops NC, Tompalski P, Goodbody TRH, Meador AS, Bourdon J-F, de Boissieu F, Achim A (2021). ",
-                  tags$em("lidR: An R package for analysis of Airborne LiDAR Data."),
-                  " Remote Sensing of Environment, 251, 112061.",
-                  tags$a(href="https://doi.org/10.1016/j.rse.2020.112061",
-                         "doi:10.1016/j.rse.2020.112061", target="_blank",
-                         style=paste0("color:",GREEN,";"))
-                ),
-                tags$p(style="margin:6px 0 0;",
-                  "Roussel J-R, Auty D (2023). ",
-                  tags$em("Airborne LiDAR Data Manipulation and Visualization for Forestry Applications."),
-                  " R package version 4.x. ",
-                  tags$a(href="https://cran.r-project.org/package=lidR",
-                         "CRAN/lidR", target="_blank",
-                         style=paste0("color:",GREEN,";"))
-                )
-              ),
-              
-              div(class="ref-box",
-                tags$b(style=paste0("color:",PURPLE,";"),"Algoritmo CSF (suelo)"),tags$br(),
-                tags$p(style="margin:4px 0 0;",
-                  "Zhang W et al. (2016). An easy-to-use airborne LiDAR data filtering method based on cloth simulation. ",
-                  tags$em("Remote Sensing"), " 8(6), 501.",
-                  tags$a(href="https://doi.org/10.3390/rs8060501",
-                         "doi:10.3390/rs8060501", target="_blank",
-                         style=paste0("color:",GREEN,";"))
-                )
-              )
-            )
-          ),
-          tags$br(),
-          card(
-              card_header(
-                tags$h5(
-                  class="card-title",
-                  "ℹ️ Acerca de la Herramienta INTA para el análisis integral de relevamientos aerofotogramétricos y LiDAR en paisajes productivos forestales"
-                )
-              ),
-              
-              card_body(
-                
-                tags$p("Desarrollada por el Grupo Forestal de la Estación Experimental Agropecuaria Montecarlo del INTA, esta herramienta presenta un flujo de trabajo para el análisis de nubes de puntos generadas por relevamientos aerofotogramétricos o LiDAR."),
-                
-                tags$p(
-                  style=paste0("color:",GREEN,";font-size:13px;font-weight:600;margin:12px 0 8px;"),
-                  "Funciones incorporadas:"
-                ),
-                
-                # 🔹 ROW CORRECTO
-                div(class="row",
-                    
-                    # 🔸 Columna izquierda (lista)
-                    div(class="col-9",
-                        tags$ul(
-                          style=paste0("color:",MUTED,";font-size:12px;"),
-                          tags$li("Recorte y submuestreo de la nube de puntos"),
-                          tags$li("Clasificación automática del terreno"),
-                          tags$li("Generación de modelos digitales (DEM, CHM)"),
-                          tags$li("Extracción de curvas de nivel"),
-                          tags$li("Detección de árboles individuales"),
-                          tags$li("Informe descriptivo en PDF")
-                        )
-                    ),
-                    
-                    # 🔸 Columna derecha (logo)
-                    div(class="col-3 d-flex align-items-start",
-                        img(
-                          src = "assets/logo_INTA.png",
-                          alt = "INTA Logo",
-                          width = "120px",
-                          style = "opacity:0.9; margin-left:10px;"
-                        )
-                    )
-                ),
-                
-                tags$table(
-                  class="table table-sm",
-                  style=paste0("color:",MUTED,";margin-top:10px;"),
-                  tags$tr(tags$td(tags$b("Versión:")),      tags$td(NVersion)),
-                  tags$tr(tags$td(tags$b("Última actualización:")), tags$td("Marzo 2026")),
-                  tags$tr(tags$td(tags$b("Contacto:")),     tags$td(tags$a(
-                    href="mailto:hildt.eduardo@inta.gob.ar",
-                    "hildt.eduardo@inta.gob.ar",
-                    style=paste0("color:",GREEN,";")
-                  )))
-                )
-              )
-            )
+          uiOutput("ui_about_section")
         )
       )
     )
   ),
   
+  nav_spacer(),
+  nav_item(
+    selectInput(
+      "lang_select",
+      label    = NULL,
+      choices  = c("ES" = "es", "EN" = "en", "PT" = "pt"),
+      selected = "es",
+      width    = "80px"
+    )
+  ),
+
   footer = tags$footer(
     style=paste0("position:fixed; bottom:0; left:0; right:0; width:100%; background:",DEEP,"; border-top:1px solid ",BORDER,"; padding:16px 20px; text-align:center; font-size:12px; color:",MUTED,"; z-index:1000; box-shadow:0 -2px 8px rgba(0,0,0,0.1);"),
     tags$div(
-      "INTA ForestMap — Análisis integral de relevamientos aéreos — Dr. Eduardo Hildt — INTA EEA Montecarlo — ",
+      tags$span(id="footer_main_text", "INTA ForestMap — Análisis integral de relevamientos aéreos — Dr. Eduardo Hildt — INTA EEA Montecarlo — "),
       tags$a(href="mailto:hildt.eduardo@inta.gob.ar", "Contacto: hildt.eduardo@inta.gob.ar", style=paste0("color:",TEXTO_PIE,";")),
       paste0(" — Red de Drones INTA — Versión ", NVersion),
       style=paste0("color:",TEXTO_PIE,";")

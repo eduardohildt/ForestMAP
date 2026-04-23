@@ -1,14 +1,25 @@
 # ==============================================================================
-# SERVER - Lógica del servidor
+# SERVER - Orquestador principal
 # ==============================================================================
-# Este archivo requiere que se carguen primero:
-# - Bibliotecas: shiny, terra, sf, lidR, ggplot2, DT, plotly
-# - Módulos: processing.R, visualization.R, export.R
-# - Variables de colores desde colors_light.R
+# Inicializa el estado reactivo y delega cada sección a su módulo:
+#   server_helpers.R        — %||%, elegir_archivo/carpeta, csf_presets
+#   server_config.R         — E0: configuración de proyecto y archivos
+#   server_presets.R        — E1: tarjetas preset (CSF, densidad, DEM, CHM, árboles)
+#   server_preprocessing.R  — E2: preproceso LiDAR y resolución de CRS
+#   server_models.R         — E3: generación de modelos digitales
+#   server_trees.R          — E4: detección de árboles y cobertura de copas
+#   server_export.R         — E5: exportación e informe PDF
 # ==============================================================================
 
 server <- function(input, output, session) {
 
+  set_lidr_threads(min(max(1L, floor(0.75 * N_CORES_MAX)), N_CORES_MAX - 1L))
+
+  # ── Logging ──────────────────────────────────────────────────────────────────
+  ts_log <- function(m) paste(format(Sys.time(), "[%H:%M:%S]"), m)
+  ag <- function(campo, m) rv[[campo]] <- c(rv[[campo]], ts_log(m))
+
+  # ── Estado reactivo global ───────────────────────────────────────────────────
   rv <- reactiveValues(
     ruta_las       = NULL,
     ruta_shp       = NULL,
@@ -31,641 +42,249 @@ server <- function(input, output, session) {
     log_export     = character(0),
     crs_pendiente  = NULL,
     # Configuración del proyecto (editable)
-    cfg_autor      = "Autor del análisis",
-    cfg_institucion = "Institución",
-    cfg_email      = "email@email.com",
-    cfg_destinatario = "Destinatario del informe"
+    cfg_autor        = "-",
+    cfg_institucion  = "-",
+    cfg_email        = "-",
+    cfg_destinatario = "-",
+    # Metadata de archivos leída del header (sin cargar la nube completa)
+    las_meta         = NULL,
+    shp_meta         = NULL,
+    # Escenario CSF y flag de configuración personalizada
+    csf_scenario     = "ondulado",
+    csf_custom       = FALSE,
+    csf_rigidness    = 2L,
+    csf_threshold    = 0.5,
+    csf_cloth_res    = 1.0,
+    csf_sloop_smooth = FALSE,
+    # Nivel de densidad y flag de configuración personalizada
+    densidad_nivel   = "medio",
+    densidad_custom  = FALSE,
+    densidad_val     = 25,
+    # Presets modelos DEM
+    dem_res_sel      = 1,     dem_res_custom      = FALSE,
+    cn_equidist_sel  = 1,     cn_equidist_custom  = FALSE,
+    dem_win_min_sel  = 3,     dem_win_min_custom  = FALSE,
+    dem_win_mean_sel = 15,    dem_win_mean_custom = FALSE,
+    # Presets modelos CHM
+    chm_res_sel      = 0.5,   chm_res_custom      = FALSE,
+    chm_subcirc_sel  = 0.025, chm_subcirc_custom  = FALSE,
+    # Presets árboles
+    lmf_ws_sel        = 4,   lmf_ws_custom        = FALSE,
+    lmf_hmin_sel      = 10,  lmf_hmin_custom      = FALSE,
+    canopy_cutoff_sel = 4,   canopy_cutoff_custom = FALSE
   )
 
-  ts_log <- function(m) paste(format(Sys.time(),"[%H:%M:%S]"), m)
-  ag <- function(campo, m) rv[[campo]] <- c(rv[[campo]], ts_log(m))
+  # ── Idioma ───────────────────────────────────────────────────────────────────
+  lang <- reactiveVal("es")
 
-  # ── Procesamiento interno (reutilizado desde btn_preprocesar y modal CRS) ───
-  ejecutar_preproceso <- function(crs_override = NULL) {
-    rv$log_prepro <- character(0)
-    withProgress(message = "Pre-procesando...", value = 0, {
-      tryCatch({
-        setProgress(0.10, detail = "Cargando...")
-        res <- cargar_recortar_las(rv$ruta_las, rv$ruta_shp,
-                                    buffer_m     = input$buffer_m,
-                                    crs_override = crs_override,
-                                    log_fn       = function(m) ag("log_prepro", m))
-        rv$las_raw   <- res$las
-        rv$roi       <- res$roi
-        rv$dens_orig <- res$dens_orig
-        rv$area_ha   <- res$area_ha
-
-        setProgress(0.40, detail = "Filtrando...")
-        rv$las_filtrado <- filtrar_nube(rv$las_raw, densidad = input$densidad,
-                                         log_fn = function(m) ag("log_prepro", m))
-
-        setProgress(0.70, detail = "Clasificando suelo...")
-        rv$las_clasf <- clasificar_suelo(rv$las_filtrado,
-                          rigidness        = as.integer(input$csf_rigidness),
-                          class_threshold  = input$csf_threshold,
-                          cloth_resolution = input$csf_cloth_res,
-                          sloop_smooth     = input$csf_sloop_smooth,
-                          log_fn           = function(m) ag("log_prepro", m))
-
-        setProgress(1)
-        rv$crs_pendiente <- NULL
-        showNotification("✅ Pre-procesamiento completado.", type = "message")
-      }, error = function(e) {
-        ag("log_prepro", paste("❌ ERROR:", conditionMessage(e)))
-        showNotification(paste("Error:", conditionMessage(e)), type = "error")
-      })
-    })
-  }
-
-  # ── Guardar Configuración del Proyecto ───────────────────────────────────────
-  observeEvent(input$btn_guardar_cfg, {
-    rv$cfg_autor       <- input$cfg_autor
-    rv$cfg_institucion <- input$cfg_institucion
-    rv$cfg_email       <- input$cfg_email
-    rv$cfg_destinatario <- input$cfg_destinatario
-    showNotification("✅ Configuración del proyecto guardada.", type="message")
-  })
-
-  # ── Helpers de diálogo nativo (rstudioapi con fallback a tcltk) ─────────────
-  # Usa rstudioapi si está disponible (RStudio), si no cae a tcltk (R base)
-  elegir_archivo <- function(caption, filtros_rstudio, dir_inicio) {
-    if (rstudioapi::isAvailable()) {
-      tryCatch(
-        rstudioapi::selectFile(
-          caption = caption,
-          filter  = filtros_rstudio,
-          path    = dir_inicio
-        ),
-        error = function(e) character(0)
-      )
-    } else {
-      tryCatch({
-        tcltk::tkfocus(tcltk::tktoplevel())  # inicializa Tcl/Tk si hace falta
-        tcltk::tk_choose.files(
-          default = dir_inicio,
-          caption = caption,
-          multi   = FALSE
-        )
-      }, error = function(e) character(0))
-    }
-  }
-
-  elegir_carpeta <- function(caption, dir_inicio) {
-    if (rstudioapi::isAvailable()) {
-      tryCatch(
-        rstudioapi::selectDirectory(
-          caption = caption,
-          path    = dir_inicio
-        ),
-        error = function(e) NA_character_
-      )
-    } else {
-      tryCatch({
-        tcltk::tk_choose.dir(default = dir_inicio, caption = caption)
-      }, error = function(e) NA_character_)
-    }
-  }
-
-  # ── LAS ──────────────────────────────────────────────────────────────────
-  observeEvent(input$btn_las, {
-    ruta <- elegir_archivo(
-      caption          = "Seleccionar nube de puntos (LAS/LAZ)",
-      filtros_rstudio  = "LAS/LAZ (*.las *.laz)",
-      dir_inicio       = rv$ultima_carpeta
-    )
-    if (length(ruta) > 0 && !is.na(ruta) && nchar(ruta) > 0) {
-      rv$ruta_las       <- ruta
-      rv$ultima_carpeta <- dirname(ruta)
-    }
-  })
-
-  # ── SHP ──────────────────────────────────────────────────────────────────
-  observeEvent(input$btn_shp, {
-    ruta <- elegir_archivo(
-      caption          = "Seleccionar área de interés (Shapefile)",
-      filtros_rstudio  = "Shapefile (*.shp)",
-      dir_inicio       = rv$ultima_carpeta
-    )
-    if (length(ruta) > 0 && !is.na(ruta) && nchar(ruta) > 0) {
-      rv$ruta_shp       <- ruta
-      rv$ultima_carpeta <- dirname(ruta)
-    }
-  })
-
-  # ── DIR salida ────────────────────────────────────────────────────────────
-  observeEvent(input$btn_dir, {
-    ruta <- elegir_carpeta(
-      caption    = "Seleccionar carpeta de salida",
-      dir_inicio = rv$ultima_carpeta
-    )
-    if (!is.na(ruta) && nchar(ruta) > 0)
-      rv$ruta_dir <- ruta
-  })
-
-  # Outputs de rutas
-  output$txt_ruta_las <- renderText(rv$ruta_las %||% "Sin seleccionar")
-  output$txt_ruta_shp <- renderText(rv$ruta_shp %||% "Sin seleccionar")
-  output$txt_ruta_dir <- renderText(rv$ruta_dir %||% "Sin seleccionar")
-  output$met_las <- renderText(if(!is.null(rv$ruta_las))"✅"else"❌")
-  output$met_shp <- renderText(if(!is.null(rv$ruta_shp))"✅"else"❌")
-  output$met_dir <- renderText(if(!is.null(rv$ruta_dir))"✅"else"❌")
-
-  # ── E1: Confirmar Configuración ─────────────────────────────────────────
-  observeEvent(input$btn_configurar, {
-    req(rv$ruta_las, rv$ruta_shp, rv$ruta_dir)
-    # Si n_hilos es 0, usar todos los núcleos disponibles
-    n_threads <- if(input$n_hilos == 0) N_CORES_MAX else input$n_hilos
-    set_lidr_threads(n_threads)
-    crear_estructura_carpetas(rv$ruta_dir)
-    rv$configurado <- TRUE
-    ag("log_config", sprintf("LAS  : %s", basename(rv$ruta_las)))
-    ag("log_config", sprintf("ROI  : %s", basename(rv$ruta_shp)))
-    ag("log_config", sprintf("Dir  : %s", rv$ruta_dir))
-    ag("log_config", sprintf("Hilos: %s | Buffer: %d m | Densidad: %.0f pts/m²",
-                              ifelse(input$n_hilos == 0, paste0("Todos (", N_CORES_MAX, ")"), input$n_hilos),
-                              input$buffer_m, input$densidad))
-    ag("log_config", "Carpetas: NUBES / RASTER / VECTORIALES / INFORME — ✅ listas")
-    ag("log_config", "✅ Configuración confirmada. Continúe con la Etapa 2.")
-    showNotification("✅ Configuración guardada.", type="message")
-  })
-  output$log_config <- renderText(paste(rv$log_config, collapse="\n"))
-
-  # ── E2: Pre-procesamiento ───────────────────────────────────────────────
-  observeEvent(input$btn_preprocesar, {
-    req(rv$ruta_las, rv$ruta_shp, rv$ruta_dir)
-
-    crs_info <- tryCatch(
-      verificar_crs_las(rv$ruta_las, rv$ruta_shp),
-      error = function(e) {
-        ag("log_prepro", paste("Advertencia al verificar CRS:", conditionMessage(e)))
-        list(estado = "ok")
-      }
-    )
-
-    if (crs_info$estado == "sin_crs") {
-      rv$crs_pendiente <- crs_info
-      epsg_shp_str <- if (!is.na(crs_info$epsg_shp)) as.character(crs_info$epsg_shp) else "desconocido"
-      epsg_default  <- if (!is.na(crs_info$epsg_shp)) crs_info$epsg_shp else 22185L
-      showModal(modalDialog(
-        title = "⚠️ Nube de puntos sin proyección",
-        tags$p("El archivo LAS/LAZ no tiene sistema de referencia de coordenadas (CRS) asignado. ",
-               "Para continuar, ingrese el código EPSG que corresponde a los datos del LAS."),
-        tags$p("El SHP cargado utiliza ", tags$strong(paste0("EPSG:", epsg_shp_str)), ". ",
-               "Si ambos archivos comparten la misma proyección, use ese mismo código."),
-        numericInput("modal_epsg_las",
-                     label = "Código EPSG:",
-                     value = epsg_default,
-                     min   = 1,
-                     max   = 99999,
-                     step  = 1),
-        tags$p(style = "font-size:12px; color:#666; margin-top:8px;",
-               "Consulte ", tags$a("epsg.io", href = "https://epsg.io/", target = "_blank"),
-               " para identificar el código EPSG de su sistema de referencia."),
-        footer = tagList(
-          modalButton("Cancelar"),
-          actionButton("btn_modal_confirmar_crs", "Confirmar y continuar",
-                       class = "btn btn-success")
-        ),
-        easyClose = FALSE
-      ))
-
-    } else if (crs_info$estado == "mismatch") {
-      ag("log_prepro",
-         sprintf("⚠️  CRS distintos — LAS: EPSG:%s | SHP: EPSG:%s. El ROI será reproyectado.",
-                 if (!is.na(crs_info$epsg_las)) crs_info$epsg_las else "?",
-                 if (!is.na(crs_info$epsg_shp)) crs_info$epsg_shp else "?"))
-      ejecutar_preproceso()
-
-    } else {
-      ejecutar_preproceso()
-    }
-  })
-
-  # ── Confirmación del modal de CRS ────────────────────────────────────────
-  observeEvent(input$btn_modal_confirmar_crs, {
-    req(rv$crs_pendiente)
-    removeModal()
-    epsg_elegido <- as.integer(input$modal_epsg_las)
-    ag("log_prepro", sprintf("📐 CRS asignado por el usuario: EPSG:%d", epsg_elegido))
-    ejecutar_preproceso(crs_override = epsg_elegido)
-  })
-  output$log_prepro    <- renderText(paste(rv$log_prepro, collapse="\n"))
-  output$met_pts_orig  <- renderText(if(is.null(rv$las_raw))      "—" else format(nrow(rv$las_raw@data),     big.mark="."))
-  output$met_pts_filt  <- renderText(if(is.null(rv$las_filtrado)) "—" else format(nrow(rv$las_filtrado@data),big.mark="."))
-  output$met_pts_suelo <- renderText(if(is.null(rv$las_clasf))    "—" else format(sum(rv$las_clasf@data$Classification==2L,na.rm=TRUE),big.mark="."))
-  output$met_pts_veg   <- renderText(if(is.null(rv$las_clasf))    "—" else format(sum(rv$las_clasf@data$Classification!=2L,na.rm=TRUE),big.mark="."))
-
-  output$plot3d_orig  <- renderPlotly({
-    req(rv$las_raw)
-    plotly_nube_3d(rv$las_raw, color_var="Z",
-                   titulo="Nube Original — coloreada por Elevación (Z)")
-  })
-  output$plot3d_clasf <- renderPlotly({
-    req(rv$las_clasf)
-    plotly_nube_3d(rv$las_clasf, color_var="Classification",
-                   titulo="Nube Clasificada — Suelo (amarillo) / Vegetación (verde)")
-  })
-
-  # ── E3: Modelos Digitales ───────────────────────────────────────────────
-  observeEvent(input$btn_modelos, {
-    req(rv$las_clasf, rv$roi)
-    rv$log_modelos <- character(0)
-    withProgress(message="Generando modelos...", value=0, {
-      tryCatch({
-        setProgress(0.10, detail="DEM...")
-        rd <- generar_dem(rv$las_clasf,
-                          res_dem=input$dem_res,
-                          win_min=input$dem_win_min,
-                          win_mean=input$dem_win_mean,
-                          log_fn=function(m) ag("log_modelos",m))
-        rv$dem      <- rd$dem
-        rv$dem_suav <- rd$dem_suav
-        rv$dem_min  <- rd$dem_min
-        rv$dem_max  <- rd$dem_max
-        rv$dem_mean <- rd$dem_mean
-
-        setProgress(0.35, detail="Curvas de nivel...")
-        rv$curvas <- generar_curvas_nivel(rv$dem_suav, rv$roi,
-                       equidistancia=input$cn_equidist,
-                       log_fn=function(m) ag("log_modelos",m))
-
-        setProgress(0.50, detail="Hillshade...")
-        rv$hillshade <- generar_hillshade(rv$dem_suav,
-                         angulo_sol=input$hs_angulo, azimut=input$hs_azimut,
-                         log_fn=function(m) ag("log_modelos",m))
-
-        setProgress(0.70, detail="Normalización + CHM...")
-        rn <- normalizar_y_chm(rv$las_clasf, rv$dem_suav, rv$roi,
-                res_chm=input$chm_res, subcircle=input$chm_subcirc,
-                log_fn=function(m) ag("log_modelos",m))
-        rv$datos_norm <- rn$datos_norm
-        rv$chm        <- rn$chm
-        rv$chm_min    <- rn$chm_min
-        rv$chm_max    <- rn$chm_max
-        rv$chm_mean   <- rn$chm_mean
-
-        setProgress(1)
-        showNotification("✅ Modelos generados.", type="message")
-      }, error=function(e){
-        ag("log_modelos", paste("❌ ERROR:", conditionMessage(e)))
-        showNotification(paste("Error:", conditionMessage(e)), type="error")
-      })
-    })
-  })
-  output$log_modelos <- renderText(paste(rv$log_modelos, collapse="\n"))
-
-  output$plot_dem_bruto <- renderPlotly({
-    req(rv$dem)
-    plotly_raster(raster_to_df(rv$dem), "DEM bruto (TIN)", PAL_TERRAIN, "Elev.(m)")
-  })
-  output$plot_dem_suav <- renderPlotly({
-    req(rv$dem_suav)
-    plotly_raster(raster_to_df(rv$dem_suav), "DEM suavizado", PAL_TERRAIN, "Elev.(m)")
-  })
-  output$plot_hillshade <- renderPlotly({
-    req(rv$hillshade)
-    plotly_raster(raster_to_df(rv$hillshade), "Hillshade — Sombreado del Relieve", PAL_HILLSHADE, "Luz")
-  })
-  output$plot_chm <- renderPlotly({
-    req(rv$chm)
-    plotly_raster(raster_to_df(rv$chm), "CHM — Modelo de Altura de Copas", PAL_CHM, "Altura(m)")
-  })
-
-  # Curvas de nivel: Se usa renderPlot con terra::plot para máxima eficiencia
-  # (el código Plotly original tenía problemas con líneas espurias entre curvas)
-  
-  output$plot_curvas <- renderPlot({
-    # 1. Requerir los datos
-    req(rv$dem_suav, rv$curvas)
-    
-    # 2. Configurar el área de dibujo (opcional: márgenes)
-    par(mar = c(4, 4, 3, 5)) 
-    
-    # 3. Dibujar el Raster (DEM) de fondo
-    # terra::plot es extremadamente eficiente con escenas grandes
-    plot(rv$dem_suav, 
-         main = "DEM Suavizado + Curvas de Nivel", 
-         col = terrain.colors(50), # O tu variable PAL_TERRAIN
-         mar = c(3, 1, 3, 5))
-    
-    # 4. Superponer las curvas
-    # Al ser rv$curvas un objeto SpatVector o SF, plot(..., add=TRUE) es instantáneo
-    plot(rv$curvas, 
-         add = TRUE, 
-         col = "black", 
-         lwd = 0.8)
-    
-  }, height = 530) # Puedes ajustar la altura fija para que se vea bien
-
-  output$plot_hist_z <- renderPlot({
-    req(rv$datos_norm)
-    z <- rv$datos_norm@data$Z
-    if (length(z) > 100000) z <- sample(z, 100000)
-    ggplot(data.frame(Z=z), aes(x=Z)) +
-      geom_histogram(bins=60, fill=GREEN, color=BG_CARD, alpha=0.85) +
-      labs(title="Distribución Vertical — Nube Normalizada",
-           x="Altura sobre el terreno (m)", y="Frecuencia") +
-      theme_minimal() +
-      theme(plot.background=element_rect(fill=BG_CARD,colour=NA),
-            panel.background=element_rect(fill=BG_CARD,colour=NA),
-            panel.grid=element_line(color=BORDER_COLOR),
-            text=element_text(color=TEXT_PRIMARY),
-            axis.text=element_text(color=TEXT_SECONDARY),
-            plot.title=element_text(color=ACCENT_PRIMARY,face="bold"))
-  })
-
-  # ── E4: Árboles ─────────────────────────────────────────────────────────
-# ==============================================================================
-# Función para calcular cobertura de copas usando máscara binaria del CHM
-# ==============================================================================
-# Calcula métricas de cobertura de copas a partir de un umbral de altura en el CHM.
-# Método: Crea una máscara binaria donde CHM > umbral, luego vectoriza y calcula áreas.
-#
-# PARÁMETROS:
-#   chm              : SpatRaster con el Canopy Height Model
-#   roi              : Area de interes
-#   umbral_altura    : Altura mínima (m) para considerar cobertura de copa (default = 3.0)
-#
-# RETORNO (lista con):
-#   porc_cobertura   : Porcentaje de cobertura de copas (0-100)
-#   area_copa_total  : Suma de áreas cubiertas por copas (m²)
-#   n_poligonos      : Número de polígonos de copa detectados
-#   area_polig_media : Área promedio por polígono (m²)
-#   area_polig_sd    : Desviación estándar del área de polígonos (m²)
-#   area_polig_min   : Área mínima de polígono (m²)
-#   area_polig_max   : Área máxima de polígono (m²)
-#   area_total       : Área total del área de estudio (m²)
-#   copas_vect       : SpatVector con polígonos de copas
-#
-# MÉTODO:
-#   1. Crea máscara binaria: CHM > umbral_altura
-#   2. Vectoriza la máscara (as.polygons con dissolve = TRUE)
-#   3. Filtra polígonos donde valor == 1 (copas)
-#   4. Calcula áreas usando expanse()
-# ------------------------------------------------------------------------------
-calcular_cobertura <- function(chm, roi, umbral_altura = 3.0) {
-  
-  if (is.null(chm) || is.null(roi)) {
-    stop("chm o roi NULL")
-  }
-  
-  # Máscara binaria
-  mask <- chm > umbral_altura
-  
-  # Convertir máscara (SpatRaster de terra) a dataframe
-  df_mascara <- as.data.frame(mask, xy = TRUE)
-  names(df_mascara)[3] <- "valor"
-  
-  # Vectorización
-  copas <- as.polygons(mask, dissolve = TRUE)
-  
-  # Filtrar solo valor 1
-  copas <- copas[copas[[1]] == 1, ]
-  
-  if (is.null(copas) || nrow(copas) == 0) {
-    return(list(
-      porc_cobertura = 0,
-      area_copa_total = 0,
-      n_poligonos = 0,
-      area_total = as.numeric(expanse(roi, unit = "m")),
-      copas_vect = NULL,
-      mascara_df = df_mascara,
-      umbral_altura = umbral_altura
+  observeEvent(input$lang_select, {
+    l <- input$lang_select
+    lang(l)
+    session$sendCustomMessage("update_nav_labels", list(
+      config  = tr("nav.tab.config",    l),
+      data    = tr("nav.tab.data_load", l),
+      models  = tr("nav.tab.models",    l),
+      trees   = tr("nav.tab.trees",     l),
+      export  = tr("nav.tab.export",    l),
+      about   = tr("nav.tab.about",     l)
     ))
-  }
-  
-  # Áreas
-  area_total <- as.numeric(expanse(roi, unit = "m"))
-  areas <- expanse(copas, unit = "m")
-  
-  area_copa_total <- sum(areas, na.rm = TRUE)
-  porc_cobertura <- min(area_copa_total / area_total * 100, 100)
-  
-  list(
-    porc_cobertura = porc_cobertura,
-    area_copa_total = area_copa_total,
-    n_poligonos = nrow(copas),
-    area_total = area_total,
-    copas_vect = copas,
-    mascara_df = df_mascara,
-    umbral_altura = umbral_altura
-  )
-}
+  }, ignoreInit = TRUE)
 
-observeEvent(input$btn_arboles, {
-  req(rv$datos_norm, rv$chm, rv$roi)
-  
-  rv$log_arboles <- character(0)
-  
-  withProgress(message="Detectando árboles...", value=0, {
-    tryCatch({
-      
-      setProgress(0.3)
-      rv$arboles <- detectar_arboles(
-        rv$datos_norm,
-        ws = input$lmf_ws,
-        hmin = input$lmf_hmin,
-        log_fn = function(m) ag("log_arboles", m)
-      )
-      
-      ag("log_arboles", sprintf("✅ %d árboles detectados", nrow(rv$arboles)))
-      
-      setProgress(0.7)
-      rv$cobertura_copas <- calcular_cobertura(
-        rv$chm,
-        rv$roi,
-        input$canopy_height_cutoff
-      )
-      
-      ag("log_arboles", sprintf("🌳 Cobertura: %.1f%%",
-                               rv$cobertura_copas$porc_cobertura))
-      
-      setProgress(1)
-      
-    }, error=function(e){
-      ag("log_arboles", paste("❌ ERROR:", conditionMessage(e)))
-    })
-  })
-})
+  # ── Actualización completa de la UI al cambiar idioma ─────────────────────────
+  observeEvent(lang(), {
+    l <- lang()
 
-output$log_arboles <- renderText(paste(rv$log_arboles, collapse="\n"))
-output$met_n_arb   <- renderText(if(is.null(rv$arboles)) "—" else as.character(nrow(rv$arboles)))
-output$met_alt_med <- renderText(if(is.null(rv$arboles)) "—" else sprintf("%.1f", mean(rv$arboles$Z, na.rm=TRUE)))
-output$met_alt_max <- renderText(if(is.null(rv$arboles)) "—" else sprintf("%.1f", max(rv$arboles$Z, na.rm=TRUE)))
+    # Botones de acción
+    updateActionButton(session, "btn_continuar",       label = tr("config.pipeline.continue_btn",       l))
+    updateActionButton(session, "btn_abrir_cfg",       label = tr("config.pipeline.project_edit",       l))
+    updateActionButton(session, "btn_densidad_avanzado", label = tr("data_load.subsample.advanced_btn", l))
+    updateActionButton(session, "btn_csf_avanzado",    label = tr("data_load.csf.advanced_btn",      l))
+    updateActionButton(session, "btn_preprocesar",     label = tr("data_load.run_btn",                  l))
+    updateActionButton(session, "btn_dem_avanzado",    label = tr("models.dem.advanced_btn",             l))
+    updateActionButton(session, "btn_chm_avanzado",    label = tr("models.chm.advanced_btn",             l))
+    updateActionButton(session, "btn_modelos",         label = tr("models.run_btn",                      l))
+    updateActionButton(session, "btn_arb_config_aplicar", label = tr("trees.modal.apply_btn",            l))
+    updateActionButton(session, "btn_arboles",         label = tr("trees.run_btn",                       l))
+    updateActionButton(session, "btn_exportar",        label = tr("export.export_btn",                   l))
+    updateActionButton(session, "btn_informe",         label = tr("export.pdf_btn",                      l))
+    updateActionButton(session, "btn_abrir_carpeta",   label = tr("export.open_folder_btn",              l))
 
+    # RadioButtons
+    updateRadioButtons(session, "decimate_tipo",
+      choiceNames  = list(tr("data_load.subsample.random",  l), tr("data_load.subsample.uniform", l)),
+      choiceValues = list("aleatorio", "uniforme"))
 
-output$met_canopy_pct <- renderText({
-  req(rv$cobertura_copas)
-  sprintf("%.1f%%", rv$cobertura_copas$porc_cobertura)
-})
+    # Textos estáticos via JS
+    session$sendCustomMessage("update_ui_text", list(
+      # Banner config
+      h2_banner_title    = tr("config.banner.title",    l),
+      p_banner_subtitle  = tr("config.banner.subtitle", l),
+      # Pipeline steps
+      h5_project_step    = tr("config.pipeline.project_step",       l),
+      span_project_badge = tr("config.pipeline.project_configured", l),
+      h5_step_las        = tr("config.pipeline.las_title",          l),
+      h5_step_shp        = tr("config.pipeline.shp_title",          l),
+      h5_step_dir        = tr("config.pipeline.dir_title",          l),
+      # CTA
+      h4_cta_title       = tr("config.pipeline.cta_title", l),
+      p_cta_desc         = tr("config.pipeline.cta_desc",  l),
+      # Tab 2 — Carga de datos
+      h5_subsample_header = tr("data_load.subsample.header",      l),
+      p_subsample_desc    = tr("data_load.subsample.desc",        l),
+      h6_method_header    = tr("data_load.subsample.method_header", l),
+      p_method_tip        = tr("data_load.subsample.method_tip",  l),
+      h5_csf_header       = tr("data_load.csf.header",            l),
+      p_csf_desc          = tr("data_load.csf.desc",              l),
+      lbl_pts_loaded      = tr("data_load.metrics.points_loaded", l),
+      lbl_pts_filtered    = tr("data_load.metrics.filtered",      l),
+      lbl_pts_soil        = tr("data_load.metrics.soil",          l),
+      lbl_pts_veg         = tr("data_load.metrics.vegetation",    l),
+      tip_cloud_3d        = tr("data_load.tips.cloud_3d",         l),
+      tip_classified      = tr("data_load.tips.classified",       l),
+      # Tab 3 — Modelos
+      h5_dem_header       = tr("models.dem.header",               l),
+      p_dem_res_label     = tr("models.dem.resolution_label",     l),
+      p_cn_equidist_label = tr("models.dem.contour_label",        l),
+      p_dem_win_min_label = tr("models.dem.min_filter_label",     l),
+      p_dem_win_mean_label = tr("models.dem.smooth_label",        l),
+      h5_chm_header       = tr("models.chm.header",               l),
+      p_chm_res_label     = tr("models.chm.resolution_label",     l),
+      p_chm_gap_label     = tr("models.chm.gap_fill_label",       l),
+      tip_mod_dem         = tr("models.tips.dem",                 l),
+      tip_mod_contours    = tr("models.tips.contours",            l),
+      tip_mod_hillshade   = tr("models.tips.hillshade",           l),
+      tip_mod_chm         = tr("models.tips.chm",                 l),
+      tip_mod_profile     = tr("models.tips.profile",             l),
+      lbl_dem_raw         = tr("models.sublabels.dem_raw",        l),
+      lbl_dem_smooth      = tr("models.sublabels.dem_smooth",     l),
+      # Tab 4 — Árboles
+      h5_trees_header     = tr("trees.detection.header",          l),
+      div_trees_desc      = tr("trees.detection.desc",            l),
+      p_lmf_ws_label      = tr("trees.detection.window_label",    l),
+      p_lmf_hmin_label    = tr("trees.detection.min_height_label", l),
+      p_canopy_cutoff_label = tr("trees.detection.canopy_cutoff_label", l),
+      modalArbConfigLabel = tr("trees.modal.title",               l),
+      tip_lbl_lmf_ws      = tr("trees.modal.window_tip_label",    l),
+      tip_lbl_lmf_hmin    = tr("trees.modal.min_height_tip_label", l),
+      tip_lbl_canopy_cutoff = tr("trees.modal.canopy_cutoff_tip_label", l),
+      btn_arb_modal_close = tr("trees.modal.close_btn",           l),
+      lbl_trees_detected  = tr("trees.metrics.detected",          l),
+      lbl_trees_density   = tr("trees.metrics.density",           l),
+      lbl_trees_avg_height = tr("trees.metrics.avg_height",       l),
+      lbl_trees_max_height = tr("trees.metrics.max_height",       l),
+      tip_arb_apex        = tr("trees.tips.apex",                 l),
+      tip_arb_canopy      = tr("trees.tips.canopy",               l),
+      lbl_canopy_area     = tr("trees.metrics.canopy_area",       l),
+      lbl_canopy_pct      = tr("trees.metrics.canopy_pct",        l),
+      btn_arb_open_modal  = tr("trees.detection.advanced_btn",    l),
+      # Tab 5 — Exportar
+      h6_export_clouds    = tr("export.clouds_header",            l),
+      h6_export_raster    = tr("export.raster_header",            l),
+      h6_export_vector    = tr("export.vector_header",            l),
+      h5_export_log       = tr("export.log_header",               l),
+      # Footer
+      footer_main_text    = tr("footer.main",                     l)
+    ))
 
-output$met_canopy_area <- renderText({
-  req(rv$cobertura_copas)
-  sprintf("%.1f ha", rv$cobertura_copas$area_copa_total / 10000)
-})
+    # Tabs internos via JS
+    session$sendCustomMessage("update_nav_tabs", list(
+      inner_prepro_log        = tr("data_load.tabs.log",             l),
+      inner_prepro_cloud      = tr("data_load.tabs.cloud_original",  l),
+      inner_prepro_classified = tr("data_load.tabs.cloud_classified", l),
+      inner_mod_dem           = tr("models.tabs.dem",                l),
+      inner_mod_contours      = tr("models.tabs.contours",           l),
+      inner_mod_hillshade     = tr("models.tabs.hillshade",          l),
+      inner_mod_chm           = tr("models.tabs.chm",                l),
+      inner_mod_profile       = tr("models.tabs.profile",            l),
+      inner_mod_log           = tr("models.tabs.log",                l),
+      inner_arb_map           = tr("trees.tabs.apex_map",            l),
+      inner_arb_dist          = tr("trees.tabs.distribution",        l),
+      inner_arb_canopy        = tr("trees.tabs.canopy",              l),
+      inner_arb_log           = tr("trees.tabs.log",                 l)
+    ))
+  }, ignoreInit = TRUE)
 
-
-  # Mapa árboles sobre CHM
-  output$plot_arb_chm <- renderPlotly({
-    req(rv$chm, rv$arboles)
-    # Convertir CHM a data frame con nombre estándar
-    df_chm <- raster_to_df(rv$chm)   # columnas: x, y, valor
-    # Coordenadas de los ápices
-    co_arb <- as.data.frame(st_coordinates(rv$arboles))
-    co_arb$altura <- rv$arboles$Z
-
-    plotly_raster(df_chm, "Árboles identificados sobre CHM", PAL_CHM, "Altura(m)") |>
-      add_trace(
-        data = co_arb, x = ~X, y = ~Y,
-        type="scatter", mode="markers",
-        inherit = FALSE,
-        marker=list(symbol="cross", size=9, color=MARKER_TREE_COLOR,
-                    line=list(color=MARKER_TREE_LINE, width=1.2)),
-        text  = ~paste0("Ápice: ", round(altura,1), " m"),
-        hovertemplate = "%{text}<extra></extra>",
-        showlegend = FALSE
-      )
-  })
-
-  output$plot_hist_arb <- renderPlot({
-    req(rv$arboles)
-    df <- data.frame(h = rv$arboles$Z)
-    n  <- nrow(df)
-    
-    # Breaks dinámicos: ~30 bins como ggplot por defecto, alineados a valores redondos
-    rng      <- range(df$h)
-    bin_w    <- pretty(rng, n = 30) |> diff() |> min()
-    h_breaks <- seq(floor(rng[1] / bin_w) * bin_w,
-                    ceiling(rng[2] / bin_w) * bin_w,
-                    by = bin_w)
-    
-    ggplot(df, aes(x = h)) +
-      geom_histogram(breaks = h_breaks, fill = GREEN, color = BG_CARD, alpha = 0.9) +
-      geom_text(stat = "bin", breaks = h_breaks,
-                aes(y = after_stat(count),
-                    label = ifelse(after_stat(count) > 0,
-                                   paste0(round(after_stat(count) / n * 100, 1), "%"),
-                                   "")),
-                vjust = -0.4, size = 4, color = TEXT_PRIMARY) +
-      scale_x_continuous(breaks = h_breaks) +
-      scale_y_continuous(
-        name     = "Frecuencia",
-        sec.axis = sec_axis(~ . / n * 100, name = "Frecuencia relativa (%)")
-      ) +
-      labs(title = "Distribución de Alturas de Árboles Detectados",
-           x = "Altura del ápice (m)") +
-      theme_minimal() +
-      theme(plot.background  = element_rect(fill = BG_CARD, colour = NA),
-            panel.background = element_rect(fill = BG_CARD, colour = NA),
-            panel.grid       = element_line(color = BORDER_COLOR),
-            text             = element_text(color = TEXT_PRIMARY),
-            axis.text        = element_text(color = TEXT_SECONDARY),
-            axis.text.x      = element_text(angle = 90, vjust = 0.5, size = 9),
-            plot.title       = element_text(color = ACCENT_PRIMARY, face = "bold"))
-  })
-
-
-
-output$plot_canopy_coverage <- renderPlotly({
-  req(rv$cobertura_copas)
-  
-  # Forzar consistencia (como en CHM)
-  df_cov <- rv$cobertura_copas$mascara_df
-  
-  # Normalizar nombres
-  names(df_cov) <- tolower(names(df_cov))
-  col_val <- setdiff(names(df_cov), c("x", "y"))[1]
-  df_cov$valor <- df_cov[[col_val]]
-
-  # Opcional: asegurar binario limpio
-  df_cov$valor <- ifelse(df_cov$valor > 0, 1, 0)
-
-  plotly_raster(
-    df_cov,
-    sprintf("Cobertura de copas: %.1f%% del área",
-            rv$cobertura_copas$porc_cobertura),
-    PAL_TERRENO_VEGETACION,
-    "Cobertura"
-  ) |>
-    layout(
-      coloraxis = list(
-        colorbar = list(
-          tickmode = "array",
-          tickvals = c(0, 1),
-          ticktext = c("Sin copa", "Copa")
+  # ── Sección "Acerca de" reactiva al idioma ────────────────────────────────────
+  output$ui_about_section <- renderUI({
+    l <- lang()
+    tagList(
+      card(card_header(tags$h5(class="card-title", tr("about.references_header", l))),
+        card_body(
+          div(class="ref-box",
+            tags$b(style=paste0("color:", PURPLE, ";"), tr("about.lidr_ref_title", l)), tags$br(),
+            tags$p(style="margin:4px 0 0;",
+              "Roussel J-R, Auty D, Coops NC, Tompalski P, Goodbody TRH, Meador AS, Bourdon J-F, de Boissieu F, Achim A (2021). ",
+              tags$em("lidR: An R package for analysis of Airborne LiDAR Data."),
+              " Remote Sensing of Environment, 251, 112061.",
+              tags$a(href="https://doi.org/10.1016/j.rse.2020.112061",
+                     "doi:10.1016/j.rse.2020.112061", target="_blank",
+                     style=paste0("color:", GREEN, ";"))
+            ),
+            tags$p(style="margin:6px 0 0;",
+              "Roussel J-R, Auty D (2023). ",
+              tags$em("Airborne LiDAR Data Manipulation and Visualization for Forestry Applications."),
+              " R package version 4.x. ",
+              tags$a(href="https://cran.r-project.org/package=lidR",
+                     "CRAN/lidR", target="_blank",
+                     style=paste0("color:", GREEN, ";"))
+            )
+          ),
+          div(class="ref-box",
+            tags$b(style=paste0("color:", PURPLE, ";"), tr("about.csf_ref_title", l)), tags$br(),
+            tags$p(style="margin:4px 0 0;",
+              "Zhang W et al. (2016). An easy-to-use airborne LiDAR data filtering method based on cloth simulation. ",
+              tags$em("Remote Sensing"), " 8(6), 501.",
+              tags$a(href="https://doi.org/10.3390/rs8060501",
+                     "doi:10.3390/rs8060501", target="_blank",
+                     style=paste0("color:", GREEN, ";"))
+            )
+          )
         )
       ),
-      showlegend = FALSE
+      tags$br(),
+      card(
+        card_header(tags$h5(class="card-title", tr("about.tool_header", l))),
+        card_body(
+          tags$p(tr("about.tool_description", l)),
+          tags$p(style=paste0("color:", GREEN, ";font-size:13px;font-weight:600;margin:12px 0 8px;"),
+            tr("about.functions_heading", l)),
+          div(class="row",
+            div(class="col-9",
+              tags$ul(style=paste0("color:", MUTED, ";font-size:12px;"),
+                tags$li(tr("about.function_1", l)),
+                tags$li(tr("about.function_2", l)),
+                tags$li(tr("about.function_3", l)),
+                tags$li(tr("about.function_4", l)),
+                tags$li(tr("about.function_5", l)),
+                tags$li(tr("about.function_6", l))
+              )
+            ),
+            div(class="col-3 d-flex align-items-start",
+              img(src="assets/logo_INTA.png", alt="INTA Logo", width="120px",
+                  style="opacity:0.9; margin-left:10px;")
+            )
+          ),
+          tags$table(class="table table-sm",
+            style=paste0("color:", MUTED, ";margin-top:10px;"),
+            tags$tr(tags$td(tags$b(tr("about.version_label",  l))), tags$td(NVersion)),
+            tags$tr(tags$td(tags$b(tr("about.updated_label",  l))), tags$td(tr("about.updated_value", l))),
+            tags$tr(tags$td(tags$b(tr("about.contact_label",  l))), tags$td(tags$a(
+              href="mailto:hildt.eduardo@inta.gob.ar",
+              "hildt.eduardo@inta.gob.ar",
+              style=paste0("color:", GREEN, ";")
+            )))
+          )
+        )
+      )
     )
-})
-
- 
-  # ── E5: Exportación ──────────────────────────────────────────────────────
-  observeEvent(input$btn_exportar, {
-    req(rv$ruta_dir, rv$las_clasf, rv$datos_norm, rv$dem_suav,
-        rv$chm, rv$curvas, rv$hillshade, rv$arboles, rv$roi)
-    rv$log_export <- character(0)
-    withProgress(message="Exportando...", value=0.1, {
-      tryCatch({
-        # Extraer copas_vect (SpatVector) si está disponible
-        copas_vect <- if (!is.null(rv$cobertura_copas)) {
-          rv$cobertura_copas$copas_vect
-        } else {
-          NULL
-        }
-        
-        exportar_todos(rv$ruta_dir, rv$las_clasf, rv$datos_norm, rv$dem_suav,
-                       rv$chm, rv$curvas, rv$hillshade, rv$arboles, rv$roi,
-                       copas_vect = copas_vect,
-                       log_fn=function(m) ag("log_export",m))
-        setProgress(1)
-        showNotification("✅ Exportación completada.", type="message")
-      }, error=function(e){
-        ag("log_export", paste("❌ ERROR:", conditionMessage(e)))
-        showNotification(paste("Error:", conditionMessage(e)), type="error")
-      })
-    })
   })
 
-  # ── Informe descriptivo narrativo PDF ────────────────────────────────────
-  observeEvent(input$btn_informe, {
-    req(rv$ruta_dir)
-    ag("log_export","📄 Generando informe descriptivo PDF...")
-    tryCatch({
-      generar_informe_descriptivo(rv, input, log_fn = function(m) ag("log_export", m))
-      showNotification("✅ Informe PDF generado.", type="message")
-    }, error = function(e) {
-      ag("log_export", paste("❌ ERROR informe:", conditionMessage(e)))
-      showNotification(paste("Error informe:", conditionMessage(e)), type="error")
-    })
-  })
-
-  output$log_exportar <- renderText(paste(rv$log_export, collapse="\n"))
-
-  # ── Abrir carpeta de resultados ──────────────────────────────────────────
-  observeEvent(input$btn_abrir_carpeta, {
-    req(rv$ruta_dir)
-    carpeta <- rv$ruta_dir
-    if (!dir.exists(carpeta)) {
-      showNotification("❌ La carpeta de resultados no existe aún.", type="error")
-      return()
-    }
-    os <- .Platform$OS.type
-    sysname <- Sys.info()[["sysname"]]
-    tryCatch({
-      if (sysname == "Windows") {
-        shell.exec(carpeta)
-      } else if (sysname == "Darwin") {
-        system(paste("open", shQuote(carpeta)))
-      } else {
-        system(paste("xdg-open", shQuote(carpeta)))
-      }
-      showNotification("📂 Carpeta de resultados abierta.", type="message")
-    }, error = function(e) {
-      showNotification(paste("No se pudo abrir la carpeta:", carpeta), type="warning")
-    })
-  })
+  # ── Registro de módulos ──────────────────────────────────────────────────────
+  register_config(input, output, session, rv, ag, lang)
+  register_presets(input, output, session, rv, ag, lang)
+  register_preprocessing(input, output, session, rv, ag, lang)
+  register_models(input, output, session, rv, ag, lang)
+  register_trees(input, output, session, rv, ag, lang)
+  register_export(input, output, session, rv, ag, lang)
 
 }
-
-# ══════════════════════════════════════════════════════════════════════════════

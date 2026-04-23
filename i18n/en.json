@@ -1,0 +1,611 @@
+{
+  "app": {
+    "title": "INTA ForestMap"
+  },
+  "nav": {
+    "tab": {
+      "config": "Configuration",
+      "data_load": "Data Loading",
+      "models": "Digital Models",
+      "trees": "Trees",
+      "export": "Export",
+      "about": "📚 About ..."
+    }
+  },
+  "common": {
+    "btn": {
+      "cancel": "Cancel",
+      "save": "💾  Save",
+      "apply": "Apply",
+      "close": "Close",
+      "reset": "Restore recommended values",
+      "apply_config": "Apply configuration",
+      "restore": "Restore",
+      "confirm_continue": "Confirm and continue",
+      "understood_continue": "Understood, continue"
+    },
+    "status": {
+      "loaded": "✔ Loaded",
+      "pending": "⏳ Pending",
+      "not_selected": "Not selected",
+      "selected": "✔ Selected"
+    },
+    "meta": {
+      "epsg_detected": "EPSG: %s ✔ detected",
+      "no_crs": "No CRS assigned ⚠",
+      "no_crs_shp": "No CRS ⚠",
+      "cannot_read_header": "Could not read header",
+      "not_calculable": "Not calculable (unprojected CRS)",
+      "multiple_polygons_warning": "%d ⚠ Recommended: use only 1"
+    }
+  },
+  "config": {
+    "banner": {
+      "title": "Comprehensive aerial survey analysis",
+      "subtitle": "Applied to productive forest landscapes"
+    },
+    "pipeline": {
+      "project_step": "Project",
+      "project_configured": "✔ Configured",
+      "project_edit": "Edit project data",
+      "las_title": "LiDAR or photogrammetric point cloud (LAS/LAZ)",
+      "shp_title": "Area of interest for analysis (SHP)",
+      "dir_title": "Output folder for results",
+      "cta_title": "Ready to continue",
+      "cta_desc": "Review the information and proceed to the next step.",
+      "continue_btn": "Continue →"
+    },
+    "modal": {
+      "title": "⚙️ Project configuration",
+      "instructions": "This data will be used in the PDF report. If a field is left empty, \"-\" will be written.",
+      "author_label": "Author",
+      "author_placeholder": "Author name",
+      "institution_label": "Institution",
+      "institution_placeholder": "Institution name",
+      "email_label": "Email",
+      "email_placeholder": "email@example.com",
+      "recipient_label": "Recipient",
+      "recipient_placeholder": "Report recipient"
+    },
+    "table": {
+      "author": "Author",
+      "institution": "Institution",
+      "email": "Email",
+      "recipient": "Recipient"
+    },
+    "file": {
+      "select_las_btn": "Select LAS/LAZ file",
+      "change_file_btn": "Change file",
+      "select_shp_btn": "Select SHP file",
+      "select_dir_btn": "Select output folder",
+      "change_dir_btn": "Change folder",
+      "meta_filename": "File",
+      "meta_size": "Size",
+      "meta_projection": "Projection",
+      "meta_modified": "Modified",
+      "meta_polygons": "Polygons",
+      "meta_area": "Total area",
+      "meta_path": "Path",
+      "dialog_las_caption": "Select point cloud (LAS/LAZ)",
+      "dialog_las_filter": "LAS/LAZ (*.las *.laz)",
+      "dialog_shp_caption": "Select area of interest (Shapefile)",
+      "dialog_shp_filter": "Shapefile (*.shp)",
+      "dialog_dir_caption": "Select output folder"
+    },
+    "log": {
+      "las": "LAS  : %s",
+      "roi": "ROI  : %s",
+      "dir": "Dir  : %s",
+      "folders_ready": "Folders: CLOUDS / RASTER / VECTORS / REPORT — ✅ ready"
+    }
+  },
+  "notification": {
+    "success": {
+      "project_saved": "✅ Project data saved.",
+      "config_saved": "✅ Configuration saved.",
+      "preprocessing_done": "✅ Pre-processing complete.",
+      "models_done": "✅ Models generated.",
+      "export_done": "✅ Export complete.",
+      "pdf_done": "✅ PDF report generated.",
+      "folder_opened": "📂 Results folder opened."
+    },
+    "error": {
+      "shp_cannot_read": "❌ Could not read the SHP area of interest.",
+      "shp_multiple_polygons": "❌ The SHP contains %d polygons. The area of interest must have a single polygon. Please select a different file.",
+      "folder_not_exists": "❌ The results folder does not exist yet.",
+      "prefix": "❌ ERROR:",
+      "report_prefix": "❌ REPORT ERROR:",
+      "generic": "Error: %s",
+      "report_generic": "Report error: %s",
+      "folder_open_failed": "Could not open folder: %s"
+    },
+    "warning": {
+      "crs_check": "Warning verifying CRS: %s"
+    }
+  },
+  "progress": {
+    "preprocessing": {
+      "message": "Pre-processing...",
+      "loading": "Loading...",
+      "filtering": "Filtering...",
+      "soil_classification": "Classifying ground..."
+    },
+    "models": {
+      "message": "Generating models...",
+      "dem": "DEM...",
+      "contours": "Contour lines...",
+      "hillshade": "Hillshade...",
+      "chm": "Normalization + CHM...",
+      "cropping": "Clipping to area of interest..."
+    },
+    "trees": {
+      "message": "Detecting trees..."
+    },
+    "export": {
+      "message": "Exporting..."
+    }
+  },
+  "modal": {
+    "crs": {
+      "las_title": "⚠️ Point cloud without projection",
+      "las_body_1": "The LAS/LAZ file has no coordinate reference system (CRS) assigned. To continue, enter the EPSG code corresponding to the LAS data.",
+      "las_body_shp_epsg": "The loaded SHP uses %s. If both files share the same projection, use that same code.",
+      "epsg_label": "EPSG code:",
+      "epsg_reference": "Consult",
+      "epsg_reference_suffix": "to identify the EPSG code for your reference system.",
+      "shp_title": "⚠️ Area of interest without projection",
+      "shp_body_1": "The SHP file has no coordinate reference system (CRS) assigned. To continue, enter the EPSG code corresponding to the area of interest.",
+      "shp_body_las_epsg": "The LAS point cloud uses %s. If both files share the same projection, use that same code.",
+      "shp_epsg_label": "SHP EPSG code:",
+      "mismatch_title": "⚠️ Different reference systems",
+      "mismatch_body_1": "The point cloud and the area of interest have different projections:",
+      "mismatch_las": "LAS: ",
+      "mismatch_shp": "SHP: ",
+      "mismatch_body_2": "The area of interest will be automatically reprojected to the cloud CRS (%s) before clipping."
+    }
+  },
+  "data_load": {
+    "subsample": {
+      "header": "⚙️ Point cloud subsampling",
+      "desc": "Choose how many points per m² will be loaded. Higher density = higher fidelity and more processing time.",
+      "method_header": "Subsampling method",
+      "random": "Random",
+      "uniform": "Uniform",
+      "advanced_btn": "⚙ Advanced settings",
+      "method_tip": "Subsampling types: Random preserves the original distribution. Uniform achieves a homogeneous distribution."
+    },
+    "csf": {
+      "header": "🏔️ Ground classification (CSF algorithm)",
+      "desc": "Select the predominant terrain type. The CSF algorithm models a mesh that adapts to the terrain to separate ground from vegetation.",
+      "advanced_btn": "⚙️ Advanced settings (optional)"
+    },
+    "run_btn": "▶  Run loading and classification",
+    "metrics": {
+      "points_loaded": "Points loaded",
+      "filtered": "Filtered",
+      "soil": "Ground",
+      "vegetation": "Vegetation"
+    },
+    "tabs": {
+      "log": "📊 Processing log",
+      "cloud_original": "☁️ Original cloud",
+      "cloud_classified": "🗺️ Classified cloud"
+    },
+    "tips": {
+      "cloud_3d": "🖱️ Rotate: click+drag · Zoom: scroll wheel · Pan: right-click",
+      "classified": "🎨 Colors: ground vs. vegetation"
+    }
+  },
+  "models": {
+    "dem": {
+      "header": "🏔️ Digital elevation model (DEM)",
+      "resolution_label": "DEM resolution (m)",
+      "contour_label": "Contour line interval (m)",
+      "min_filter_label": "Low vegetation filtering",
+      "smooth_label": "DEM and contour smoothing",
+      "advanced_btn": "⚙️ Advanced settings"
+    },
+    "chm": {
+      "header": "🌿 Canopy height model (CHM)",
+      "resolution_label": "CHM resolution (m)",
+      "gap_fill_label": "Gap filling",
+      "advanced_btn": "⚙️ Advanced settings"
+    },
+    "run_btn": "▶  Generate all models",
+    "tabs": {
+      "dem": "🗺️ DEM",
+      "contours": "📏 Contours",
+      "hillshade": "🌓 Shaded relief",
+      "chm": "🌿 CHM — Canopy height model",
+      "profile": "📊 Vertical profile",
+      "log": "📝 Log"
+    },
+    "tips": {
+      "dem": "Zoom with scroll or selection. 🏠 button to reset.",
+      "contours": "Contour lines plotted over the DEM",
+      "hillshade": "Relief shading based on solar angle.",
+      "chm": "Grey=ground · Blue=low · Green=medium · Yellow=high · Red=emergent",
+      "profile": "Vertical distribution of heights in the point cloud"
+    },
+    "sublabels": {
+      "dem_raw": "Raw DEM",
+      "dem_smooth": "Smoothed DEM"
+    },
+    "log": {
+      "cropping": "✂️  Clipping models to area of interest...",
+      "crop_done": "✅ Clipping complete."
+    }
+  },
+  "trees": {
+    "detection": {
+      "header": "🌲 Apex detection",
+      "desc": "The algorithm searches for the highest point in moving windows. Each maximum represents a tree.",
+      "window_label": "Search window diameter (m)",
+      "min_height_label": "Minimum tree height (m)",
+      "canopy_cutoff_label": "Canopy coverage height cutoff (m)",
+      "advanced_btn": "⚙️ Advanced settings"
+    },
+    "modal": {
+      "title": "Advanced settings — Trees",
+      "close_aria": "Close",
+      "window_tip_label": "Window diameter (m)",
+      "window_tip": "Search window diameter, similar to tree crown size",
+      "min_height_tip_label": "Minimum tree height (m)",
+      "min_height_tip": "Avoids searching for very short trees. Reduces false positives and speeds up the search",
+      "canopy_cutoff_tip_label": "Canopy coverage height cutoff (m)",
+      "canopy_cutoff_tip": "Threshold to classify canopy-covered areas. CHM areas above this value are considered covered",
+      "apply_btn": "Apply",
+      "close_btn": "Close"
+    },
+    "metrics": {
+      "detected": "🌲 Trees detected",
+      "density": "trees/ha",
+      "avg_height": "Mean height (m)",
+      "max_height": "Max height (m)",
+      "canopy_area": "Canopy area (ha)",
+      "canopy_pct": "% Covered"
+    },
+    "run_btn": "▶  Detect trees",
+    "tabs": {
+      "apex_map": "📍 Apex map",
+      "distribution": "📊 Distribution",
+      "canopy": "🌳 Canopy coverage",
+      "log": "📝 Log"
+    },
+    "tips": {
+      "apex": "Red crosses = apices on CHM. Zoom with scroll or selection.",
+      "canopy": "Analysis of canopy-covered area using CHM and the configured height threshold."
+    },
+    "log": {
+      "detected": "✅ %d trees detected",
+      "coverage": "🌳 Coverage: %.1f%%"
+    }
+  },
+  "export": {
+    "clouds_header": "☁️ Point clouds",
+    "raster_header": "🗺️ Raster models",
+    "vector_header": "📐 Vector layers",
+    "export_btn": "💾  Export products",
+    "pdf_btn": "📄  Generate PDF report",
+    "open_folder_btn": "📂  Open folder",
+    "log_header": "📝 Export log",
+    "log": {
+      "generating_pdf": "📄 Generating descriptive PDF report..."
+    }
+  },
+  "about": {
+    "references_header": "📚 Bibliographic references",
+    "tool_header": "ℹ️ About the INTA Tool for comprehensive aerophotogrammetric and LiDAR survey analysis in productive forest landscapes",
+    "tool_description": "Developed by the Forest Group of the INTA Montecarlo Experimental Agricultural Station, this tool presents a workflow for analyzing point clouds generated by aerophotogrammetric or LiDAR surveys.",
+    "functions_heading": "Built-in functions:",
+    "function_1": "Point cloud clipping and subsampling",
+    "function_2": "Automatic terrain classification",
+    "function_3": "Digital model generation (DEM, CHM)",
+    "function_4": "Contour line extraction",
+    "function_5": "Individual tree detection",
+    "function_6": "Descriptive PDF report",
+    "version_label": "Version:",
+    "updated_label": "Last update:",
+    "updated_value": "April 2026",
+    "contact_label": "Contact:",
+    "lidr_ref_title": "lidR package",
+    "csf_ref_title": "CSF algorithm (ground)"
+  },
+  "presets": {
+    "csf": {
+      "flat_title": "Flat terrain",
+      "flat_desc": "Flat or nearly flat relief",
+      "wavy_title": "Rolling terrain",
+      "wavy_desc": "Gentle variations (most common)",
+      "rugged_title": "Rugged terrain",
+      "rugged_desc": "Ravines, terraces, streams",
+      "custom_badge": "⚙ Custom configuration active",
+      "modal_title": "⚙️ Advanced settings — CSF algorithm",
+      "custom_badge_modal": "Custom",
+      "modal_desc": "Manual adjustment of CSF algorithm parameters.",
+      "cloth_res_label": "Mesh resolution (m)",
+      "cloth_res_tip": "Cell size of the mesh that models the terrain. Smaller values adapt better to micro-relief but require more computation. Very low values may overestimate terrain level under dense vegetation.",
+      "threshold_label": "Threshold (m)",
+      "threshold_tip": "Maximum distance between a point and the mesh to classify it as ground.",
+      "slope_label": "Steep slope adaptation",
+      "slope_tip": "Improves mesh coupling in areas with abrupt level changes (road edges, ravines, streams).",
+      "slope_checkbox": "Enable slope smoothing"
+    },
+    "density": {
+      "custom_modal_title": "Custom density",
+      "custom_input_label": "Target density (pts/m²):",
+      "low_label": "Low",
+      "low_desc": "≈ 10 pts/m²",
+      "medium_label": "Medium",
+      "medium_desc": "≈ 25 pts/m²",
+      "high_label": "High",
+      "high_desc": "≈ 50 pts/m²",
+      "custom_badge": "⚙ Custom density active"
+    },
+    "dem": {
+      "res_high_label": "High",
+      "res_high_desc": "0.25 m/px",
+      "res_medium_label": "Medium",
+      "res_medium_desc": "0.5 m/px",
+      "res_low_label": "Low",
+      "res_low_desc": "1 m/px",
+      "contour_1_label": "0.5 m",
+      "contour_1_desc": "Detailed topography",
+      "contour_2_label": "1 m",
+      "contour_2_desc": "Normal detail",
+      "contour_3_label": "5 m",
+      "contour_3_desc": "Low detail",
+      "filter_conservative_label": "Conservative",
+      "filter_conservative_desc": "3 px — retains more detail",
+      "filter_medium_label": "Medium",
+      "filter_medium_desc": "5 px — balanced",
+      "filter_aggressive_label": "Aggressive",
+      "filter_aggressive_desc": "9 px — filters low vegetation",
+      "smooth_conservative_label": "Conservative",
+      "smooth_conservative_desc": "5 px — micro-relief preserved",
+      "smooth_medium_label": "Medium",
+      "smooth_medium_desc": "15 px — balanced smoothing",
+      "smooth_aggressive_label": "Aggressive",
+      "smooth_aggressive_desc": "27 px — strong smoothing",
+      "modal_title": "⚙️ Advanced settings — DEM",
+      "res_label": "DEM resolution (m)",
+      "res_tip": "Pixel size of the elevation model. Lower values = more detail and more computational cost",
+      "contour_label": "Contour line interval (m)",
+      "contour_tip": "Vertical spacing between contour lines. Smaller values generate more contours",
+      "min_filter_label": "Minimization filter (px)",
+      "min_filter_tip": "Removes high points from low vegetation. Higher values filter more vegetation (odd, 3–15)",
+      "mean_filter_label": "Mean filter (px)",
+      "mean_filter_tip": "Smooths DEM relief. Higher values produce smoother surfaces (odd, 3–81)"
+    },
+    "chm": {
+      "res_high_label": "High",
+      "res_high_desc": "0.25 m/px",
+      "res_medium_label": "Medium",
+      "res_medium_desc": "0.5 m/px",
+      "res_low_label": "Low",
+      "res_low_desc": "1 m/px",
+      "gap_conservative_label": "Conservative",
+      "gap_conservative_desc": "0.025 m — minimum",
+      "gap_medium_label": "Medium",
+      "gap_medium_desc": "0.25 m — standard",
+      "gap_aggressive_label": "Aggressive",
+      "gap_aggressive_desc": "0.5 m — maximum",
+      "modal_title": "⚙️ Advanced settings — CHM",
+      "res_label": "CHM resolution (m)",
+      "res_tip": "Pixel size of the canopy height model. Lower values = more detail (0.1–2 m)",
+      "gap_label": "Gap filling (m)",
+      "gap_tip": "Search radius for CHM gap interpolation. Higher value = more filling (0–0.5 m)"
+    },
+    "tree": {
+      "ws_small_label": "Small",
+      "ws_small_desc": "4 m",
+      "ws_medium_label": "Medium",
+      "ws_medium_desc": "6 m",
+      "ws_large_label": "Large",
+      "ws_large_desc": "8 m",
+      "hmin_low_label": "Low",
+      "hmin_low_desc": "5 m",
+      "hmin_medium_label": "Medium",
+      "hmin_medium_desc": "10 m",
+      "hmin_high_label": "High",
+      "hmin_high_desc": "15 m",
+      "cutoff_low_label": "Low",
+      "cutoff_low_desc": "2 m",
+      "cutoff_medium_label": "Medium",
+      "cutoff_medium_desc": "4 m",
+      "cutoff_high_label": "High",
+      "cutoff_high_desc": "8 m"
+    }
+  },
+  "plot": {
+    "title": {
+      "dem_raw": "Raw DEM (TIN)",
+      "dem_smooth": "Smoothed DEM",
+      "hillshade": "Hillshade — Shaded Relief",
+      "chm": "CHM — Canopy Height Model",
+      "dem_contours": "Smoothed DEM + Contour Lines",
+      "vertical_profile": "Vertical Distribution — Normalized Cloud",
+      "cloud_original": "Original Cloud — colored by Elevation (Z)",
+      "cloud_classified": "Classified Cloud — Ground (yellow) / Vegetation (green)",
+      "trees_on_chm": "Trees identified on CHM",
+      "tree_heights": "Distribution of Detected Tree Heights",
+      "canopy_coverage": "Canopy coverage: %.1f%% of area"
+    },
+    "axis": {
+      "height_m": "Height above ground (m)",
+      "frequency": "Frequency",
+      "rel_frequency": "Relative frequency (%)",
+      "apex_height": "Apex height (m)",
+      "x_m": "X (m)",
+      "y_m": "Y (m)",
+      "z_m": "Z (m)"
+    },
+    "colorbar": {
+      "elevation": "Elevation (m)",
+      "class": "Class",
+      "elev_short": "Elev.(m)",
+      "height_short": "Height(m)",
+      "coverage": "Coverage",
+      "light": "Light"
+    },
+    "hover": {
+      "apex": "Apex: %s m"
+    },
+    "canopy": {
+      "no_canopy": "No canopy",
+      "canopy": "Canopy"
+    }
+  },
+  "processing": {
+    "log": {
+      "loading_cloud": "📂 Loading point cloud...",
+      "cloud_loaded": "✅ Cloud loaded: %s pts | density ≈ %.1f pts/m²",
+      "loading_roi": "🗺️  Loading area of interest...",
+      "roi_area": "   Area of interest: %.2f ha",
+      "assigning_crs_las": "📐 Assigning CRS to LAS: EPSG:%d",
+      "assigning_crs_shp": "📐 Assigning CRS to SHP: EPSG:%d",
+      "shp_no_crs": "⚠️  SHP without projection. Assigning CRS from LAS to area of interest...",
+      "crs_assigned": "   CRS assigned: EPSG:%d",
+      "crs_mismatch": "⚠️  Different CRS. Reprojecting area of interest to LAS CRS...",
+      "reprojection_done": "   Reprojection complete.",
+      "clipping": "✂️  Clipping with buffer of %d m...",
+      "no_points_in_roi": "The area of interest contains no points from the cloud. Verify that the SHP polygon overlaps with the LAZ file.",
+      "cloud_clipped": "✅ Clipped cloud: %s pts",
+      "subsampling": "🔽 Subsampling to density %.0f pts/m² (%s)...",
+      "removing_duplicates": "🔍 Removing duplicate points...",
+      "removing_noise": "🔇 Classifying and removing noise (SOR)...",
+      "cloud_filtered": "✅ Filtered cloud: %s pts",
+      "soil_classification": "🏔️ Classifying ground — CSF (rigidity: %s)...",
+      "soil_classified": "✅ Ground points classified: %s",
+      "generating_dem": "📐 Generating DEM — resolution %.2f m (TIN)...",
+      "smoothing": "🔀 Smoothing: min window %dx%d → mean window %dx%d...",
+      "dem_stats": "   Elevation min: %.1f m | max: %.1f m | mean: %.1f m",
+      "dem_done": "✅ DEM generated and smoothed.",
+      "contours": "📏 Contour lines (interval %.2f m)...",
+      "contour_range": "   Range: %.2f – %.2f m → %d levels",
+      "contours_done": "✅ %d contours generated.",
+      "hillshade": "☀️  Hillshade (sun: %.0f° elevation, %.0f° azimuth)...",
+      "hillshade_done": "✅ Hillshade generated.",
+      "normalizing": "📉 Normalizing cloud to terrain level...",
+      "cloud_normalized": "✅ Normalized cloud: %s pts",
+      "chm": "🌿 CHM — resolution %.2f m (p2r + knnidw)...",
+      "chm_stats": "   Height min: %.1f m | max: %.1f m | mean: %.1f m",
+      "chm_done": "✅ CHM generated.",
+      "detecting_trees": "🌲 Detecting trees — LMF (ws=%.1f m, hmin=%.1f m)...",
+      "trees_detected_proc": "✅ %d trees detected."
+    },
+    "csf": {
+      "quebrado": "1 — Rugged",
+      "ondulado": "2 — Rolling / Medium",
+      "llano": "3 — Flat"
+    }
+  },
+  "preprocessing": {
+    "log": {
+      "crs_las_assigned": "📐 CRS assigned by user to LAS: EPSG:%d",
+      "crs_shp_assigned": "📐 CRS assigned by user to SHP: EPSG:%d",
+      "reprojection": "📐 Reprojection confirmed: SHP EPSG:%s → LAS EPSG:%s."
+    }
+  },
+  "footer": {
+    "main": "INTA ForestMap — Comprehensive aerial survey analysis — Dr. Eduardo Hildt — INTA EEA Montecarlo — "
+  },
+  "report": {
+    "error": {
+      "invalid_dir": "invalid ruta_dir for report generation"
+    },
+    "log": {
+      "generating": "📄 Generating descriptive PDF report...",
+      "slope_warning": "  ⚠ Could not calculate slopes: %s",
+      "figure_coverage": "  ✓ Canopy coverage figure generated",
+      "figure_coverage_error": "  ⚠ Could not generate coverage figure: %s"
+    },
+    "fig": {
+      "dem": "Digital Elevation Model (DEM) with contour lines",
+      "hillshade": "Hillshade — Shaded Relief",
+      "chm": "Canopy Height Model (CHM)",
+      "trees": "Detected trees (N=%s)",
+      "tree_heights": "Tree Height Distribution",
+      "canopy": "Canopy coverage: %.1f%% of area (threshold %.1f m)"
+    },
+    "homogeneity": {
+      "very_homogeneous": "very homogeneous",
+      "moderately_homogeneous": "moderately homogeneous",
+      "moderately_heterogeneous": "moderately heterogeneous",
+      "highly_heterogeneous": "highly heterogeneous"
+    },
+    "section": {
+      "survey_data": "Survey Data",
+      "area": "Description of the Analyzed Area",
+      "pointcloud": "Point Cloud",
+      "soil": "Terrain Classification",
+      "models": "Digital Terrain Models",
+      "vertical": "Vertical Structure of the Forest",
+      "trees": "Individual Tree Detection",
+      "management": "Forest Management Metrics",
+      "products": "Generated Products",
+      "references": "References"
+    },
+    "title": "Aerial forest survey analysis report",
+    "table": {
+      "field": "Field",
+      "detail": "Detail",
+      "recipient": "Recipient",
+      "analysis_date": "Analysis date",
+      "pointcloud_file": "Point cloud file",
+      "roi": "Area of interest",
+      "analyst": "Analyst",
+      "institution": "Institution",
+      "email": "Email"
+    },
+    "subsection": {
+      "survey_characteristics": "Survey Characteristics",
+      "dem": "Digital Elevation Model (DEM)",
+      "contours": "Contour Lines",
+      "chm": "Normalization and Canopy Height Model (CHM)",
+      "density": "Stand Density and Structure",
+      "canopy": "Canopy Coverage"
+    },
+    "content": {
+      "area": "The analyzed area covers approximately **%s hectares**, delimited by the provided area of interest shapefile.",
+      "lidr_note": "The aerial survey was fully processed using the **lidR** package for R [@lidR2021; @lidR2023], developed specifically for the analysis of airborne LiDAR data in forestry applications and applicable to point clouds obtained by photogrammetry.",
+      "pointcloud_density": "The original point cloud had an estimated density of approximately **%s pts/m²**, with a total of **%s points** in the clipped area with buffer.",
+      "pointcloud_subsample": "To optimize processing time, the cloud was subsampled to a working density of **%s pts/m²**, resulting in **%s points** after filtering.",
+      "pointcloud_noise": "Additionally, duplicate points were removed and noise points were identified and removed using the **SOR** (Statistical Outlier Removal) algorithm.",
+      "soil_csf": "Ground point classification was performed using the **CSF** (Cloth Simulation Filter, Zhang et al. 2016) algorithm, configured for a rigidity level of **%s**, a classification threshold of **%s m**, and a cloth resolution of **%s m**.",
+      "soil_result": "As a result, **%s points** were identified as ground and used to construct the digital elevation model.",
+      "dem_generation": "From the ground-classified points, a Digital Elevation Model (DEM) was generated with a spatial resolution of **%s m**, using triangulated irregular network (TIN) interpolation.",
+      "dem_smoothing": "The model was smoothed in two consecutive stages: first with a minimum window of %sx%s pixels to reduce the influence of residual vegetation, and then with a mean window of %sx%s pixels to obtain a continuous surface.",
+      "dem_stats": "The terrain in the analyzed area had a minimum elevation of **%s m**, maximum of **%s m**, and mean of **%s m**, with an altitudinal range of **%s m**.",
+      "contours": "Contour lines were generated from the smoothed DEM with an interval of **%s m**. The contours were clipped to the area of interest boundaries and exported in shapefile format for use in geographic information systems.",
+      "chm_normalization": "The point cloud was normalized to the terrain level by subtracting the smoothed DEM elevation from each point. This process expresses heights in relative terms to the ground (heights above terrain), independently of the underlying topography.",
+      "chm_generation": "From the normalized cloud, a Canopy Height Model (CHM) was generated with a resolution of **%s m**.",
+      "chm_stats": "The vegetation height in the analyzed area ranged from **%s m** to **%s m**, with a mean height of **%s m**.",
+      "trees_lmf": "Individual tree detection was performed using the **LMF** (Local Maximum Filter) algorithm, which identifies local maxima of the CHM as tree apices.",
+      "trees_params": "A search window of **%s m** diameter and a minimum height of **%s m** were used to exclude shrubs and regeneration.",
+      "trees_count": "A total of **%s trees** were detected in the analyzed area.",
+      "trees_heights": "Estimated individual heights ranged from **%s m** to **%s m**, with a mean height of **%s m**.",
+      "density_sentence": "The density of detected individuals is **%s trees/ha**, with an estimated mean spacing of **%s m** between trees.",
+      "cv_sentence": "The coefficient of variation of heights is **%s%%**, indicating a **%s** stand in terms of vertical structure (Avery and Burkhart, 2002).",
+      "cv_note": "This index is useful for evaluating growth homogeneity and planning differentiated silvicultural interventions.",
+      "canopy_analysis": "The canopy coverage analysis, calculated by vectorizing the binary CHM mask (height threshold = %s m), indicates that the crowns cover **%s%%** of the total area, equivalent to **%s ha**.",
+      "canopy_importance": "This metric is fundamental for evaluating canopy closure, competition between individuals, and space-use efficiency. It is also key for monitoring silvopastoral systems, where canopy coverage determines when pruning and thinning should be performed.",
+      "products_intro": "All products were exported to the selected output folder with the following structure:",
+      "footer": "*Report automatically generated with the INTA Tool for LiDAR Analysis and Forest Photogrammetry (ForestMap - INTA EEA Montecarlo). Statistical values correspond to the processing performed on the indicated date.*"
+    },
+    "products": {
+      "clouds_header": "**Point_Clouds/**",
+      "classified": "- `classified_points.laz`: Point cloud with ground (Class 2) and vegetation classification.",
+      "normalized": "- `normalized_points.laz`: Point cloud normalized to terrain level.",
+      "raster_header": "**Raster_Models/**",
+      "dem": "- `DEM.tif`: Smoothed Digital Elevation Model, clipped to the area of interest.",
+      "chm": "- `CHM.tif`: Canopy Height Model, clipped to the area of interest.",
+      "hillshade": "- `Hillshade.tif`: Shaded relief.",
+      "vector_header": "**Vector_Layers/**",
+      "contours_shp": "- `Contours.shp`: Contour lines in shapefile format.",
+      "trees_shp": "- `Trees.shp`: Detected tree points with apex height.",
+      "roi_shp": "- `Area_of_Interest.shp`: Area of interest polygon.",
+      "canopy_shp": "- `Canopy_Coverage.shp`: Canopy coverage polygons (if available)."
+    }
+  }
+}

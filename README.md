@@ -11,7 +11,7 @@
 **Versión:** 2026.5
 
 ------------------------------------------------------------------------
-	
+
 ## Descripción
 
 ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada íntegramente sobre el ecosistema [**lidR**](https://github.com/r-lidar/lidR) (Roussel et al., 2020, 2021, 2023), el paquete de referencia mundial para procesamiento de datos LiDAR aerotransportados en aplicaciones forestales.
@@ -28,11 +28,9 @@ ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada �
 ### Requisitos de Entrada
 
 | Archivo | Formato | Descripción |
-|---------------------|---------------------|------------------------------|
+|----|----|----|
 | **Nube de puntos** | `.laz` / `.las` | LiDAR o fotogramétrica (estructura-desde-movimiento) |
 | **Área de interés** | `.shp` | Polígono delimitador del rodal/parcela |
-
-⚠️ **Crítico**: Ambos archivos deben compartir el mismo sistema de coordenadas (CRS/EPSG).
 
 ------------------------------------------------------------------------
 
@@ -41,7 +39,7 @@ ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada �
 ### Software Requerido
 
 | Componente | Versión Mínima | Notas |
-|------------------------|------------------------------|------------------|
+|----|----|----|
 | **R** | 4.0+ | [Descargar](https://cloud.r-project.org/) |
 | **RStudio** | *Recomendado* | [Descargar](https://posit.co/download/rstudio-desktop/) |
 
@@ -49,7 +47,7 @@ ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada �
 
 ``` r
 # Core
-shiny, bslib, DT, plotly, htmlwidgets, ggplot2
+shiny, shiny.i18n, bslib, DT, plotly, htmlwidgets, ggplot2
 
 # Geoespacial
 lidR, terra, sf, RCSF
@@ -80,185 +78,24 @@ cd ForestMAP
 
 ### 2. Instalar Dependencias
 
-**Opción A: Script automático** *(recomendado)*
+**Script automático** *(recomendado)*
 
-``` PowerShell o CMD
-start 'C:\Program Files\R\R-4.5.2\bin\x64\Rscript.exe' .\scripts\install.R
-```
-
-**Opción B: Manual en R**
-
-``` r
-install.packages(c(
-  "shiny", "bslib", "DT", "plotly", "lidR", "terra", 
-  "sf", "RCSF", "htmlwidgets", "ggplot2", "knitr", "rmarkdown", "fancyhdr"
-))
-```
+`PowerShell o CMD start 'C:\Program Files\R\R-4.5.2\bin\x64\Rscript.exe' .\scripts\install.R`
 
 ------------------------------------------------------------------------
 
 ## Ejecución
 
-### Opción 1: Terminal
-
-``` PowerShell o CMD
-start 'C:\Program Files\R\R-4.5.2\bin\x64\Rscript.exe' .\run.R
-```
-
-La aplicación se abrirá automáticamente en el navegador en `http://localhost:3838`
-
-### Opción 2: RStudio
+### Opción 1: RStudio
 
 1.  Abrir `run.R` en RStudio
 2.  Clic en **"Run App"** (esquina superior derecha)
 
-------------------------------------------------------------------------
+### Opción 2: Terminal
 
-## Estructura del Proyecto
+`PowerShell o CMD start 'C:\Program Files\R\R-4.5.2\bin\x64\Rscript.exe' .\run.R`
 
-```         
-ForestMAP/
-├── app.R                      # Punto de entrada principal
-├── run.R                      # Launcher desde terminal
-├── R/
-│   ├── colors_light.R         # Paleta de colores científica
-│   ├── processing.R           # Pipeline LiDAR (CSF, DEM, CHM)
-│   ├── visualization.R        # Plotly 2D/3D, helpers UI
-│   ├── export.R               # Exportación LAZ/GeoTIFF/SHP
-│   ├── report_generator.R     # Informes PDF automatizados
-│   ├── ui.R                   # Interfaz Shiny
-│   └── server.R               # Lógica servidor
-├── assets/
-│   └── logo_INTA.png          # Logo institucional
-├── scripts/
-│   └── install.R              # Instalador automático
-└── README.md
-```
-
-------------------------------------------------------------------------
-
-## Uso Básico
-
-### Flujo de Trabajo
-
-#### 1. Configuración Inicial
-
-##### Panel: Configuración
-
-```         
-📂 Seleccionar archivo LAZ/LAS (nube de puntos)
-📂 Seleccionar shapefile ROI (área de interés)
-📂 Elegir carpeta de salida
-```
-
-#### 2. Preprocesamiento
-
-##### Panel: Carga de datos
-
-| Parámetro | Rango | Recomendado | Efecto |
-|--------------|------------|--------------|-------------------------|
-| **Densidad submuestreo** | 1–50 pts/m² | 5–10 | Reduce tiempo de cómputo manteniendo calidad |
-| **CSF Rigidez** | 1–3 | 2 (ondulado) | 1=abrupto, 2=moderado, 3=llano |
-| **CSF Umbral** | 0.1–2 m | 0.5 | Distancia vertical dentro de la que se clasifica el suelo |
-
-**Ejecutar**: `[Filtrar y Clasificar]` → genera `puntos_clasificados.laz`
-
-#### 3. Generación de Modelos Digitales
-
-##### Panel: Modelos Digitales
-
-| Modelo | Resolución | Suavizado | Producto |
-|-----------|------------|----------------------|----------------------------|
-| **DEM** | 0.5–5 m | Ventana 3×3 (mín) + 9×9 (media) | Topografía base y curvas de nivel |
-| **CHM** | 0.25–2 m | Algoritmo p2r + knnidw | Alturas de copas |
-| **Hillshade** | Igual DEM | Ángulo 45°, azimut 315° | Visualización relieve |
-
-**Ejecutar**: `[Generar Modelos]` → visualización 3D interactiva
-
-#### 4. Detección de Árboles Individuales
-
-##### Panel: Árboles
-
-| Parámetro | Función | Típico | Ajuste según... |
-|-----------------|-----------------|-----------------|---------------------|
-| **ws** (ventana) | Diámetro búsqueda máximos locales | 3–8 m | Densidad plantación: ↓ ws para alta densidad |
-| **hmin** | Altura mínima ápice válido | 10–15 m | Madurez rodal: ↑ hmin para excluir regeneración |
-| **umbral** | Cálculo de la cobertura | 4 m | Altura de la base de la copa |
-
-**Ejecutar**: `[Detectar Árboles]` → shapefile `Arboles.shp` con atributo `Z` (altura)
-
-#### 5. Exportación
-
-##### Panel: Exportar
-
-**Estructura de salidas**:
-
-```         
-📁 Salidas_NUBES/
-   ├── puntos_clasificados.laz    # Clase 2=suelo, resto=vegetación
-   └── puntos_normalizados.laz    # Z referido al terreno
-
-📁 Salidas_RASTER/
-   ├── DEM.tif                    # Modelo elevación (EPSG original)
-   ├── CHM.tif                    # Modelo altura copas
-   └── Hillshade.tif              # Sombreado relieve
-
-📁 Salidas_VECTORIALES/
-   ├── Curvas_Nivel.shp           # Isolíneas equidistancia 1 m
-   ├── Arboles.shp                # Puntos con atributo altura
-   ├── Area_Interes.shp           # Polígono ROI analizado
-   └── Cobertura_Copas.shp        # Polígonos vectorizados
-
-📄 Informe_Analisis.pdf           # Reporte técnico automatizado
-```
-
-------------------------------------------------------------------------
-
-## Productos del Informe Automatizado
-
-El informe PDF generado (`Informe_Analisis.pdf`) incluye:
-
-### Sección 1: Metadatos del Relevamiento
-
--   Usuario, fecha de análisis, archivos procesados
--   Autor institucional, contacto técnico
-
-### Sección 2: Características del Área
-
--   Superficie analizada (hectáreas)
--   Densidad original/submuestreada de la nube de puntos
--   Puntos clasificados como suelo (algoritmo CSF)
-
-### Sección 3: Topografía
-
--   **DEM con curvas de nivel**: Elevación absoluta, rango altitudinal
--   **Hillshade**: Visualización de micro-relieve y pendientes
-
-### Sección 4: Estructura Forestal
-
--   **CHM (Canopy Height Model)**: Distribución espacial de alturas
--   **Vista de árboles detectados**: Cruces sobre CHM con gradiente de color
--   **Mapa de cobertura de copas**
-
-## Notas Técnicas
-
-### Algoritmos Clave
-
--   **CSF** (Cloth Simulation Filter): Clasificación de puntos de suelo
-
--   **TIN** (Triangulated Irregular Network): Interpolación DEM
-
--   **p2r + knnidw**: Generación CHM con relleno adaptativo
-
--   **LMF** (Local Maximum Filter): Detección de ápices arbóreos
-
-### Procesamiento Paralelo
-
-La aplicación detecta automáticamente núcleos de CPU y permite procesamiento multi-hilo en: - Filtrado de ruido (SOR) - Generación de modelos digitales
-
-### Límites
-
--   Tamaño máximo archivo: **25 GB** (configurable en `app.R`)
+La aplicación se abrirá automáticamente en el navegador en `http://localhost:3838`
 
 ------------------------------------------------------------------------
 

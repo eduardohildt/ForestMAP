@@ -13,6 +13,7 @@ cat("═════════════════════════
 # Lista completa de paquetes requeridos
 required_packages <- c(
   "shiny",        # Framework web interactivo
+  "shiny.i18n",   # Paquete para traducciones
   "bslib",        # Bootstrap 5 para Shiny
   "DT",           # Tablas interactivas DataTables
   "plotly",       # Gráficos interactivos 3D/2D
