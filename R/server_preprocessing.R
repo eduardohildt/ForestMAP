@@ -227,8 +227,8 @@ register_preprocessing <- function(input, output, session, rv, ag, lang) {
   output$met_pts_veg   <- renderText(if(is.null(rv$las_clasf))    "—" else format(sum(rv$las_clasf@data$Classification!=2L,na.rm=TRUE),big.mark="."))
 
   output$plot3d_orig  <- renderPlotly({
-    req(rv$las_raw)
-    plotly_nube_3d(rv$las_raw, color_var="Z",
+    req(rv$las_filtrado)
+    plotly_nube_3d(rv$las_filtrado, color_var="Z",
                    titulo = tr("plot.title.cloud_original", lang()), lang = lang())
   })
   output$plot3d_clasf <- renderPlotly({
