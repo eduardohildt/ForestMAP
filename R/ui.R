@@ -306,10 +306,25 @@ ui <- page_navbar(
               uiOutput("cfg_shp_badge")
             ),
             card(
-              card_body(class="p-3",
-                uiOutput("cfg_shp_ui")
+                card_body(class = "p-3",
+                  fluidRow(style = "display: flex; align-items: center;",
+                    
+                    # Columna del botón: Ocupa el espacio necesario
+                    column(width = 8, 
+                          uiOutput("cfg_shp_ui")
+                    ),
+                    
+                    # Columna del checkbox: Pegada al botón y bien alineada
+                    column(width = 4,
+                          div(style = "display: flex; align-items: center; justify-content: flex-start; gap: 10px;",
+                              checkboxInput("chk_extension_completa", label = "", value = FALSE),
+                              tags$span(style = "white-space: nowrap; margin-bottom: 10px;", 
+                                        uiOutput("lbl_extension_completa", inline = TRUE))
+                          )
+                    )
+                  )
+                )
               )
-            )
           ),
 
           # ── BLOQUE 3: CARPETA DE SALIDA ────────────────────────────────────

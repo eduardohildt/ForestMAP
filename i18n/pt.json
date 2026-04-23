@@ -28,7 +28,8 @@
       "loaded": "✔ Carregado",
       "pending": "⏳ Pendente",
       "not_selected": "Não selecionado",
-      "selected": "✔ Selecionada"
+      "selected": "✔ Selecionada",
+      "full_extent": "✔ Extensão completa"
     },
     "meta": {
       "epsg_detected": "EPSG: %s ✔ detectado",
@@ -90,11 +91,14 @@
       "dialog_las_filter": "LAS/LAZ (*.las *.laz)",
       "dialog_shp_caption": "Selecionar área de interesse (Shapefile)",
       "dialog_shp_filter": "Shapefile (*.shp)",
-      "dialog_dir_caption": "Selecionar pasta de saída"
+      "dialog_dir_caption": "Selecionar pasta de saída",
+      "use_full_extent": "Usar toda a extensão",
+      "full_extent_hint": "Será usado o perímetro da nuvem"
     },
     "log": {
       "las": "LAS  : %s",
       "roi": "ROI  : %s",
+      "roi_bbox": "ROI  : [extensão completa da nuvem de pontos]",
       "dir": "Dir  : %s",
       "folders_ready": "Pastas: NUVENS / RASTER / VETORES / RELATÓRIO — ✅ prontas"
     }
@@ -135,7 +139,7 @@
       "dem": "MDE...",
       "contours": "Curvas de nível...",
       "hillshade": "Hillshade...",
-      "chm": "Normalização + MCA...",
+      "chm": "Normalização + CHM...",
       "cropping": "Recortando para área de interesse..."
     },
     "trees": {
@@ -206,8 +210,8 @@
       "advanced_btn": "⚙️ Configurações avançadas"
     },
     "chm": {
-      "header": "🌿 Modelo de altura de copas (MCA)",
-      "resolution_label": "Resolução do MCA (m)",
+      "header": "🌿 Modelo de altura de copas (CHM)",
+      "resolution_label": "Resolução do CHM (m)",
       "gap_fill_label": "Preenchimento de lacunas",
       "advanced_btn": "⚙️ Configurações avançadas"
     },
@@ -216,7 +220,7 @@
       "dem": "🗺️ MDE",
       "contours": "📏 Curvas de nível",
       "hillshade": "🌓 Relevo sombreado",
-      "chm": "🌿 MCA — Modelo de altura de copas",
+      "chm": "🌿 CHM — Modelo de altura de copas",
       "profile": "📊 Perfil vertical",
       "log": "📝 Log"
     },
@@ -228,7 +232,7 @@
       "profile": "Distribuição vertical das alturas na nuvem de pontos"
     },
     "sublabels": {
-      "dem_raw": "MDE bruto",
+      "dem_raw": "MDE original",
       "dem_smooth": "MDE suavizado"
     },
     "log": {
@@ -253,7 +257,7 @@
       "min_height_tip_label": "Altura mínima das árvores (m)",
       "min_height_tip": "Evita buscar árvores muito baixas. Reduz falsos positivos e agiliza a busca",
       "canopy_cutoff_tip_label": "Altura de corte para cobertura (m)",
-      "canopy_cutoff_tip": "Limiar para classificar áreas cobertas por copas. Áreas do MCA acima deste valor são consideradas cobertas",
+      "canopy_cutoff_tip": "Limiar para classificar áreas cobertas por copas. Áreas do CHM acima deste valor são consideradas cobertas",
       "apply_btn": "Aplicar",
       "close_btn": "Fechar"
     },
@@ -273,8 +277,8 @@
       "log": "📝 Log"
     },
     "tips": {
-      "apex": "Cruzes vermelhas = ápices sobre o MCA. Zoom com roda ou seleção.",
-      "canopy": "Análise da área coberta pelas copas usando o MCA e o limiar de altura configurado."
+      "apex": "Cruzes vermelhas = ápices sobre o CHM. Zoom com roda ou seleção.",
+      "canopy": "Análise da área coberta pelas copas usando o CHM e o limiar de altura configurado."
     },
     "log": {
       "detected": "✅ %d árvores detectadas",
@@ -300,7 +304,7 @@
     "functions_heading": "Funções incorporadas:",
     "function_1": "Recorte e subamostragem da nuvem de pontos",
     "function_2": "Classificação automática do terreno",
-    "function_3": "Geração de modelos digitais (MDE, MCA)",
+    "function_3": "Geração de modelos digitais (MDE, CHM)",
     "function_4": "Extração de curvas de nível",
     "function_5": "Detecção de árvores individuais",
     "function_6": "Relatório descritivo em PDF",
@@ -390,11 +394,11 @@
       "gap_medium_desc": "0.25 m — normal",
       "gap_aggressive_label": "Agressivo",
       "gap_aggressive_desc": "0.5 m — máximo",
-      "modal_title": "⚙️ Configurações avançadas — MCA",
-      "res_label": "Resolução MCA (m)",
+      "modal_title": "⚙️ Configurações avançadas — CHM",
+      "res_label": "Resolução CHM (m)",
       "res_tip": "Tamanho do pixel do modelo de altura de copas. Valores menores = mais detalhe (0.1–2 m)",
       "gap_label": "Preenchimento de lacunas (m)",
-      "gap_tip": "Raio de busca para interpolação de lacunas no MCA. Valor maior = mais preenchimento (0–0.5 m)"
+      "gap_tip": "Raio de busca para interpolação de lacunas no CHM. Valor maior = mais preenchimento (0–0.5 m)"
     },
     "tree": {
       "ws_small_label": "Pequena",
@@ -422,12 +426,12 @@
       "dem_raw": "MDE bruto (TIN)",
       "dem_smooth": "MDE suavizado",
       "hillshade": "Hillshade — Relevo Sombreado",
-      "chm": "MCA — Modelo de Altura de Copas",
+      "chm": "CHM — Modelo de Altura de Copas",
       "dem_contours": "MDE Suavizado + Curvas de Nível",
       "vertical_profile": "Distribuição Vertical — Nuvem Normalizada",
       "cloud_original": "Nuvem Original — colorida por Elevação (Z)",
       "cloud_classified": "Nuvem Classificada — Solo (amarelo) / Vegetação (verde)",
-      "trees_on_chm": "Árvores identificadas sobre MCA",
+      "trees_on_chm": "Árvores identificadas sobre CHM",
       "tree_heights": "Distribuição de Alturas de Árvores Detectadas",
       "canopy_coverage": "Cobertura de copas: %.1f%% da área"
     },
@@ -488,9 +492,9 @@
       "hillshade_done": "✅ Hillshade gerado.",
       "normalizing": "📉 Normalizando nuvem ao nível do terreno...",
       "cloud_normalized": "✅ Nuvem normalizada: %s pts",
-      "chm": "🌿 MCA — resolução %.2f m (p2r + knnidw)...",
+      "chm": "🌿 CHM — resolução %.2f m (p2r + knnidw)...",
       "chm_stats": "   Altura mín: %.1f m | máx: %.1f m | média: %.1f m",
-      "chm_done": "✅ MCA gerado.",
+      "chm_done": "✅ CHM gerado.",
       "detecting_trees": "🌲 Detectando árvores — LMF (ws=%.1f m, hmin=%.1f m)...",
       "trees_detected_proc": "✅ %d árvores detectadas."
     },
@@ -523,7 +527,7 @@
     "fig": {
       "dem": "Modelo Digital de Elevação (MDE) com curvas de nível",
       "hillshade": "Hillshade — Relevo Sombreado",
-      "chm": "Modelo de Altura de Copas (MCA)",
+      "chm": "Modelo de Altura de Copas (CHM)",
       "trees": "Árvores detectadas (N=%s)",
       "tree_heights": "Distribuição de Alturas de Árvores",
       "canopy": "Cobertura de copas: %.1f%% da área (limiar %.1f m)"
@@ -562,7 +566,7 @@
       "survey_characteristics": "Características do Levantamento",
       "dem": "Modelo Digital de Elevação (MDE)",
       "contours": "Curvas de Nível",
-      "chm": "Normalização e Modelo de Altura de Copas (MCA)",
+      "chm": "Normalização e Modelo de Altura de Copas (CHM)",
       "density": "Densidade e Estrutura do Talhão",
       "canopy": "Cobertura de Copas"
     },
@@ -579,32 +583,32 @@
       "dem_stats": "O terreno da área analisada apresentou elevação mínima de **%s m**, máxima de **%s m** e média de **%s m**, com amplitude altitudinal de **%s m**.",
       "contours": "Curvas de nível foram geradas a partir do MDE suavizado, com equidistância de **%s m**. As curvas foram recortadas aos limites da área de interesse e exportadas em formato shapefile para uso em sistemas de informação geográfica.",
       "chm_normalization": "A nuvem de pontos foi normalizada ao nível do terreno subtraindo de cada ponto a elevação do MDE suavizado. Este processo permite expressar as alturas em termos relativos ao solo (alturas sobre o terreno), independentemente da topografia subjacente.",
-      "chm_generation": "A partir da nuvem normalizada foi gerado o Modelo de Altura de Copas (MCA) com resolução de **%s m**.",
+      "chm_generation": "A partir da nuvem normalizada foi gerado o Modelo de Altura de Copas (CHM) com resolução de **%s m**.",
       "chm_stats": "A altura da vegetação na área analisada variou entre **%s m** e **%s m**, com altura média de **%s m**.",
-      "trees_lmf": "A detecção de árvores individuais foi realizada com o algoritmo **LMF** (Local Maximum Filter), que identifica os máximos locais do MCA como ápices de árvores.",
+      "trees_lmf": "A detecção de árvores individuais foi realizada com o algoritmo **LMF** (Local Maximum Filter), que identifica os máximos locais do CHM como ápices de árvores.",
       "trees_params": "Foi utilizada uma janela de busca de **%s m** de diâmetro e altura mínima de **%s m** para excluir arbustos e regeneração.",
       "trees_count": "Foram detectadas **%s árvores** na área analisada.",
       "trees_heights": "As alturas individuais estimadas variaram entre **%s m** e **%s m**, com altura média de **%s m**.",
       "density_sentence": "A densidade de indivíduos detectados é de **%s árvores/ha**, com espaçamento médio estimado de **%s m** entre árvores.",
       "cv_sentence": "O coeficiente de variação das alturas é de **%s%%**, indicando um talhão **%s** em termos de estrutura vertical (Avery e Burkhart, 2002).",
       "cv_note": "Este índice é útil para avaliar a homogeneidade do crescimento e planejar intervenções silviculturais diferenciadas.",
-      "canopy_analysis": "A análise de cobertura de copas, calculada por vetorização da máscara binária do MCA (limiar de altura = %s m), indica que as copas cobrem **%s%%** da área total, equivalente a **%s ha**.",
+      "canopy_analysis": "A análise de cobertura de copas, calculada por vetorização da máscara binária do CHM (limiar de altura = %s m), indica que as copas cobrem **%s%%** da área total, equivalente a **%s ha**.",
       "canopy_importance": "Esta métrica é fundamental para avaliar o fechamento de copas, a competição entre indivíduos e a eficiência no uso do espaço. Também é fundamental para o monitoramento de sistemas silvipastoris, onde a cobertura de copas determina o momento em que podas e desbastes devem ser realizados.",
       "products_intro": "Todos os produtos foram exportados para a pasta de saída selecionada com a seguinte estrutura:",
       "footer": "*Relatório gerado automaticamente com a Ferramenta INTA para Análise LiDAR e Fotogrametria Florestal (ForestMap - INTA EEA Montecarlo). Os valores estatísticos correspondem ao processamento realizado na data indicada.*"
     },
     "products": {
       "clouds_header": "**Salidas_NUBES/**",
-      "classified": "- `pontos_classificados.laz`: Nuvem de pontos com classificação de solo (Classe 2) e vegetação.",
-      "normalized": "- `pontos_normalizados.laz`: Nuvem normalizada ao nível do terreno.",
+      "classified": "- `puntos_clasificados.laz`:  Nuvem de pontos com classificação de solo (Classe 2) e vegetação.",
+      "normalized": "- `puntos_normalizados.laz`: Nuvem normalizada ao nível do terreno.",
       "raster_header": "**Salidas_RASTER/**",
-      "dem": "- `MDE.tif`: Modelo Digital de Elevação suavizado, recortado para a área de interesse.",
-      "chm": "- `MCA.tif`: Modelo de Altura de Copas, recortado para a área de interesse.",
+      "dem": "- `DEM.tif`: Modelo Digital de Elevação suavizado, recortado para a área de interesse.",
+      "chm": "- `CHM.tif`: Modelo de Altura de Copas, recortado para a área de interesse.",
       "hillshade": "- `Hillshade.tif`: Relevo sombreado.",
       "vector_header": "**Salidas_VECTORIALES/**",
       "contours_shp": "- `Curvas_Nivel.shp`: Curvas de nível em formato shapefile.",
-      "trees_shp": "- `Arvores.shp`: Pontos de árvores detectadas com altura do ápice.",
-      "roi_shp": "- `Area_Interesse.shp`: Polígono da área de interesse analisada.",
+      "trees_shp": "- `Arboles.shp`: Pontos de árvores detectadas com altura do ápice.",
+      "roi_shp": "- `Area_Interes.shp`: Polígono da área de interesse analisada.",
       "canopy_shp": "- `Cobertura_Copas.shp`: Polígonos de cobertura de copas (se disponível)."
     }
   }

@@ -28,7 +28,8 @@
       "loaded": "✔ Cargado",
       "pending": "⏳ Pendiente",
       "not_selected": "Sin seleccionar",
-      "selected": "✔ Seleccionada"
+      "selected": "✔ Seleccionada",
+      "full_extent": "✔ Extensión completa"
     },
     "meta": {
       "epsg_detected": "EPSG: %s ✔ detectado",
@@ -90,11 +91,14 @@
       "dialog_las_filter": "LAS/LAZ (*.las *.laz)",
       "dialog_shp_caption": "Seleccionar área de interés (Shapefile)",
       "dialog_shp_filter": "Shapefile (*.shp)",
-      "dialog_dir_caption": "Seleccionar carpeta de salida"
+      "dialog_dir_caption": "Seleccionar carpeta de salida",
+      "use_full_extent": "Usar toda la extensión",
+      "full_extent_hint": "Se usará perímetro de la nube"
     },
     "log": {
       "las": "LAS  : %s",
       "roi": "ROI  : %s",
+      "roi_bbox": "ROI  : [extensión completa de la nube de puntos]",
       "dir": "Dir  : %s",
       "folders_ready": "Carpetas: NUBES / RASTER / VECTORIALES / INFORME — ✅ listas"
     }
@@ -228,7 +232,7 @@
       "profile": "Distribución vertical de las alturas en la nube de puntos"
     },
     "sublabels": {
-      "dem_raw": "DEM bruto",
+      "dem_raw": "DEM original",
       "dem_smooth": "DEM suavizado"
     },
     "log": {
@@ -602,7 +606,7 @@
       "chm": "- `CHM.tif`: Modelo de Altura de Copas, recortado al área de interés.",
       "hillshade": "- `Hillshade.tif`: Sombreado del relieve.",
       "vector_header": "**Salidas_VECTORIALES/**",
-      "contours_shp": "- `Curvas_Nivel.shp`: Curvas de nivel en formato shapefile.",
+      "contours_shp": "- `Curvas_Nivel.shp`:Curvas de nivel en formato shapefile.",
       "trees_shp": "- `Arboles.shp`: Puntos de árboles detectados con altura del ápice.",
       "roi_shp": "- `Area_Interes.shp`: Polígono del área de interés analizada.",
       "canopy_shp": "- `Cobertura_Copas.shp`: Polígonos de cobertura de copas (si disponible)."

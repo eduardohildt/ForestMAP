@@ -67,8 +67,16 @@ verificar_crs_las <- function(ruta_las, ruta_shp) {
   list(estado = "ok")
 }
 
-cargar_recortar_las <- function(ruta_las, ruta_shp, buffer_m = 20,
+verificar_crs_las_solo <- function(ruta_las) {
+  hdr   <- readLASheader(ruta_las)
+  wkt   <- tryCatch(sf::st_crs(hdr)$wkt, error = function(e) NULL)
+  tiene <- !is.null(wkt) && !is.na(wkt) && nchar(trimws(wkt)) > 0
+  if (!tiene) list(estado = "sin_crs") else list(estado = "ok")
+}
+
+cargar_recortar_las <- function(ruta_las, ruta_shp = NULL, buffer_m = 20,
                                 crs_override = NULL, shp_crs_override = NULL,
+                                usar_bbox = FALSE,
                                 log_fn = message, lang = "es") {
   log_fn(tr("processing.log.loading_cloud", lang))
   las <- readLAS(ruta_las, select = "xyznr")
@@ -77,6 +85,20 @@ cargar_recortar_las <- function(ruta_las, ruta_shp, buffer_m = 20,
   area <- (bb[2]-bb[1]) * (bb[4]-bb[3])
   dens_orig <- round(nrow(las@data) / as.numeric(area), 1)
   log_fn(tr("processing.log.cloud_loaded", lang, format(nrow(las@data), big.mark="."), dens_orig))
+
+  if (usar_bbox) {
+    if (!is.null(crs_override)) {
+      log_fn(tr("processing.log.assigning_crs_las", lang, as.integer(crs_override)))
+      projection(las) <- crs(paste0("epsg:", as.integer(crs_override)))
+    }
+    wkt_las <- tryCatch(sf::st_crs(las)$wkt, error = function(e) NULL)
+    las_tiene_crs <- !is.null(wkt_las) && !is.na(wkt_las) && nchar(trimws(wkt_las)) > 0
+    roi <- as.polygons(ext(las))
+    if (las_tiene_crs) terra::crs(roi) <- wkt_las
+    area_roi_ha <- round(as.numeric(expanse(roi, unit = "ha")), 2)
+    log_fn(tr("processing.log.roi_area", lang, area_roi_ha))
+    return(list(las = las, roi = roi, dens_orig = dens_orig, area_ha = area_roi_ha))
+  }
 
   log_fn(tr("processing.log.loading_roi", lang))
   roi <- vect(ruta_shp)

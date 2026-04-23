@@ -206,10 +206,27 @@ register_config <- function(input, output, session, rv, ag, lang) {
       tags$span(class = "step-status-badge status-pending",  tr("common.status.pending", l))
   })
 
-  # ── Bloque 2: SHP — botón o tarjeta de metadata ──────────────────────────
+  # ── Bloque 2: SHP — checkbox extensión completa ──────────────────────────
+  output$lbl_extension_completa <- renderUI({
+    tags$span(tr("config.file.use_full_extent", lang()))
+  })
+
+  observeEvent(input$chk_extension_completa, {
+    rv$usar_extension_completa <- isTRUE(input$chk_extension_completa)
+    if (rv$usar_extension_completa) rv$ruta_shp <- NULL
+  })
+
   output$cfg_shp_ui <- renderUI({
     l <- lang()
-    if (is.null(rv$ruta_shp)) {
+    if (isTRUE(rv$usar_extension_completa)) {
+      div(class = "file-meta-card",
+        div(class = "file-meta-row",
+          tags$span(class = "file-meta-value",
+            style = "color:#555;font-style:italic;",
+            tr("config.file.full_extent_hint", l))
+        )
+      )
+    } else if (is.null(rv$ruta_shp)) {
       actionButton("btn_shp", tr("config.file.select_shp_btn", l),
         class = "btn btn-info w-100",
         style = "font-weight:600;padding:10px;color:#fff;")
@@ -249,7 +266,9 @@ register_config <- function(input, output, session, rv, ag, lang) {
 
   output$cfg_shp_badge <- renderUI({
     l <- lang()
-    if (!is.null(rv$ruta_shp))
+    if (isTRUE(rv$usar_extension_completa))
+      tags$span(class = "step-status-badge status-complete", tr("common.status.full_extent", l))
+    else if (!is.null(rv$ruta_shp))
       tags$span(class = "step-status-badge status-complete", tr("common.status.loaded", l))
     else
       tags$span(class = "step-status-badge status-pending",  tr("common.status.pending", l))
@@ -286,18 +305,23 @@ register_config <- function(input, output, session, rv, ag, lang) {
 
   # ── Botón Continuar: habilitar solo cuando todo está completo ─────────────
   observe({
-    todo_listo <- !is.null(rv$ruta_las) && !is.null(rv$ruta_shp) && !is.null(rv$ruta_dir)
+    shp_ok     <- !is.null(rv$ruta_shp) || isTRUE(rv$usar_extension_completa)
+    todo_listo <- !is.null(rv$ruta_las) && shp_ok && !is.null(rv$ruta_dir)
     if (todo_listo) session$sendCustomMessage("btnEnable",  "btn_continuar")
     else            session$sendCustomMessage("btnDisable", "btn_continuar")
   })
 
   observeEvent(input$btn_continuar, {
-    req(rv$ruta_las, rv$ruta_shp, rv$ruta_dir)
+    req(rv$ruta_las, rv$ruta_dir)
+    if (!isTRUE(rv$usar_extension_completa)) req(rv$ruta_shp)
     l <- lang()
     crear_estructura_carpetas(rv$ruta_dir)
     rv$configurado <- TRUE
     ag("log_config", tr("config.log.las", l, basename(rv$ruta_las)))
-    ag("log_config", tr("config.log.roi", l, basename(rv$ruta_shp)))
+    if (isTRUE(rv$usar_extension_completa))
+      ag("log_config", tr("config.log.roi_bbox", l))
+    else
+      ag("log_config", tr("config.log.roi", l, basename(rv$ruta_shp)))
     ag("log_config", tr("config.log.dir", l, rv$ruta_dir))
     ag("log_config", tr("config.log.folders_ready", l))
     showNotification(tr("notification.success.config_saved", l), type = "message")

@@ -28,7 +28,8 @@
       "loaded": "✔ Loaded",
       "pending": "⏳ Pending",
       "not_selected": "Not selected",
-      "selected": "✔ Selected"
+      "selected": "✔ Selected",
+      "full_extent": "✔ Full extent"
     },
     "meta": {
       "epsg_detected": "EPSG: %s ✔ detected",
@@ -90,11 +91,14 @@
       "dialog_las_filter": "LAS/LAZ (*.las *.laz)",
       "dialog_shp_caption": "Select area of interest (Shapefile)",
       "dialog_shp_filter": "Shapefile (*.shp)",
-      "dialog_dir_caption": "Select output folder"
+      "dialog_dir_caption": "Select output folder",
+      "use_full_extent": "Use full extent",
+      "full_extent_hint": "Point cloud perimeter will be used"
     },
     "log": {
       "las": "LAS  : %s",
       "roi": "ROI  : %s",
+      "roi_bbox": "ROI  : [full point cloud extent]",
       "dir": "Dir  : %s",
       "folders_ready": "Folders: CLOUDS / RASTER / VECTORS / REPORT — ✅ ready"
     }
@@ -238,7 +242,7 @@
   },
   "trees": {
     "detection": {
-      "header": "🌲 Apex detection",
+      "header": "🌲 Tree top detection",
       "desc": "The algorithm searches for the highest point in moving windows. Each maximum represents a tree.",
       "window_label": "Search window diameter (m)",
       "min_height_label": "Minimum tree height (m)",
@@ -267,7 +271,7 @@
     },
     "run_btn": "▶  Detect trees",
     "tabs": {
-      "apex_map": "📍 Apex map",
+      "apex_map": "📍 Tree tops map",
       "distribution": "📊 Distribution",
       "canopy": "🌳 Canopy coverage",
       "log": "📝 Log"
@@ -435,7 +439,7 @@
       "height_m": "Height above ground (m)",
       "frequency": "Frequency",
       "rel_frequency": "Relative frequency (%)",
-      "apex_height": "Apex height (m)",
+      "apex_height": "Tree top height (m)",
       "x_m": "X (m)",
       "y_m": "Y (m)",
       "z_m": "Z (m)"
@@ -449,7 +453,7 @@
       "light": "Light"
     },
     "hover": {
-      "apex": "Apex: %s m"
+      "apex": "Tree tops: %s m"
     },
     "canopy": {
       "no_canopy": "No canopy",
@@ -594,18 +598,18 @@
       "footer": "*Report automatically generated with the INTA Tool for LiDAR Analysis and Forest Photogrammetry (ForestMap - INTA EEA Montecarlo). Statistical values correspond to the processing performed on the indicated date.*"
     },
     "products": {
-      "clouds_header": "**Point_Clouds/**",
-      "classified": "- `classified_points.laz`: Point cloud with ground (Class 2) and vegetation classification.",
-      "normalized": "- `normalized_points.laz`: Point cloud normalized to terrain level.",
-      "raster_header": "**Raster_Models/**",
+      "clouds_header": "**Salidas_NUBES/**",
+      "classified": "- `puntos_clasificados.laz`: Point cloud with ground (Class 2) and vegetation classification.",
+      "normalized": "- `puntos_normalizados.laz`: Point cloud normalized to terrain level.",
+      "raster_header": "**Salidas_RASTER/**",
       "dem": "- `DEM.tif`: Smoothed Digital Elevation Model, clipped to the area of interest.",
       "chm": "- `CHM.tif`: Canopy Height Model, clipped to the area of interest.",
       "hillshade": "- `Hillshade.tif`: Shaded relief.",
-      "vector_header": "**Vector_Layers/**",
-      "contours_shp": "- `Contours.shp`: Contour lines in shapefile format.",
-      "trees_shp": "- `Trees.shp`: Detected tree points with apex height.",
-      "roi_shp": "- `Area_of_Interest.shp`: Area of interest polygon.",
-      "canopy_shp": "- `Canopy_Coverage.shp`: Canopy coverage polygons (if available)."
+      "vector_header": "**Salidas_VECTORIALES/**",
+      "contours_shp": "- `Curvas_Nivel.shp`:Contour lines in shapefile format.",
+      "trees_shp": "- `Arboles.shp`: Detected tree points with tree top height.",
+      "roi_shp": "- `Area_Interes.shp`: Area of interest polygon.",
+      "canopy_shp": "- `Cobertura_Copas.shp`: Canopy coverage polygons (if available)."
     }
   }
 }

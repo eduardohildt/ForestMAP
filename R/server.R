@@ -24,6 +24,7 @@ server <- function(input, output, session) {
     ruta_las       = NULL,
     ruta_shp       = NULL,
     ruta_dir       = NULL,
+    usar_extension_completa = FALSE,
     # Última carpeta conocida — arranca en Home, se actualiza tras cada selección
     ultima_carpeta = path.expand("~"),
     configurado    = FALSE,

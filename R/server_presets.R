@@ -178,7 +178,44 @@ register_presets <- function(input, output, session, rv, ag, lang) {
 
     svg_llano <- '<svg viewBox="0 0 80 38" width="52" height="22" xmlns="http://www.w3.org/2000/svg"><polygon points="0,24 80,24 80,38 0,38" fill="rgba(45,122,61,0.12)"/><polyline points="0,24 80,24" stroke="#2d7a3d" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'
     svg_ondulado <- '<svg viewBox="0 0 80 38" width="52" height="22" xmlns="http://www.w3.org/2000/svg"><path d="M0,28 C14,28 14,12 28,20 C42,28 42,10 58,16 C68,20 74,16 80,18 L80,38 L0,38 Z" fill="rgba(45,122,61,0.12)"/><path d="M0,28 C14,28 14,12 28,20 C42,28 42,10 58,16 C68,20 74,16 80,18" stroke="#2d7a3d" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>'
-    svg_quebrado <- '<svg viewBox="0 0 80 38" width="52" height="22" xmlns="http://www.w3.org/2000/svg"><polygon points="0,28 16,28 24,10 32,28 52,28 62,6 70,28 80,28 80,38 0,38" fill="rgba(45,122,61,0.12)"/><polyline points="0,28 16,28 24,10 32,28 52,28 62,6 70,28 80,28" stroke="#2d7a3d" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    svg_quebrado <- '<svg viewBox="0 0 80 38" width="52" height="22" xmlns="http://www.w3.org/2000/svg">
+  <!-- Relleno -->
+  <polygon points="
+    0,28 
+    10,24 
+    16,30 
+    24,14 
+    32,28 
+    40,18 
+    48,30 
+    56,12 
+    64,28 
+    72,16 
+    80,28 
+    80,38 
+    0,38"
+    fill="rgba(45,122,61,0.12)"/>
+
+  <!-- Línea -->
+  <polyline points="
+    0,28 
+    10,24 
+    16,30 
+    24,14 
+    32,28 
+    40,18 
+    48,30 
+    56,12 
+    64,28 
+    72,16 
+    80,28"
+    stroke="#2d7a3d"
+    stroke-width="2.5"
+    fill="none"
+    stroke-linecap="butt"
+    stroke-linejoin="miter"/>
+</svg>'
+
 
     mk <- function(id, svg, title, desc) {
       cls <- paste("csf-scenario-card", if (sc == id) "csf-selected" else "")

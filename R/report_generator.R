@@ -24,7 +24,10 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
   # VARIABLES BÁSICAS
   # ============================================================================
   nombre_las  <- basename(rv$ruta_las %||% "N/A")
-  nombre_roi  <- basename(rv$ruta_shp %||% "N/A")
+  nombre_roi  <- if (isTRUE(rv$usar_extension_completa))
+                   tr("config.log.roi_bbox", lang)
+                 else
+                   basename(rv$ruta_shp %||% "N/A")
   area_ha     <- if (!is.na(rv$area_ha)) sprintf("%.2f", rv$area_ha) else "N/D"
   dens_orig_v <- if (!is.na(rv$dens_orig)) sprintf("%.1f", rv$dens_orig) else "N/D"
   dens_sub    <- as.character(rv$densidad_val)

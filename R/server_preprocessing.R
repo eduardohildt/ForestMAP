@@ -6,7 +6,8 @@
 register_preprocessing <- function(input, output, session, rv, ag, lang) {
 
   # ── Lógica interna de preproceso (reutilizada desde btn y modales CRS) ─────
-  ejecutar_preproceso <- function(crs_override = NULL, shp_crs_override = NULL) {
+  ejecutar_preproceso <- function(crs_override = NULL, shp_crs_override = NULL,
+                                  usar_bbox = FALSE) {
     l <- lang()
     rv$log_prepro <- character(0)
     withProgress(message = tr("progress.preprocessing.message", l), value = 0, {
@@ -16,6 +17,7 @@ register_preprocessing <- function(input, output, session, rv, ag, lang) {
                                     buffer_m         = input$buffer_m,
                                     crs_override     = crs_override,
                                     shp_crs_override = shp_crs_override,
+                                    usar_bbox        = usar_bbox,
                                     log_fn           = function(m) ag("log_prepro", m),
                                     lang             = l)
         rv$las_raw   <- res$las
@@ -51,8 +53,42 @@ register_preprocessing <- function(input, output, session, rv, ag, lang) {
 
   # ── Botón principal de preproceso ─────────────────────────────────────────
   observeEvent(input$btn_preprocesar, {
-    req(rv$ruta_las, rv$ruta_shp, rv$ruta_dir)
+    req(rv$ruta_las, rv$ruta_dir)
+    if (!isTRUE(rv$usar_extension_completa)) req(rv$ruta_shp)
     l <- lang()
+
+    if (isTRUE(rv$usar_extension_completa)) {
+      crs_info <- tryCatch(
+        verificar_crs_las_solo(rv$ruta_las),
+        error = function(e) list(estado = "ok")
+      )
+      if (crs_info$estado == "sin_crs") {
+        rv$crs_pendiente <- crs_info
+        showModal(modalDialog(
+          title = tr("modal.crs.las_title", l),
+          tags$p(tr("modal.crs.las_body_1", l)),
+          numericInput("modal_epsg_las",
+                       label = tr("modal.crs.epsg_label", l),
+                       value = 22185L,
+                       min   = 1,
+                       max   = 99999,
+                       step  = 1),
+          tags$p(style = "font-size:12px; color:#666; margin-top:8px;",
+                 tr("modal.crs.epsg_reference", l),
+                 tags$a("epsg.io", href = "https://epsg.io/", target = "_blank"),
+                 tr("modal.crs.epsg_reference_suffix", l)),
+          footer = tagList(
+            modalButton(tr("common.btn.cancel", l)),
+            actionButton("btn_modal_confirmar_crs", tr("common.btn.confirm_continue", l),
+                         class = "btn btn-success")
+          ),
+          easyClose = FALSE
+        ))
+      } else {
+        ejecutar_preproceso(usar_bbox = TRUE)
+      }
+      return()
+    }
 
     val_shp <- tryCatch(
       validar_shp_un_poligono(rv$ruta_shp),
@@ -161,7 +197,8 @@ register_preprocessing <- function(input, output, session, rv, ag, lang) {
     removeModal()
     epsg_elegido <- as.integer(input$modal_epsg_las)
     ag("log_prepro", tr("preprocessing.log.crs_las_assigned", lang(), epsg_elegido))
-    ejecutar_preproceso(crs_override = epsg_elegido)
+    ejecutar_preproceso(crs_override = epsg_elegido,
+                        usar_bbox    = isTRUE(rv$usar_extension_completa))
   })
 
   observeEvent(input$btn_modal_confirmar_shp_crs, {
