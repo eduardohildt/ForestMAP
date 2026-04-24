@@ -30,6 +30,8 @@ library(ggplot2)
 library(parallel)
 cat("   ✓ Bibliotecas cargadas\n\n")
 
+# Nota: La generación de informes ahora produce HTML; TinyTeX/LaTeX no es requerido.
+
 # Corrección para sistema de puntuación
 options(OutDec = ".")
 

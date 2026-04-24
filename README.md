@@ -23,7 +23,7 @@ ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada �
 -   **Segmentación individual de árboles**: Algoritmo LMF (Local Maximum Filter) con ventanas adaptativas y umbrales de altura
 -   **Métricas forestales**: Densidad (árboles/ha), cobertura de copas (%), distribución altimétrica, coeficiente de variación estructural
 -   **Visualización científica**: Renderizado 3D interactivo (Plotly) y gráficos temáticos
--   **Exportación multiformato**: LAZ clasificado/normalizado, GeoTIFF georreferenciado, Shapefile con atributos dasométricos, informes PDF automatizados
+-   **Exportación multiformato**: LAZ clasificado/normalizado, GeoTIFF georreferenciado, Shapefile con atributos dasométricos, informes HTML automatizados
 
 ### Requisitos de Entrada
 
@@ -46,6 +46,9 @@ ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada �
 ### Dependencias R (CRAN)
 
 ``` r
+# Informes
+
+``` r
 # Core
 shiny, shiny.i18n, bslib, DT, plotly, htmlwidgets, ggplot2
 
@@ -53,14 +56,11 @@ shiny, shiny.i18n, bslib, DT, plotly, htmlwidgets, ggplot2
 lidR, terra, sf, RCSF
 
 # Informes
-knitr, rmarkdown, tinytex
+knitr, rmarkdown
 
 # Sistema
 parallel, rstudioapi
 ```
-
-### Hardware Recomendado
-
 -   **RAM**: ≥16 GB (nubes \>10M puntos)
 -   **CPU**: 4+ núcleos (procesamiento paralelo)
 -   **Almacenamiento**: 50+ GB libres

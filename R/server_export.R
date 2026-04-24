@@ -1,5 +1,5 @@
 # ==============================================================================
-# SERVER EXPORT - E5: Exportación de productos e informe PDF
+# SERVER EXPORT - E5: Exportación de productos e informe HTML
 # ==============================================================================
 
 register_export <- function(input, output, session, rv, ag, lang) {
@@ -28,10 +28,10 @@ register_export <- function(input, output, session, rv, ag, lang) {
   observeEvent(input$btn_informe, {
     req(rv$ruta_dir)
     l <- lang()
-    ag("log_export", tr("export.log.generating_pdf", l))
+    ag("log_export", tr("export.log.generating_HTML", l))
     tryCatch({
       generar_informe_descriptivo(rv, input, lang = l, log_fn = function(m) ag("log_export", m))
-      showNotification(tr("notification.success.pdf_done", l), type = "message")
+      showNotification(tr("notification.success.HTML_done", l), type = "message")
     }, error = function(e) {
       ag("log_export", paste(tr("notification.error.report_prefix", l), conditionMessage(e)))
       showNotification(tr("notification.error.report_generic", l, conditionMessage(e)), type = "error")

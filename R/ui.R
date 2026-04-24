@@ -745,7 +745,7 @@ ui <- page_navbar(
                     class="btn-run w-100", style="padding:14px;font-size:15px;")
                 ),
                 div(class="col-md-4",
-                  actionButton("btn_informe","📄  Generar informe PDF",
+                  actionButton("btn_informe","📄  Generar informe HTML",
                     class="btn btn-outline-info w-100", style="padding:14px;font-size:15px;")
                 ),
                 div(class="col-md-4",

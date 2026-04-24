@@ -58,7 +58,7 @@
     },
     "modal": {
       "title": "⚙️ Project configuration",
-      "instructions": "This data will be used in the PDF report. If a field is left empty, \"-\" will be written.",
+      "instructions": "This data will be used in the HTML report. If a field is left empty, \"-\" will be written.",
       "author_label": "Author",
       "author_placeholder": "Author name",
       "institution_label": "Institution",
@@ -110,7 +110,8 @@
       "preprocessing_done": "✅ Pre-processing complete.",
       "models_done": "✅ Models generated.",
       "export_done": "✅ Export complete.",
-      "pdf_done": "✅ PDF report generated.",
+      "HTML_done": "✅ HTML report generated.",
+      "PDF_done": "✅ PDF report generated.",
       "folder_opened": "📂 Results folder opened."
     },
     "error": {
@@ -290,11 +291,11 @@
     "raster_header": "🗺️ Raster models",
     "vector_header": "📐 Vector layers",
     "export_btn": "💾  Export products",
-    "pdf_btn": "📄  Generate PDF report",
+    "HTML_btn": "📄  Generate HTML report",
     "open_folder_btn": "📂  Open folder",
     "log_header": "📝 Export log",
     "log": {
-      "generating_pdf": "📄 Generating descriptive PDF report..."
+      "generating_HTML": "📄 Generating descriptive HTML report..."
     }
   },
   "about": {
@@ -307,7 +308,7 @@
     "function_3": "Digital model generation (DEM, CHM)",
     "function_4": "Contour line extraction",
     "function_5": "Individual tree detection",
-    "function_6": "Descriptive PDF report",
+    "function_6": "Descriptive HTML report",
     "version_label": "Version:",
     "updated_label": "Last update:",
     "updated_value": "April 2026",
@@ -519,7 +520,7 @@
       "invalid_dir": "invalid ruta_dir for report generation"
     },
     "log": {
-      "generating": "📄 Generating descriptive PDF report...",
+      "generating": "📄 Generating descriptive HTML report...",
       "slope_warning": "  ⚠ Could not calculate slopes: %s",
       "figure_coverage": "  ✓ Canopy coverage figure generated",
       "figure_coverage_error": "  ⚠ Could not generate coverage figure: %s"
@@ -543,7 +544,7 @@
       "area": "Description of the Analyzed Area",
       "pointcloud": "Point Cloud",
       "soil": "Terrain Classification",
-      "models": "Digital Terrain Models",
+      "models": "Topographic Analysis",
       "vertical": "Vertical Structure of the Forest",
       "trees": "Individual Tree Detection",
       "management": "Forest Management Metrics",

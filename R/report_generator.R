@@ -1,17 +1,17 @@
 # =============================================================================
-# GENERADOR DE REPORTE EN PDF - ForestMap INTA
+# GENERADOR DE REPORTE EN HTML - ForestMap INTA
 # =============================================================================
 # Autor: Dr. Eduardo Hildt - INTA EEA Montecarlo
 # Versión: 2026.5
 # =============================================================================
 
-#' Generar informe descriptivo PDF de análisis LiDAR.
+#' Generar informe descriptivo HTML de análisis LiDAR.
 #'
 #' @param rv ReactiveValues object containing inputs, outputs, statistics, and data.
 #' @param input Shiny input list with user-set parameters.
 #' @param lang Language code: "es", "en", or "pt" (default: "es").
 #' @param log_fn Function to log status messages (default: message).
-#' @return Path to generated PDF.
+#' @return Path to generated HTML.
 #' @export
 generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message) {
   if (is.null(rv$ruta_dir) || !nzchar(rv$ruta_dir)) {
@@ -127,85 +127,94 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
   # ============================================================================
   dir_inf <- file.path(rv$ruta_dir, "Salidas_INFORME")
   if (!dir.exists(dir_inf)) dir.create(dir_inf, recursive = TRUE)
+  # Unified ggplot2 theme and save helper
+  gg_theme_cart <- theme_minimal() + theme(
+    axis.title = element_blank(),
+    axis.text = element_text(size=8),
+    plot.title = element_text(face="bold", size=10),
+    legend.title = element_text(size=8)
+  )
+
+  save_plot <- function(plot_obj, path, w_px=1600, h_px=1600, dpi=150) {
+    tryCatch({
+      ggsave(filename=path, plot=plot_obj,
+             width = w_px / dpi, height = h_px / dpi, units = "in", dpi = dpi, device = "png")
+    }, error = function(e) {
+      if (file.exists(path)) tryCatch(file.remove(path), error = function(e2) NULL)
+      log_fn(tr("report.log.figure_save_error", lang, conditionMessage(e)))
+    })
+  }
 
   if (!is.null(rv$dem_suav)) {
-    png(file.path(dir_inf, "fig_dem.png"), width=1600, height=1600, res=150)
-    par(mar = c(4, 4, 3, 5))
-    plot(rv$dem_suav,
-         main = tr("report.fig.dem", lang),
-         col  = terrain.colors(100),
-         mar  = c(3, 3, 3, 5))
-    if (!is.null(rv$curvas)) plot(rv$curvas, add=TRUE, col="black", lwd=0.8)
-    dev.off()
+    df_dem <- raster_to_df(rv$dem_suav)
+    p_dem <- ggplot(df_dem, aes(x=x, y=y, fill=valor)) +
+      geom_raster() +
+      scale_fill_gradientn(colours = terrain.colors(100), na.value = "transparent") +
+      coord_equal() + gg_theme_cart +
+      labs(title = tr("report.fig.dem", lang))
+    if (!is.null(rv$curvas)) {
+      curvas_sf <- tryCatch(st_as_sf(rv$curvas), error = function(e) NULL)
+      if (!is.null(curvas_sf)) p_dem <- p_dem + geom_sf(data=curvas_sf, inherit.aes=FALSE, color="black", size=0.2)
+    }
+    save_plot(p_dem, file.path(dir_inf, "fig_dem.png"))
   }
 
   if (!is.null(rv$hillshade)) {
-    png(file.path(dir_inf, "fig_hillshade.png"), width=1600, height=1600, res=150)
     df_hs <- raster_to_df(rv$hillshade)
     p_hs <- ggplot(df_hs, aes(x=x, y=y, fill=valor)) +
       geom_raster() +
-      scale_fill_gradientn(colours=grey(seq(0,1,.01)), guide="none") +
-      coord_equal() + theme_void() +
-      labs(title = tr("report.fig.hillshade", lang)) +
-      theme(plot.title=element_text(face="bold", size=10))
-    print(p_hs); dev.off()
+      scale_fill_gradientn(colours = grey(seq(0,1,.01)), guide = "none", na.value = "transparent") +
+      coord_equal() + gg_theme_cart +
+      labs(title = tr("report.fig.hillshade", lang))
+    save_plot(p_hs, file.path(dir_inf, "fig_hillshade.png"))
   }
 
   if (!is.null(rv$chm)) {
-    png(file.path(dir_inf, "fig_chm.png"), width=1600, height=1600, res=150)
     df_c <- raster_to_df(rv$chm)
     p_chm <- ggplot(df_c, aes(x=x, y=y, fill=valor)) +
       geom_raster() +
-      scale_fill_gradientn(colours=PAL_CHM_PNG, name="Altura\n(m)", na.value="white") +
-      coord_equal() + theme_void() +
-      labs(title = tr("report.fig.chm", lang)) +
-      theme(plot.title=element_text(face="bold", size=10), legend.title=element_text(size=8))
-    print(p_chm); dev.off()
+      scale_fill_gradientn(colours = PAL_CHM_PNG, name = "Altura\n(m)", na.value = "white") +
+      coord_equal() + gg_theme_cart +
+      labs(title = tr("report.fig.chm", lang))
+    save_plot(p_chm, file.path(dir_inf, "fig_chm.png"))
   }
 
   if (!is.null(rv$chm) && !is.null(rv$arboles)) {
-    png(file.path(dir_inf, "fig_arboles.png"), width=1600, height=1600, res=150)
     df_c <- raster_to_df(rv$chm)
     co_arb <- as.data.frame(st_coordinates(rv$arboles))
     co_arb$alt <- rv$arboles$Z
     p_arb <- ggplot(df_c, aes(x=x, y=y, fill=valor)) +
       geom_raster() +
-      scale_fill_gradientn(colours=PAL_CHM_PNG, name="Altura\n(m)", na.value="white") +
-      geom_point(data=co_arb, aes(x=X, y=Y), inherit.aes=FALSE, shape=3, color="black", size=1.2, stroke=0.6) +
-      coord_equal() + theme_void() +
-      labs(title = tr("report.fig.trees", lang, nrow(rv$arboles))) +
-      theme(plot.title=element_text(face="bold", size=10), legend.title=element_text(size=8))
-    print(p_arb); dev.off()
+      scale_fill_gradientn(colours = PAL_CHM_PNG, name = "Altura\n(m)", na.value = "white") +
+      geom_point(data=co_arb, aes(x=X, y=Y), inherit.aes=FALSE, shape=3, color="black", size=1, stroke=0.6) +
+      coord_equal() + gg_theme_cart +
+      labs(title = tr("report.fig.trees", lang, nrow(rv$arboles)))
+    save_plot(p_arb, file.path(dir_inf, "fig_arboles.png"))
   }
 
   if (!is.null(rv$arboles)) {
-    png(file.path(dir_inf, "fig_hist_arb.png"), width=1200, height=1200, res=150)
     p_hist <- ggplot(data.frame(h=rv$arboles$Z), aes(x=h)) +
       geom_histogram(bins=25, fill=GREEN, color="white", alpha=0.85) +
       labs(title = tr("report.fig.tree_heights", lang),
-           x     = tr("plot.axis.apex_height",   lang),
-           y     = tr("plot.axis.frequency",      lang)) +
-      theme_bw()
-    print(p_hist); dev.off()
+           x = tr("plot.axis.apex_height", lang),
+           y = tr("plot.axis.frequency", lang)) +
+      gg_theme_cart
+    save_plot(p_hist, file.path(dir_inf, "fig_hist_arb.png"), w_px=1200, h_px=1200)
   }
 
   if (!is.null(rv$cobertura_copas) && !is.null(rv$cobertura_copas$copas_vect)) {
     fig_path <- file.path(dir_inf, "fig_cobertura.png")
     tryCatch({
-      png(fig_path, width=1600, height=1600, res=150)
       copas_sf <- st_as_sf(rv$cobertura_copas$copas_vect)
-      p_cob <- ggplot(copas_sf) +
-        geom_sf(fill="green1", color="black", linewidth=0.5) +
-        coord_sf(expand=FALSE) + theme_void() +
+      p_cob <- ggplot() +
+        geom_sf(data=copas_sf, fill="green1", color="black", size=0.2) +
+        coord_sf(expand=FALSE) + gg_theme_cart +
         labs(title = tr("report.fig.canopy", lang,
                         rv$cobertura_copas$porc_cobertura,
-                        rv$cobertura_copas$umbral_altura)) +
-        theme(plot.title=element_text(face="bold", size=10))
-      print(p_cob)
-      dev.off()
+                        rv$cobertura_copas$umbral_altura))
+      save_plot(p_cob, fig_path)
       log_fn(tr("report.log.figure_coverage", lang))
     }, error = function(e) {
-      if (dev.cur() != 1) dev.off()
       if (file.exists(fig_path)) tryCatch(file.remove(fig_path), error = function(e2) NULL)
       log_fn(tr("report.log.figure_coverage_error", lang, conditionMessage(e)))
     })
@@ -215,7 +224,8 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
   # GENERACIÓN DEL DOCUMENTO RMD
   # ============================================================================
   rmd_p <- file.path(rv$ruta_dir, "informe.Rmd")
-  pdf_p <- file.path(rv$ruta_dir, "Salidas_INFORME", "Informe_Analisis.pdf")
+  out_h <- file.path(rv$ruta_dir, "Salidas_INFORME", "Informe_Analisis.html")
+  out_p <- file.path(rv$ruta_dir, "Salidas_INFORME", "Informe_Analisis.pdf")
 
   writeLines(con = rmd_p, c(
     "---",
@@ -223,29 +233,15 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     paste0("subtitle: '", rv$cfg_destinatario, "'"),
     "date: '`r format(Sys.Date(), \"%d de %B de %Y\")`'",
     "output:",
-    "  pdf_document:",
+    "  html_document:",
     "    toc: true",
     "    toc_depth: 3",
     "    number_sections: true",
-    "    latex_engine: xelatex",
     "    fig_caption: true",
-    "    keep_tex: false",
-    "lang: es-ES",
-    "fontsize: 11pt",
-    "geometry: margin=2cm",
-    "header-includes:",
-    "  - \\setlength{\\headheight}{14pt}",
-    "  - \\addtolength{\\topmargin}{-2pt}",
-    "  - \\usepackage{fancyhdr}",
-    "  - \\usepackage{graphicx}",
-    "  - \\usepackage{xcolor}",
-    "  - \\definecolor{forestgreen}{RGB}{34,139,34}",
-    "  - \\pagestyle{fancy}",
-    "  - \\fancyhf{}",
-    "  - \\fancyhead[L]{\\textcolor{forestgreen}{\\textbf{ForestMAP INTA}}}",
-    "  - \\fancyhead[R]{\\thepage}",
-    "  - \\renewcommand{\\headrulewidth}{0.5pt}",
-    "  - \\renewcommand{\\footrulewidth}{0.5pt}",
+    "    self_contained: false",
+    "    df_print: paged",
+    "    theme: yeti",
+    "    highlight: tango",
     "---",
     "",
     "```{r setup, include=FALSE}",
@@ -392,10 +388,13 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     tr("report.content.footer", lang)
   ))
 
-  rmarkdown::render(rmd_p, output_file=pdf_p,
+  rmarkdown::render(rmd_p, output_file=out_h,
                     envir=new.env(parent=globalenv()), quiet=TRUE)
   unlink(rmd_p)
 
-  log_fn(paste("✅ PDF guardado en:", pdf_p))
-  invisible(pdf_p)
+  log_fn(paste("✅ HTML guardado en:", out_h))
+  invisible(out_h)
+
+  Sys.sleep(1)
+  pagedown::chrome_print(input = out_h, output = out_p)
 }

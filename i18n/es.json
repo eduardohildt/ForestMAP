@@ -58,7 +58,7 @@
     },
     "modal": {
       "title": "⚙️ Configuración del proyecto",
-      "instructions": "Estos datos se usarán en el informe PDF. Si deja un campo vacío se escribirá \"-\".",
+      "instructions": "Estos datos se usarán en el informe HTML. Si deja un campo vacío se escribirá \"-\".",
       "author_label": "Autor",
       "author_placeholder": "Nombre del autor",
       "institution_label": "Institución",
@@ -110,7 +110,8 @@
       "preprocessing_done": "✅ Pre-procesamiento completado.",
       "models_done": "✅ Modelos generados.",
       "export_done": "✅ Exportación completada.",
-      "pdf_done": "✅ Informe PDF generado.",
+      "HTML_done": "✅ Informe HTML generado.",
+      "PDF_done": "✅ Informe PDF generado.",
       "folder_opened": "📂 Carpeta de resultados abierta."
     },
     "error": {
@@ -290,11 +291,11 @@
     "raster_header": "🗺️ Modelos raster",
     "vector_header": "📐 Capas vectoriales",
     "export_btn": "💾  Exportar productos",
-    "pdf_btn": "📄  Generar informe PDF",
+    "HTML_btn": "📄  Generar informe HTML",
     "open_folder_btn": "📂  Abrir carpeta",
     "log_header": "📝 Log de exportación",
     "log": {
-      "generating_pdf": "📄 Generando informe descriptivo PDF..."
+      "generating_HTML": "📄 Generando informe descriptivo HTML..."
     }
   },
   "about": {
@@ -307,7 +308,7 @@
     "function_3": "Generación de modelos digitales (DEM, CHM)",
     "function_4": "Extracción de curvas de nivel",
     "function_5": "Detección de árboles individuales",
-    "function_6": "Informe descriptivo en PDF",
+    "function_6": "Informe descriptivo en HTML",
     "version_label": "Versión:",
     "updated_label": "Última actualización:",
     "updated_value": "Abril 2026",
@@ -519,7 +520,7 @@
       "invalid_dir": "ruta_dir inválida para generar informe"
     },
     "log": {
-      "generating": "📄 Generando informe descriptivo PDF ...",
+      "generating": "📄 Generando informe descriptivo HTML ...",
       "slope_warning": "  ⚠ No se pudieron calcular pendientes: %s",
       "figure_coverage": "  ✓ Figura de cobertura de copas generada",
       "figure_coverage_error": "  ⚠ No se pudo generar figura de cobertura: %s"
@@ -543,7 +544,7 @@
       "area": "Descripción del Área Analizada",
       "pointcloud": "Nube de Puntos",
       "soil": "Clasificación del Terreno",
-      "models": "Modelos Digitales del Terreno",
+      "models": "Análisis del Relieve",
       "vertical": "Estructura Vertical de la Forestación",
       "trees": "Detección de Árboles Individuales",
       "management": "Métricas de Gestión Forestal",

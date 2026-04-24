@@ -102,7 +102,7 @@ PAL_HILLSHADE <- list(
 )
 
 # ──────────────────────────────────────────────────────────────────────────────
-# PALETAS GGPLOT2 (exportación PNG/PDF)
+# PALETAS GGPLOT2 (exportación PNG/HTML)
 # ──────────────────────────────────────────────────────────────────────────────
 PAL_TERRAIN_PNG <- c(COL_TERRAIN_1, COL_TERRAIN_2, COL_TERRAIN_3, 
                      COL_TERRAIN_4, COL_TERRAIN_5, COL_TERRAIN_6, COL_TERRAIN_7)

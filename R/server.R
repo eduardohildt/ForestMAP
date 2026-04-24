@@ -8,7 +8,7 @@
 #   server_preprocessing.R  — E2: preproceso LiDAR y resolución de CRS
 #   server_models.R         — E3: generación de modelos digitales
 #   server_trees.R          — E4: detección de árboles y cobertura de copas
-#   server_export.R         — E5: exportación e informe PDF
+#   server_export.R         — E5: exportación e informe HTML
 # ==============================================================================
 
 server <- function(input, output, session) {
@@ -107,7 +107,7 @@ server <- function(input, output, session) {
     updateActionButton(session, "btn_arb_config_aplicar", label = tr("trees.modal.apply_btn",            l))
     updateActionButton(session, "btn_arboles",         label = tr("trees.run_btn",                       l))
     updateActionButton(session, "btn_exportar",        label = tr("export.export_btn",                   l))
-    updateActionButton(session, "btn_informe",         label = tr("export.pdf_btn",                      l))
+    updateActionButton(session, "btn_informe",         label = tr("export.HTML_btn",                      l))
     updateActionButton(session, "btn_abrir_carpeta",   label = tr("export.open_folder_btn",              l))
 
     # RadioButtons
