@@ -115,4 +115,4 @@ Opcional: Cerrar y volver a abrir RStudio
 -   **Issues/Soporte:** Abrir issue en este repositorio
 -   **Comentarios y sugerencias:** [Completar formulario](https://forms.gle/8YokYp4K3CCrzggG8)
 
-**Licencia:** Propiedad intelectual de INTA (Instituto Nacional de Tecnología Agropecuaria). Uso institucional, académico y de investigación. Para uso comercial, contactar al autor.
+**Licencia:** [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0) — libre uso, modificación y distribución. Las obras derivadas deben mantener la misma licencia. Copyright © INTA / Dr. Eduardo Hildt.
