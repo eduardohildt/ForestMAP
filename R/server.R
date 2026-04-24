@@ -250,7 +250,7 @@ server <- function(input, output, session) {
           tags$p(style=paste0("color:", GREEN, ";font-size:13px;font-weight:600;margin:12px 0 8px;"),
             tr("about.functions_heading", l)),
           div(class="row",
-            div(class="col-9",
+            div(class="col-6",
               tags$ul(style=paste0("color:", MUTED, ";font-size:12px;"),
                 tags$li(tr("about.function_1", l)),
                 tags$li(tr("about.function_2", l)),
@@ -258,6 +258,23 @@ server <- function(input, output, session) {
                 tags$li(tr("about.function_4", l)),
                 tags$li(tr("about.function_5", l)),
                 tags$li(tr("about.function_6", l))
+              )
+            ),
+            div(class="col-3",
+              div(class="card h-100 border-success",
+                div(class="card-body p-2 d-flex flex-column justify-content-between",
+                  tags$p(class="card-title fw-semibold mb-1",
+                         style=paste0("color:", GREEN, ";font-size:13px;"),
+                         tr("about.feedback_header", l)),
+                  tags$p(style=paste0("color:", MUTED, ";font-size:11px;margin-bottom:8px;"),
+                         tr("about.feedback_desc", l)),
+                  tags$a(
+                    href   = "https://forms.gle/8YokYp4K3CCrzggG8",
+                    target = "_blank",
+                    class  = "btn btn-sm btn-outline-success mt-auto",
+                    tr("about.feedback_btn", l)
+                  )
+                )
               )
             ),
             div(class="col-3 d-flex align-items-start",

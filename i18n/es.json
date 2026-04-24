@@ -314,7 +314,10 @@
     "updated_value": "Abril 2026",
     "contact_label": "Contacto:",
     "lidr_ref_title": "Paquete lidR",
-    "csf_ref_title": "Algoritmo CSF (suelo)"
+    "csf_ref_title": "Algoritmo CSF (suelo)",
+    "feedback_header": "💬 Comentarios y sugerencias",
+    "feedback_desc": "¿Tenés sugerencias o encontraste un error? Tu opinión nos ayuda a mejorar la herramienta.",
+    "feedback_btn": "Completar formulario"
   },
   "presets": {
     "csf": {

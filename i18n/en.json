@@ -314,7 +314,10 @@
     "updated_value": "April 2026",
     "contact_label": "Contact:",
     "lidr_ref_title": "lidR package",
-    "csf_ref_title": "CSF algorithm (ground)"
+    "csf_ref_title": "CSF algorithm (ground)",
+    "feedback_header": "💬 Comments & suggestions",
+    "feedback_desc": "Found a bug or have ideas? Your feedback helps us improve the tool.",
+    "feedback_btn": "Fill out the form"
   },
   "presets": {
     "csf": {

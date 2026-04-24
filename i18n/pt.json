@@ -314,7 +314,10 @@
     "updated_value": "Abril 2026",
     "contact_label": "Contato:",
     "lidr_ref_title": "Pacote lidR",
-    "csf_ref_title": "Algoritmo CSF (solo)"
+    "csf_ref_title": "Algoritmo CSF (solo)",
+    "feedback_header": "💬 Comentários e sugestões",
+    "feedback_desc": "Encontrou um erro ou tem sugestões? Sua opinião nos ajuda a melhorar a ferramenta.",
+    "feedback_btn": "Preencher formulário"
   },
   "presets": {
     "csf": {

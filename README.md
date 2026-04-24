@@ -43,24 +43,7 @@ ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada �
 | **R** | 4.0+ | [Descargar](https://cloud.r-project.org/) |
 | **RStudio** | *Recomendado* | [Descargar](https://posit.co/download/rstudio-desktop/) |
 
-### Dependencias R (CRAN)
-
-``` r
-# Informes
-
-``` r
-# Core
-shiny, shiny.i18n, bslib, DT, plotly, htmlwidgets, ggplot2
-
-# Geoespacial
-lidR, terra, sf, RCSF
-
-# Informes
-knitr, rmarkdown, pagedown
-
-# Sistema
-parallel, rstudioapi
-```
+**Recomendación**
 -   **RAM**: ≥16 GB (nubes \>10M puntos)
 -   **CPU**: 4+ núcleos (procesamiento paralelo)
 -   **Almacenamiento**: 50+ GB libres
@@ -78,22 +61,14 @@ cd ForestMAP
 
 ### 2. Instalar Dependencias
 
-**Script automático** *(recomendado)*
-
-`PowerShell o CMD start 'C:\Program Files\R\R-4.5.2\bin\x64\Rscript.exe' .\scripts\install.R`
+Abrir `scripts/install.R` en RStudio y ejecutar todas las líneas.
 
 ------------------------------------------------------------------------
 
 ## Ejecución
 
-### Opción 1: RStudio
-
 1.  Abrir `run.R` en RStudio
 2.  Clic en **"Run App"** (esquina superior derecha)
-
-### Opción 2: Terminal
-
-`PowerShell o CMD start 'C:\Program Files\R\R-4.5.2\bin\x64\Rscript.exe' .\run.R`
 
 La aplicación se abrirá automáticamente en el navegador en `http://localhost:3838`
 
@@ -113,36 +88,13 @@ Rscript scripts/install.R
 -   Cerrar otras aplicaciones
 -   Aumentar RAM disponible
 
-### Shiny no abre en navegador
-
-Verificar puerto 3838:
-
-``` bash
-netstat -an | grep 3838  # Linux/Mac
-netstat -an | findstr 3838  # Windows
-```
-
 ### RStudio: "Object not found"
 
 Ejecutar **completo** desde `run.R` (no ejecutar líneas individuales)
+Opcional: Cerrar y volver a abrir RStudio
 
 ------------------------------------------------------------------------
 
-## Créditos
-
-**Desarrollado por:**\
-Dr. Eduardo Hildt\
-INTA EEA Montecarlo - Grupo Forestal\
-Misiones, Argentina
-
-**Tecnología núcleo:**\
-[**lidR package**](https://github.com/r-lidar/lidR) (Roussel et al., 2020, 2021, 2023)\
-*The reference open-source software for airborne LiDAR data processing in forestry*
-
-**En apoyo a la Red de Drones INTA**\
-Herramienta institucional para facilitar el análisis de datos aerotransportados en el sector forestal argentino.
-
-------------------------------------------------------------------------
 
 ## Referencias Clave
 
@@ -161,5 +113,6 @@ Herramienta institucional para facilitar el análisis de datos aerotransportados
 -   **Email:** [hildt.eduardo\@inta.gob.ar](mailto:hildt.eduardo@inta.gob.ar)
 -   **Institución:** [INTA EEA Montecarlo](https://inta.gob.ar/montecarlo)
 -   **Issues/Soporte:** Abrir issue en este repositorio
+-   **Comentarios y sugerencias:** [Completar formulario](https://forms.gle/8YokYp4K3CCrzggG8)
 
 **Licencia:** Propiedad intelectual de INTA (Instituto Nacional de Tecnología Agropecuaria). Uso institucional, académico y de investigación. Para uso comercial, contactar al autor.
