@@ -52,7 +52,9 @@ ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada �
 
 ## Instalación
 
-### 1. Clonar Repositorio
+### 1. Descargar el repositorio en formato Zip y descomprimirlo o ...
+
+### Clonar Repositorio
 
 ``` bash
 git clone https://github.com/eduardohildt/ForestMAP
