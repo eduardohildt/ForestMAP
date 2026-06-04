@@ -4,7 +4,7 @@
 # Autor      : Dr. Eduardo Hildt
 # Institución: INTA EEA Montecarlo - Grupo Forestal
 # Email      : hildt.eduardo@inta.gob.ar
-# Versión    : 2026.5
+# Versión    : 2026.6
 # ==============================================================================
 
 cat("═══════════════════════════════════════════════════════════\n")
@@ -47,20 +47,6 @@ options(
 N_CORES_MAX <- parallel::detectCores()
 cat("   ✓ Núcleos CPU detectados:", N_CORES_MAX, "\n")
 cat("   ✓ Tamaño máximo archivo: 25 GB\n\n")
-
-# ══════════════════════════════════════════════════════════════════════════════
-# DIRECTORIO DE TRABAJO
-# ══════════════════════════════════════════════════════════════════════════════
-script_dir <- tryCatch(
-  dirname(rstudioapi::getActiveDocumentContext()$path),
-  error = function(e) getwd()
-)
-
-if (!is.null(script_dir) && script_dir != "" && dir.exists(script_dir)) {
-  setwd(script_dir)
-}
-
-cat("📁 Directorio:", getwd(), "\n\n")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # HELPER: CARGAR ARCHIVOS
@@ -108,13 +94,13 @@ cargar_archivo("R/ui.R", obligatorio = TRUE)
 cat("\n")
 
 cat("⚙️  Cargando lógica del servidor...\n")
-cargar_archivo("R/server_helpers.R",       obligatorio = TRUE)
-cargar_archivo("R/server_config.R",        obligatorio = TRUE)
-cargar_archivo("R/server_presets.R",       obligatorio = TRUE)
-cargar_archivo("R/server_preprocessing.R", obligatorio = TRUE)
-cargar_archivo("R/server_models.R",        obligatorio = TRUE)
-cargar_archivo("R/server_trees.R",         obligatorio = TRUE)
-cargar_archivo("R/server_export.R",        obligatorio = TRUE)
+cargar_archivo("R/mod_helpers.R",       obligatorio = TRUE)
+cargar_archivo("R/mod_config.R",        obligatorio = TRUE)
+cargar_archivo("R/mod_presets.R",       obligatorio = TRUE)
+cargar_archivo("R/mod_preprocessing.R", obligatorio = TRUE)
+cargar_archivo("R/mod_models.R",        obligatorio = TRUE)
+cargar_archivo("R/mod_trees.R",         obligatorio = TRUE)
+cargar_archivo("R/mod_export.R",        obligatorio = TRUE)
 cargar_archivo("R/server.R",               obligatorio = TRUE)
 cat("\n")
 
@@ -123,7 +109,7 @@ cat("\n")
 # ══════════════════════════════════════════════════════════════════════════════
 cat("═══════════════════════════════════════════════════════════\n")
 cat("  ✅ Todo cargado correctamente\n")
-cat("  🚀 Lanzando aplicación...\n")
+cat("  🚀 Lanzando aplicación en el navegador web...\n")
 cat("═══════════════════════════════════════════════════════════\n\n")
 
 shinyApp(ui = ui, server = server)

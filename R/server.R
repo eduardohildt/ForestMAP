@@ -48,8 +48,10 @@ server <- function(input, output, session) {
     cfg_email        = "-",
     cfg_destinatario = "-",
     # Metadata de archivos leída del header (sin cargar la nube completa)
-    las_meta         = NULL,
-    shp_meta         = NULL,
+    las_meta              = NULL,
+    shp_meta              = NULL,
+    shp_poligono_idx = 1L,
+    shp_sf           = NULL,
     # Escenario CSF y flag de configuración personalizada
     csf_scenario     = "ondulado",
     csf_custom       = FALSE,

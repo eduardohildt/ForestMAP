@@ -7,8 +7,8 @@
 # - Función tip_label() desde visualization.R
 # ==============================================================================
 # Versión de la aplicación (se usa en footer y sección "Acerca de")
-NVersion <- "2026.5"
-addResourcePath("assets", "./assets")
+NVersion <- "2026.6"
+addResourcePath("assets", "www")
 # Las bibliotecas se cargan en app.R, pero las incluimos aquí por si se
 # ejecuta ui.R de forma independiente para pruebas
 if (!exists("page_navbar")) {
@@ -36,7 +36,10 @@ if (!exists("tip_label")) {
 
 ui <- page_navbar(
   id       = "main_nav",
-  title    = "INTA ForestMap",
+  title    = tags$span(
+    tags$span("INTA", style = "color:#E63946; font-weight:900; letter-spacing:1px; font-family:'Exo 2',sans-serif; text-shadow:0 1px 4px rgba(0,0,0,0.45);"),
+    tags$span(" ForestMap", style = "color:#FFFFFF; font-weight:700;")
+  ),
   fillable = FALSE,
 	theme = bs_theme(
 	  version     = 5,
@@ -308,21 +311,22 @@ ui <- page_navbar(
             card(
                 card_body(class = "p-3",
                   fluidRow(style = "display: flex; align-items: center;",
-                    
+
                     # Columna del botón: Ocupa el espacio necesario
-                    column(width = 8, 
+                    column(width = 8,
                           uiOutput("cfg_shp_ui")
                     ),
-                    
+
                     # Columna del checkbox: Pegada al botón y bien alineada
                     column(width = 4,
                           div(style = "display: flex; align-items: center; justify-content: flex-start; gap: 10px;",
                               checkboxInput("chk_extension_completa", label = "", value = FALSE),
-                              tags$span(style = "white-space: nowrap; margin-bottom: 10px;", 
+                              tags$span(style = "white-space: nowrap; margin-bottom: 10px;",
                                         uiOutput("lbl_extension_completa", inline = TRUE))
                           )
                     )
-                  )
+                  ),
+                  uiOutput("plot_shp_preview_container")
                 )
               )
           ),

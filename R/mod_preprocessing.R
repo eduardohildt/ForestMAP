@@ -18,6 +18,7 @@ register_preprocessing <- function(input, output, session, rv, ag, lang) {
                                     crs_override     = crs_override,
                                     shp_crs_override = shp_crs_override,
                                     usar_bbox        = usar_bbox,
+                                    poligono_idx     = rv$shp_poligono_idx,
                                     log_fn           = function(m) ag("log_prepro", m),
                                     lang             = l)
         rv$las_raw   <- res$las
@@ -87,22 +88,6 @@ register_preprocessing <- function(input, output, session, rv, ag, lang) {
       } else {
         ejecutar_preproceso(usar_bbox = TRUE)
       }
-      return()
-    }
-
-    val_shp <- tryCatch(
-      validar_shp_un_poligono(rv$ruta_shp),
-      error = function(e) list(ok = FALSE, n_poligonos = NA_integer_)
-    )
-    if (!val_shp$ok) {
-      msg <- if (is.na(val_shp$n_poligonos)) {
-        tr("notification.error.shp_cannot_read", l)
-      } else {
-        tr("notification.error.shp_multiple_polygons", l, val_shp$n_poligonos)
-      }
-      rv$log_prepro <- character(0)
-      ag("log_prepro", msg)
-      showNotification(msg, type = "error", duration = 10)
       return()
     }
 

@@ -125,11 +125,15 @@ register_config <- function(input, output, session, rv, ag, lang) {
           n_poligonos = n_polig,
           area_ha     = area_ha,
           epsg_str    = epsg_str,
-          advertencia = (n_polig > 1)
+          advertencia = FALSE
         )
+        rv$shp_sf           <- shp_sf
+        rv$shp_poligono_idx <- 1L
       }, error = function(e) {
-        rv$shp_meta <- list(nombre = basename(ruta), n_poligonos = NA,
+        rv$shp_meta         <- list(nombre = basename(ruta), n_poligonos = NA,
           area_ha = NA_real_, epsg_str = tr("common.meta.cannot_read_header", lang()), advertencia = FALSE)
+        rv$shp_sf           <- NULL
+        rv$shp_poligono_idx <- 1L
       })
     }
   })
@@ -213,7 +217,7 @@ register_config <- function(input, output, session, rv, ag, lang) {
 
   observeEvent(input$chk_extension_completa, {
     rv$usar_extension_completa <- isTRUE(input$chk_extension_completa)
-    if (rv$usar_extension_completa) rv$ruta_shp <- NULL
+    if (rv$usar_extension_completa) { rv$ruta_shp <- NULL; rv$shp_sf <- NULL }
   })
 
   output$cfg_shp_ui <- renderUI({
@@ -232,14 +236,13 @@ register_config <- function(input, output, session, rv, ag, lang) {
         style = "font-weight:600;padding:10px;color:#fff;")
     } else {
       m <- rv$shp_meta
-      area_txt <- if (!is.null(m) && !is.na(m$area_ha))
-                    paste0(format(m$area_ha, big.mark = ".", nsmall = 2), " ha")
-                  else tr("common.meta.not_calculable", l)
-      polig_txt <- if (!is.null(m) && !is.na(m$n_poligonos)) {
-                     if (isTRUE(m$advertencia))
-                       tr("common.meta.multiple_polygons_warning", l, m$n_poligonos)
-                     else as.character(m$n_poligonos)
-                   } else "?"
+      area_txt  <- if (!is.null(m) && !is.na(m$area_ha))
+                     paste0(format(m$area_ha, big.mark = ".", nsmall = 2), " ha")
+                   else tr("common.meta.not_calculable", l)
+      polig_txt <- if (!is.null(m) && !is.na(m$n_poligonos))
+                     as.character(m$n_poligonos)
+                   else "?"
+      multi <- !is.null(m) && !is.na(m$n_poligonos) && m$n_poligonos > 1
       tagList(
         div(class = "file-meta-card",
           div(class = "file-meta-row",
@@ -248,9 +251,7 @@ register_config <- function(input, output, session, rv, ag, lang) {
               if (!is.null(m)) m$nombre else basename(rv$ruta_shp))),
           div(class = "file-meta-row",
             tags$span(class = "file-meta-label", tr("config.file.meta_polygons", l)),
-            tags$span(
-              class = paste("file-meta-value", if (!is.null(m) && isTRUE(m$advertencia)) "warn" else ""),
-              polig_txt)),
+            tags$span(class = "file-meta-value", polig_txt)),
           div(class = "file-meta-row",
             tags$span(class = "file-meta-label", tr("config.file.meta_area", l)),
             tags$span(class = "file-meta-value", area_txt)),
@@ -259,10 +260,47 @@ register_config <- function(input, output, session, rv, ag, lang) {
             tags$span(class = "file-meta-value",
               if (!is.null(m)) m$epsg_str else "?"))
         ),
+        if (multi) {
+          choices <- setNames(seq_len(m$n_poligonos),
+                              paste(tr("config.polygon_label", l), seq_len(m$n_poligonos)))
+          selectInput("sel_poligono",
+                      label    = tr("config.file.select_polygon", l),
+                      choices  = choices,
+                      selected = rv$shp_poligono_idx)
+        },
         actionButton("btn_shp", tr("config.file.change_file_btn", l), class = "btn btn-cambiar")
       )
     }
   })
+
+  observeEvent(input$sel_poligono, {
+    rv$shp_poligono_idx <- as.integer(input$sel_poligono)
+  })
+
+  output$plot_shp_preview_container <- renderUI({
+    req(rv$shp_sf, !isTRUE(rv$usar_extension_completa))
+    plotOutput("plot_shp_preview", height = "180px")
+  })
+
+  output$plot_shp_preview <- renderPlot({
+    req(rv$shp_sf)
+    sf_all <- rv$shp_sf
+    n      <- nrow(sf_all)
+    idx    <- rv$shp_poligono_idx %||% 1L
+    sf_sel <- if (n > 1) sf_all[idx, ] else sf_all
+    tit    <- if (n > 1)
+      paste0(tr("config.polygon_label", lang()), " ", idx, " / ", n,
+             "  —  ", basename(rv$ruta_shp))
+    else
+      basename(rv$ruta_shp)
+    ggplot() +
+      geom_sf(data = sf_all, fill = "#e8f4e8", color = "#888888", linewidth = 0.4) +
+      geom_sf(data = sf_sel, fill = "#2d7a3d55", color = "#2d7a3d", linewidth = 1.2) +
+      labs(title = tit) +
+      theme_void() +
+      theme(plot.title = element_text(size = 10, color = "#444444",
+                                      margin = margin(b = 4)))
+  }, bg = "transparent")
 
   output$cfg_shp_badge <- renderUI({
     l <- lang()

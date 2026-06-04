@@ -50,7 +50,7 @@
       "project_configured": "✔ Configurado",
       "project_edit": "Editar dados do projeto",
       "las_title": "Nuvem de pontos LiDAR ou fotogramétrica (LAS/LAZ)",
-      "shp_title": "Área de interesse para a análise (SHP)",
+      "shp_title": "Área de interesse para a análise (SHP / KML / GeoJSON)",
       "dir_title": "Pasta de saída para resultados",
       "cta_title": "Pronto para continuar",
       "cta_desc": "Revise as informações e prossiga para o próximo passo.",
@@ -77,7 +77,8 @@
     "file": {
       "select_las_btn": "Selecionar arquivo LAS/LAZ",
       "change_file_btn": "Alterar arquivo",
-      "select_shp_btn": "Selecionar arquivo SHP",
+      "select_shp_btn": "Selecionar área de interesse",
+      "select_polygon": "Selecionar polígono:",
       "select_dir_btn": "Selecionar pasta de saída",
       "change_dir_btn": "Alterar pasta",
       "meta_filename": "Arquivo",
@@ -89,8 +90,8 @@
       "meta_path": "Caminho",
       "dialog_las_caption": "Selecionar nuvem de pontos (LAS/LAZ)",
       "dialog_las_filter": "LAS/LAZ (*.las *.laz)",
-      "dialog_shp_caption": "Selecionar área de interesse (Shapefile)",
-      "dialog_shp_filter": "Shapefile (*.shp)",
+      "dialog_shp_caption": "Selecionar área de interesse",
+      "dialog_shp_filter": "Arquivos vetoriais (*.shp *.kml *.geojson *.json)",
       "dialog_dir_caption": "Selecionar pasta de saída",
       "use_full_extent": "Usar toda a extensão",
       "full_extent_hint": "Será usado o perímetro da nuvem"
@@ -101,7 +102,8 @@
       "roi_bbox": "ROI  : [extensão completa da nuvem de pontos]",
       "dir": "Dir  : %s",
       "folders_ready": "Pastas: NUVENS / RASTER / VETORES / RELATÓRIO — ✅ prontas"
-    }
+    },
+    "polygon_label": "Polígono"
   },
   "notification": {
     "success": {
@@ -311,7 +313,7 @@
     "function_6": "Relatório descritivo em HTML",
     "version_label": "Versão:",
     "updated_label": "Última atualização:",
-    "updated_value": "Abril 2026",
+    "updated_value": "Junho 2026",
     "contact_label": "Contato:",
     "lidr_ref_title": "Pacote lidR",
     "csf_ref_title": "Algoritmo CSF (solo)",

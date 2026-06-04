@@ -1,0 +1,31 @@
+Package: ForestMap
+Title: LiDAR and Photogrammetry Forest Analysis Tool
+Version: 2026.6
+Date: 2026-06-03
+Authors@R: person("Eduardo", "Hildt",
+    email = "hildt.eduardo@inta.gob.ar",
+    role  = c("aut", "cre"))
+Description: Aplicación Shiny para análisis de nubes de puntos LiDAR y
+    fotogramétricas en bosques productivos. Incluye preprocesamiento, modelos
+    de terreno y dosel, detección de árboles individuales y generación de
+    informes HTML.
+License: GPL-3
+Encoding: UTF-8
+Imports:
+    shiny (>= 1.13.0),
+    shiny.i18n,
+    bslib (>= 0.10.0),
+    DT,
+    plotly (>= 4.12.0),
+    lidR (>= 4.2.3),
+    terra (>= 1.9.11),
+    sf,
+    RCSF,
+    htmlwidgets,
+    ggplot2,
+    parallel,
+    rstudioapi,
+    knitr,
+    pagedown,
+    rmarkdown,
+    jsonlite

@@ -2,7 +2,7 @@
 # GENERADOR DE REPORTE EN HTML - ForestMap INTA
 # =============================================================================
 # Autor: Dr. Eduardo Hildt - INTA EEA Montecarlo
-# Versión: 2026.5
+# Versión: 2026.6
 # =============================================================================
 
 #' Generar informe descriptivo HTML de análisis LiDAR.
@@ -127,6 +127,7 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
   # ============================================================================
   dir_inf <- file.path(rv$ruta_dir, "Salidas_INFORME")
   if (!dir.exists(dir_inf)) dir.create(dir_inf, recursive = TRUE)
+  dir_inf_rmd <- gsub("\\\\", "/", dir_inf)  # forward slashes para uso en código Rmd
   # Unified ggplot2 theme and save helper
   gg_theme_cart <- theme_minimal() + theme(
     axis.title = element_blank(),
@@ -208,7 +209,7 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
       copas_sf <- st_as_sf(rv$cobertura_copas$copas_vect)
       p_cob <- ggplot() +
         geom_sf(data=copas_sf, fill="green1", color="black", size=0.2) +
-        coord_sf(expand=FALSE) + gg_theme_cart +
+        coord_sf(expand=FALSE, datum=sf::st_crs(copas_sf)) + gg_theme_cart +
         labs(title = tr("report.fig.canopy", lang,
                         rv$cobertura_copas$porc_cobertura,
                         rv$cobertura_copas$umbral_altura))
@@ -289,11 +290,11 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     tr("report.content.dem_stats", lang, dem_min_v, dem_max_v, dem_mean_v, dem_rango_v),
     "",
     paste0("```{r fig-dem, fig.cap='", tr("report.fig.dem", lang), "'}"),
-    paste0("if(file.exists('", file.path(dir_inf,"fig_dem.png"), "')) knitr::include_graphics('", file.path(dir_inf,"fig_dem.png"), "')"),
+    paste0("if(file.exists('", file.path(dir_inf_rmd,"fig_dem.png"), "')) knitr::include_graphics('", file.path(dir_inf_rmd,"fig_dem.png"), "')"),
     "```",
     "",
     paste0("```{r fig-hs, fig.cap='", tr("report.fig.hillshade", lang), "'}"),
-    paste0("if(file.exists('", file.path(dir_inf,"fig_hillshade.png"), "')) knitr::include_graphics('", file.path(dir_inf,"fig_hillshade.png"), "')"),
+    paste0("if(file.exists('", file.path(dir_inf_rmd,"fig_hillshade.png"), "')) knitr::include_graphics('", file.path(dir_inf_rmd,"fig_hillshade.png"), "')"),
     "```",
     "",
     paste0("## ", tr("report.subsection.contours", lang)),
@@ -309,7 +310,7 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     tr("report.content.chm_stats", lang, chm_min_v, chm_max_v, chm_mean_v),
     "",
     paste0("```{r fig-chm, fig.cap='", tr("report.fig.chm", lang), "'}"),
-    paste0("if(file.exists('", file.path(dir_inf,"fig_chm.png"), "')) knitr::include_graphics('", file.path(dir_inf,"fig_chm.png"), "')"),
+    paste0("if(file.exists('", file.path(dir_inf_rmd,"fig_chm.png"), "')) knitr::include_graphics('", file.path(dir_inf_rmd,"fig_chm.png"), "')"),
     "```",
     "",
     paste0("# ", tr("report.section.trees", lang)),
@@ -320,11 +321,11 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     tr("report.content.trees_heights", lang, alt_min_v, alt_max_v, alt_med_v),
     "",
     paste0("```{r fig-arb, fig.cap='", tr("report.fig.trees", lang, n_arb), "'}"),
-    paste0("if(file.exists('", file.path(dir_inf,"fig_arboles.png"), "')) knitr::include_graphics('", file.path(dir_inf,"fig_arboles.png"), "')"),
+    paste0("if(file.exists('", file.path(dir_inf_rmd,"fig_arboles.png"), "')) knitr::include_graphics('", file.path(dir_inf_rmd,"fig_arboles.png"), "')"),
     "```",
     "",
     paste0("```{r fig-hist, fig.cap='", tr("report.fig.tree_heights", lang), "', out.width='70%'}"),
-    paste0("if(file.exists('", file.path(dir_inf,"fig_hist_arb.png"), "')) knitr::include_graphics('", file.path(dir_inf,"fig_hist_arb.png"), "')"),
+    paste0("if(file.exists('", file.path(dir_inf_rmd,"fig_hist_arb.png"), "')) knitr::include_graphics('", file.path(dir_inf_rmd,"fig_hist_arb.png"), "')"),
     "```",
     "",
     paste0("# ", tr("report.section.management", lang)),
@@ -343,7 +344,7 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     if (file.exists(file.path(dir_inf, "fig_cobertura.png"))) {
       c(
         paste0("```{r fig-cobertura, fig.cap='", tr("report.fig.canopy", lang, as.numeric(cob_pct), as.numeric(cob_umbral)), "'}"),
-        paste0("knitr::include_graphics('", file.path(dir_inf,"fig_cobertura.png"), "')"),
+        paste0("knitr::include_graphics('", file.path(dir_inf_rmd,"fig_cobertura.png"), "')"),
         "```",
         ""
       )
@@ -388,8 +389,25 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     tr("report.content.footer", lang)
   ))
 
-  rmarkdown::render(rmd_p, output_file=out_h,
-                    envir=new.env(parent=globalenv()), quiet=TRUE)
+  # Buscar pandoc si no está disponible (ejecución desde CMD sin RStudio)
+  if (!rmarkdown::pandoc_available()) {
+    pandoc_dirs <- c(
+      file.path(Sys.getenv("PROGRAMFILES"),      "RStudio/resources/app/bin/quarto/bin/tools"),
+      file.path(Sys.getenv("PROGRAMFILES(X86)"), "RStudio/resources/app/bin/quarto/bin/tools"),
+      file.path(Sys.getenv("LOCALAPPDATA"), "Programs/RStudio/resources/app/bin/quarto/bin/tools"),
+      file.path(Sys.getenv("PROGRAMFILES"),      "RStudio/bin/pandoc"),
+      file.path(Sys.getenv("PROGRAMFILES(X86)"), "RStudio/bin/pandoc")
+    )
+    for (d in pandoc_dirs) {
+      if (file.exists(file.path(d, "pandoc.exe"))) {
+        rmarkdown::find_pandoc(dir = d, cache = FALSE)
+        break
+      }
+    }
+  }
+
+  rmarkdown::render(rmd_p, output_file = out_h,
+                    envir = new.env(parent = globalenv()), quiet = TRUE)
   unlink(rmd_p)
 
   log_fn(paste("✅ HTML guardado en:", out_h))
@@ -398,3 +416,4 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
   Sys.sleep(1)
   pagedown::chrome_print(input = out_h, output = out_p)
 }
+

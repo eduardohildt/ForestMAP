@@ -76,7 +76,7 @@ verificar_crs_las_solo <- function(ruta_las) {
 
 cargar_recortar_las <- function(ruta_las, ruta_shp = NULL, buffer_m = 20,
                                 crs_override = NULL, shp_crs_override = NULL,
-                                usar_bbox = FALSE,
+                                usar_bbox = FALSE, poligono_idx = NULL,
                                 log_fn = message, lang = "es") {
   log_fn(tr("processing.log.loading_cloud", lang))
   las <- readLAS(ruta_las, select = "xyznr")
@@ -102,6 +102,8 @@ cargar_recortar_las <- function(ruta_las, ruta_shp = NULL, buffer_m = 20,
 
   log_fn(tr("processing.log.loading_roi", lang))
   roi <- vect(ruta_shp)
+  if (!is.null(poligono_idx) && nrow(roi) > 1)
+    roi <- roi[poligono_idx, ]
   area_roi_ha <- round(as.numeric(expanse(roi, unit="ha")), 2)
   log_fn(tr("processing.log.roi_area", lang, area_roi_ha))
 

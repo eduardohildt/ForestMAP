@@ -1,4 +1,9 @@
-# ForestMap - Herramienta INTA para Análisis LiDAR y Fotogrametría Forestal
+<h1>
+  <span style="color:#E63946; font-weight:900; font-family:'Exo 2',sans-serif;">INTA</span>
+  <span style="color:#2d7a3d; font-weight:700;"> ForestMap</span>
+</h1>
+
+**Herramienta para Análisis LiDAR y Fotogrametría Forestal**
 
 [![R](https://img.shields.io/badge/R-%3E%3D%204.0-blue.svg)](https://www.r-project.org/) [![lidR](https://img.shields.io/badge/powered%20by-lidR-2ecc71.svg)](https://github.com/r-lidar/lidR) [![License](https://img.shields.io/badge/License-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -8,13 +13,13 @@
 **Autor:** Dr. Eduardo Hildt\
 **Institución:** INTA EEA Montecarlo - Grupo Forestal\
 **Email:** [hildt.eduardo\@inta.gob.ar](mailto:hildt.eduardo@inta.gob.ar)\
-**Versión:** 2026.5
+**Versión:** 2026.6
 
 ------------------------------------------------------------------------
 
 ## Descripción
 
-ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada íntegramente sobre el ecosistema [**lidR**](https://github.com/r-lidar/lidR) (Roussel et al., 2020, 2021, 2023), el paquete de referencia mundial para procesamiento de datos LiDAR aerotransportados en aplicaciones forestales.
+ForestMap es una **plataforma de análisis geoespacial forestal** desarrollada íntegramente sobre el ecosistema [**lidR**](https://github.com/r-lidar/lidR) (Roussel et al., 2020, 2021, 2023), el paquete de referencia mundial para procesamiento de datos LiDAR aerotransportados en aplicaciones forestales.
 
 ### Capacidades
 
@@ -41,9 +46,8 @@ ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada �
 | Componente | Versión Mínima | Notas |
 |----|----|----|
 | **R** | 4.0+ | [Descargar](https://cloud.r-project.org/) |
-| **RStudio** | *Recomendado* | [Descargar](https://posit.co/download/rstudio-desktop/) |
 
-**Recomendación**
+**Recomendación de hardware**
 -   **RAM**: ≥16 GB (nubes \>10M puntos)
 -   **CPU**: 4+ núcleos (procesamiento paralelo)
 -   **Almacenamiento**: 50+ GB libres
@@ -52,9 +56,9 @@ ForestMAP es una **plataforma de análisis geoespacial forestal** desarrollada �
 
 ## Instalación
 
-### 1. Descargar el repositorio en formato Zip y descomprimirlo o ...
+### 1. Obtener el repositorio
 
-### Clonar Repositorio
+Descargar en formato ZIP y descomprimir, o clonar:
 
 ``` bash
 git clone https://github.com/eduardohildt/ForestMAP
@@ -63,14 +67,16 @@ cd ForestMAP
 
 ### 2. Instalar Dependencias
 
-Abrir `scripts/install.R` en RStudio y ejecutar todas las líneas.
+**Windows (recomendado):** ejecutar `Instalar_Dependencias.cmd` (doble clic).\
+**Linux/macOS:** `Rscript dev/install.R`
 
 ------------------------------------------------------------------------
 
 ## Ejecución
 
-1.  Abrir `run.R` en RStudio
-2.  Clic en **"Run App"** (esquina superior derecha)
+**Windows (recomendado):** ejecutar `Ejecutar_ForestMap.cmd` (doble clic).\
+**Linux/macOS:** ejecutar `Ejecutar_ForestMap_Linux.sh`.\
+**Manual:** `Rscript dev/run.R`
 
 La aplicación se abrirá automáticamente en el navegador en `http://localhost:3838`
 
@@ -80,20 +86,14 @@ La aplicación se abrirá automáticamente en el navegador en `http://localhost:
 
 ### Error: "No se encontró el paquete X"
 
-``` bash
-Rscript scripts/install.R
-```
+**Windows:** ejecutar `Instalar_Dependencias.cmd`\
+**Linux/macOS:** `Rscript dev/install.R`
 
 ### Error: "Memory allocation failed"
 
 -   Reducir densidad de submuestreo (ej: 5 pts/m²)
 -   Cerrar otras aplicaciones
 -   Aumentar RAM disponible
-
-### RStudio: "Object not found"
-
-Ejecutar **completo** desde `run.R` (no ejecutar líneas individuales)
-Opcional: Cerrar y volver a abrir RStudio
 
 ------------------------------------------------------------------------
 

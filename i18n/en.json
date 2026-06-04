@@ -50,7 +50,7 @@
       "project_configured": "✔ Configured",
       "project_edit": "Edit project data",
       "las_title": "LiDAR or photogrammetric point cloud (LAS/LAZ)",
-      "shp_title": "Area of interest for analysis (SHP)",
+      "shp_title": "Area of interest for analysis (SHP / KML / GeoJSON)",
       "dir_title": "Output folder for results",
       "cta_title": "Ready to continue",
       "cta_desc": "Review the information and proceed to the next step.",
@@ -77,7 +77,8 @@
     "file": {
       "select_las_btn": "Select LAS/LAZ file",
       "change_file_btn": "Change file",
-      "select_shp_btn": "Select SHP file",
+      "select_shp_btn": "Select area of interest",
+      "select_polygon": "Select polygon:",
       "select_dir_btn": "Select output folder",
       "change_dir_btn": "Change folder",
       "meta_filename": "File",
@@ -89,8 +90,8 @@
       "meta_path": "Path",
       "dialog_las_caption": "Select point cloud (LAS/LAZ)",
       "dialog_las_filter": "LAS/LAZ (*.las *.laz)",
-      "dialog_shp_caption": "Select area of interest (Shapefile)",
-      "dialog_shp_filter": "Shapefile (*.shp)",
+      "dialog_shp_caption": "Select area of interest",
+      "dialog_shp_filter": "Vector files (*.shp *.kml *.geojson *.json)",
       "dialog_dir_caption": "Select output folder",
       "use_full_extent": "Use full extent",
       "full_extent_hint": "Point cloud perimeter will be used"
@@ -101,7 +102,8 @@
       "roi_bbox": "ROI  : [full point cloud extent]",
       "dir": "Dir  : %s",
       "folders_ready": "Folders: CLOUDS / RASTER / VECTORS / REPORT — ✅ ready"
-    }
+    },
+    "polygon_label": "Polygon"
   },
   "notification": {
     "success": {
@@ -311,7 +313,7 @@
     "function_6": "Descriptive HTML report",
     "version_label": "Version:",
     "updated_label": "Last update:",
-    "updated_value": "April 2026",
+    "updated_value": "June 2026",
     "contact_label": "Contact:",
     "lidr_ref_title": "lidR package",
     "csf_ref_title": "CSF algorithm (ground)",

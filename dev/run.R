@@ -9,12 +9,12 @@ cat("\n════════════════════════�
 cat("  ForestMAP - INTA EEA Montecarlo\n")
 cat("═══════════════════════════════════════════════════════════\n\n")
 
-# Detectar ruta del script en ejecución
+# Detectar ruta del script en ejecución (run.R está en dev/, la raíz es un nivel arriba)
 if (interactive()) {
   if ("rstudioapi" %in% rownames(installed.packages())) {
     script_path <- rstudioapi::getActiveDocumentContext()$path
     if (script_path != "") {
-      setwd(dirname(normalizePath(script_path)))
+      setwd(dirname(dirname(normalizePath(script_path))))
     }
   }
 }
@@ -26,7 +26,7 @@ missing <- required[!sapply(required, requireNamespace, quietly = TRUE)]
 if (length(missing) > 0) {
   cat("❌ ERROR: Paquetes faltantes:\n")
   cat("   ", paste(missing, collapse = ", "), "\n\n")
-  cat("   Ejecute primero: Rscript scripts/install.R\n\n")
+  cat("   Ejecute primero: Rscript dev/install.R\n\n")
   stop("Dependencias faltantes")
 }
 

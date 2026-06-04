@@ -32,7 +32,7 @@ plotly_raster <- function(df, titulo, colores, legend_title = "Valor", lang = "e
       xaxis = list(title = tr("plot.axis.x_m", lang), color=TEXT_PRIMARY, scaleanchor="y", scaleratio=1),
       yaxis = list(title = tr("plot.axis.y_m", lang), color=TEXT_PRIMARY),
       margin   = list(l=50,r=20,t=40,b=50),
-      dragmode = "zoom"
+      dragmode = "pan"
     ) |>
     config(
       scrollZoom = TRUE,
