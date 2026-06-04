@@ -35,7 +35,7 @@ ForestMap es una **plataforma de análisis geoespacial forestal** desarrollada �
 | Archivo | Formato | Descripción |
 |----|----|----|
 | **Nube de puntos** | `.laz` / `.las` | LiDAR o fotogramétrica (estructura-desde-movimiento) |
-| **Área de interés** | `.shp` | Polígono delimitador del rodal/parcela |
+| **Área de interés** | `.shp` / `.kml` / `.geojson` | Polígono delimitador del rodal/parcela |
 
 ------------------------------------------------------------------------
 
@@ -100,11 +100,15 @@ La aplicación se abrirá automáticamente en el navegador en `http://localhost:
 
 ## Referencias Clave
 
-**lidR - Algoritmos Forestales:** - Roussel J-R, Auty D, Coops NC, Tompalski P, Goodbody TRH, Meador AS, Bourdon J-F, de Boissieu F, Achim A (2020). *lidR: An R package for analysis of Airborne LiDAR Data*. Remote Sensing of Environment, 251, 112061. [DOI: 10.1016/j.rse.2020.112061](https://doi.org/10.1016/j.rse.2020.112061)
+**lidR - Algoritmos Forestales:** 
+
+- Roussel J-R, Auty D, Coops NC, Tompalski P, Goodbody TRH, Meador AS, Bourdon J-F, de Boissieu F, Achim A (2020). *lidR: An R package for analysis of Airborne LiDAR Data*. Remote Sensing of Environment, 251, 112061. [DOI: 10.1016/j.rse.2020.112061](https://doi.org/10.1016/j.rse.2020.112061)
 
 -   Roussel J-R, Auty D (2023). *Airborne LiDAR Data Manipulation and Visualization for Forestry Applications*. R package version 4.x. [CRAN](https://cran.r-project.org/package=lidR)
 
-**CSF - Clasificación de Suelo:** - Zhang W, Qi J, Wan P, Wang H, Xie D, Wang X, Yan G (2016). *An easy-to-use airborne LiDAR data filtering method based on cloth simulation*. Remote Sensing, 8(6), 501. [DOI: 10.3390/rs8060501](https://doi.org/10.3390/rs8060501)
+**CSF - Clasificación de Suelo:** 
+
+- Zhang W, Qi J, Wan P, Wang H, Xie D, Wang X, Yan G (2016). *An easy-to-use airborne LiDAR data filtering method based on cloth simulation*. Remote Sensing, 8(6), 501. [DOI: 10.3390/rs8060501](https://doi.org/10.3390/rs8060501)
 
 **Dasometría:** - Avery TE, Burkhart HE (2002). *Forest Measurements* (5th ed.). McGraw-Hill.
 
