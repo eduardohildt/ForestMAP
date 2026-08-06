@@ -1,8 +1,10 @@
 # ==============================================================================
 # INSTALADOR AUTOMÁTICO - ForestMAP INTA
 # ==============================================================================
-# Instala todas las dependencias necesarias desde CRAN o desde binarios (06/08/26 por caída de lidR y rlas de CRAN)
-# Ejecutar una sola vez antes del primer uso
+# Instala todas las dependencias necesarias desde CRAN o desde binarios.
+# BH, sf y terra se instalan primero desde CRAN puro para garantizar binarios.
+# rlas y lidR se obtienen de r-lidar.r-universe.dev (binarios pre-compilados).
+# Ejecutar una sola vez antes del primer uso.
 # ==============================================================================
 
 cat("\n═══════════════════════════════════════════════════════════\n")
@@ -10,72 +12,86 @@ cat("  ForestMAP - Instalador de Dependencias\n")
 cat("  INTA EEA Montecarlo - Grupo Forestal\n")
 cat("═══════════════════════════════════════════════════════════\n\n")
 
-# Lista completa de paquetes requeridos
-required_packages <- c(
-  "remotes",      # Instalación de paquetes desde codigo fuente
+# En Windows, nunca compilar desde fuente (requeriría Rtools)
+if (.Platform$OS.type == "windows") {
+  options(install.packages.compile.from.source = "never")
+  cat("ℹ️  Windows detectado: se instalarán solo binarios pre-compilados.\n\n")
+}
+
+repo_cran    <- c(CRAN = "https://cloud.r-project.org")
+repo_lidar   <- c(rlidar = "https://r-lidar.r-universe.dev",
+                  CRAN   = "https://cloud.r-project.org")
+
+# ------------------------------------------------------------
+# Fase 1: dependencias pesadas — instalar desde CRAN puro
+# para garantizar binarios (no dejar que r-universe las sirva
+# como fuente al resolver dependencias de lidR).
+# ------------------------------------------------------------
+phase1 <- c(
+  "BH",    # Headers C++ de Boost (dependencia de rlas/lidR)
+  "sf",    # Geometrías vectoriales (GDAL/GEOS/PROJ bundleados en Windows)
+  "terra"  # Raster/vector moderno
+)
+
+# ------------------------------------------------------------
+# Fase 2: resto de paquetes de aplicación
+# ------------------------------------------------------------
+phase2 <- c(
+  "remotes",      # Instalación desde repositorios alternativos
   "shiny",        # Framework web interactivo
-  "shiny.i18n",   # Paquete para traducciones
+  "shiny.i18n",   # Traducciones
   "bslib",        # Bootstrap 5 para Shiny
   "DT",           # Tablas interactivas DataTables
   "plotly",       # Gráficos interactivos 3D/2D
-  "rlas",         # Procesamiento LiDAR
-  "lidR",         # Procesamiento LiDAR
-  "terra",        # Manipulación raster/vector moderna
-  "sf",           # Geometrías vectoriales (simple features)
   "RCSF",         # Cloth Simulation Filter (clasificación suelo)
   "htmlwidgets",  # Widgets HTML/JS en R
   "ggplot2",      # Gráficos estáticos
   "parallel",     # Procesamiento paralelo (base R)
   "rstudioapi",   # Integración con RStudio
   "knitr",        # Generación de informes
-  "pagedown",     # Transformación de HTML a PDF usando motor Chromium
+  "pagedown",     # HTML a PDF via Chromium
   "rmarkdown"     # Renderizado HTML
 )
 
-cat("📦 Verificando", length(required_packages), "paquetes...\n\n")
+# ------------------------------------------------------------
+# Fase 3: LiDAR — binarios desde r-universe
+# rlas va antes que lidR (es su dependencia directa)
+# ------------------------------------------------------------
+phase3 <- c("rlas", "lidR")
 
-# Detectar paquetes faltantes
-missing_packages <- required_packages[
-  !sapply(required_packages, requireNamespace, quietly = TRUE)
-]
+all_packages <- c(phase1, phase2, phase3)
 
-if (length(missing_packages) == 0) {
-  cat("✅ Todas las dependencias ya están instaladas.\n")
-  cat("   Ejecute 'Rscript run.R' o abra 'app.R' en RStudio.\n\n")
-} else {
-  cat("📥 Instalando", length(missing_packages), "paquetes faltantes:\n")
-  cat("   ", paste(missing_packages, collapse = ", "), "\n\n")
-  
-  # r-lidar.r-universe.dev provee binarios de lidR/rlas aunque estén
-  # archivados en CRAN (evita compilación local)
-  repos <- c(
-    rlidar = "https://r-lidar.r-universe.dev",
-    CRAN   = "https://cloud.r-project.org"
-  )
-  
-  install.packages(
-    missing_packages,
-    dependencies = TRUE,
-    repos = repos
-  )
-  
-  # Fallback: si lidR/rlas siguen sin instalarse, usar GitHub (requiere
-  # herramientas de compilación: Rtools en Windows, Xcode CLT en Mac)
-  still_missing <- missing_packages[
-    !sapply(missing_packages, requireNamespace, quietly = TRUE)
-  ]
-  if (any(c("rlas", "lidR") %in% still_missing)) {
-    if (!requireNamespace("remotes", quietly = TRUE)) {
-      install.packages("remotes", repos = "https://cloud.r-project.org")
-    }
-    cat("\n⚠️  Instalando lidR/rlas desde GitHub (fallback, requiere compilador)...\n")
-    remotes::install_github("r-lidar/rlas")
-    remotes::install_github("r-lidar/lidR")
-  }
-  
-  cat("\n✅ Instalación completa.\n")
+cat("📦 Verificando", length(all_packages), "paquetes...\n\n")
+
+# Helper: instala solo los faltantes de un vector dado
+install_missing <- function(pkgs, repos, label) {
+  missing <- pkgs[!sapply(pkgs, requireNamespace, quietly = TRUE)]
+  if (length(missing) == 0) return(invisible(character(0)))
+  cat("📥 [", label, "] Instalando:", paste(missing, collapse = ", "), "\n")
+  install.packages(missing, dependencies = TRUE, repos = repos)
+  still <- missing[!sapply(missing, requireNamespace, quietly = TRUE)]
+  invisible(still)
+}
+
+# Ejecutar las tres fases en orden
+failed1 <- install_missing(phase1, repo_cran,  "Fase 1 - CRAN")
+failed2 <- install_missing(phase2, repo_cran,  "Fase 2 - CRAN")
+failed3 <- install_missing(phase3, repo_lidar, "Fase 3 - r-universe")
+
+all_failed <- c(failed1, failed2, failed3)
+
+cat("\n")
+if (length(all_failed) == 0) {
+  cat("✅ Instalación completa.\n")
   cat("   Ejecute 'Rscript run.R' o abra 'run.R' en RStudio.\n\n")
+} else {
+  cat("❌ Los siguientes paquetes NO pudieron instalarse:\n")
+  cat("   ", paste(all_failed, collapse = ", "), "\n\n")
+  cat("   Posibles causas:\n")
+  cat("   - Sin conexión a internet o repositorio no disponible\n")
+  cat("   - Versión de R incompatible (se recomienda R >= 4.3)\n")
+  cat("   - Paquete temporalmente fuera de CRAN o r-universe\n\n")
+  cat("   Consulte al administrador si el problema persiste.\n\n")
 }
 
 cat("═══════════════════════════════════════════════════════════\n\n")
-
