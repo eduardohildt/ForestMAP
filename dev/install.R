@@ -39,7 +39,6 @@ phase1 <- c(
 phase2 <- c(
   "remotes",      # Instalación desde repositorios alternativos
   "shiny",        # Framework web interactivo
-  "shiny.i18n",   # Traducciones
   "bslib",        # Bootstrap 5 para Shiny
   "DT",           # Tablas interactivas DataTables
   "plotly",       # Gráficos interactivos 3D/2D
@@ -54,12 +53,32 @@ phase2 <- c(
 )
 
 # ------------------------------------------------------------
+# Fase 2b: GitHub — paquetes R puro no disponibles en CRAN
+# No requieren compilación (sin código C/C++)
+# ------------------------------------------------------------
+failed2b <- character(0)
+if (!requireNamespace("shiny.i18n", quietly = TRUE)) {
+  cat("📥 [Fase 2b - GitHub] Instalando: shiny.i18n\n")
+  # remotes ya debería estar instalado desde fase 2
+  remotes::install_github("Appsilon/shiny.i18n", upgrade = "never")
+  if (!requireNamespace("shiny.i18n", quietly = TRUE)) {
+    failed2b <- c(failed2b, "shiny.i18n")
+  }
+}
+
+# ------------------------------------------------------------
 # Fase 3: LiDAR — binarios desde r-universe
 # rlas va antes que lidR (es su dependencia directa)
 # ------------------------------------------------------------
 phase3 <- c("rlas", "lidR")
 
-all_packages <- c(phase1, phase2, phase3)
+# ------------------------------------------------------------
+# Fase 4: Bioconductor — EBImage (procesamiento de imágenes)
+# Bioconductor provee binarios Windows via BiocManager
+# ------------------------------------------------------------
+phase4_bioc <- c("EBImage")
+
+all_packages <- c(phase1, phase2, "shiny.i18n", phase3, phase4_bioc)
 
 cat("📦 Verificando", length(all_packages), "paquetes...\n\n")
 
@@ -78,7 +97,19 @@ failed1 <- install_missing(phase1, repo_cran,  "Fase 1 - CRAN")
 failed2 <- install_missing(phase2, repo_cran,  "Fase 2 - CRAN")
 failed3 <- install_missing(phase3, repo_lidar, "Fase 3 - r-universe")
 
-all_failed <- c(failed1, failed2, failed3)
+# Fase 4: Bioconductor (EBImage y dependencias)
+failed4 <- character(0)
+bioc_missing <- phase4_bioc[!sapply(phase4_bioc, requireNamespace, quietly = TRUE)]
+if (length(bioc_missing) > 0) {
+  cat("📥 [Fase 4 - Bioconductor] Instalando:", paste(bioc_missing, collapse = ", "), "\n")
+  if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager", repos = repo_cran)
+  }
+  BiocManager::install(bioc_missing, ask = FALSE, update = FALSE)
+  failed4 <- bioc_missing[!sapply(bioc_missing, requireNamespace, quietly = TRUE)]
+}
+
+all_failed <- c(failed1, failed2, failed2b, failed3, failed4)
 
 cat("\n")
 if (length(all_failed) == 0) {
