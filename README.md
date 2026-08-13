@@ -23,7 +23,7 @@ ForestMap es una **plataforma de análisis geoespacial forestal** desarrollada �
 
 ### Capacidades
 
--   **Preprocesamiento avanzado**: Recorte, filtrado de ruido, clasificación de suelo CSF (Zhang et al., 2016), normalización altimétrica
+-   **Preprocesamiento avanzado**: Recorte, filtrado de ruido, clasificación de suelo CSF (Zhang et al., 2016), normalización de la nube de puntos
 -   **Modelado digital del terreno**: DEM con interpolación TIN, CHM a resoluciones configurables (0.25–5 m), hillshade, curvas de nivel
 -   **Segmentación individual de árboles**: Algoritmo LMF (Local Maximum Filter) con ventanas adaptativas y umbrales de altura
 -   **Métricas forestales**: Densidad (árboles/ha), cobertura de copas (%), distribución altimétrica, coeficiente de variación estructural
@@ -67,16 +67,13 @@ cd ForestMAP
 
 ### 2. Instalar Dependencias
 
-**Windows (recomendado):** ejecutar `Instalar_Dependencias.cmd` (doble clic).\
-**Linux/macOS:** `Rscript dev/install.R`
+**Windows:** ejecutar `Instalar_Dependencias.cmd` (doble clic).\
 
 ------------------------------------------------------------------------
 
 ## Ejecución
 
-**Windows (recomendado):** ejecutar `Ejecutar_ForestMap.cmd` (doble clic).\
-**Linux/macOS:** ejecutar `Ejecutar_ForestMap_Linux.sh`.\
-**Manual:** `Rscript dev/run.R`
+**Windows:** ejecutar `Ejecutar_ForestMap.cmd` (doble clic).\
 
 La aplicación se abrirá automáticamente en el navegador en `http://localhost:3838`
 
@@ -87,7 +84,6 @@ La aplicación se abrirá automáticamente en el navegador en `http://localhost:
 ### Error: "No se encontró el paquete X"
 
 **Windows:** ejecutar `Instalar_Dependencias.cmd`\
-**Linux/macOS:** `Rscript dev/install.R`
 
 ### Error: "Memory allocation failed"
 
