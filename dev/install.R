@@ -23,6 +23,16 @@ if (.Platform$OS.type == "windows") {
   cat("ℹ️  Windows: solo se instalarán binarios pre-compilados.\n\n")
 }
 
+# Si la librería del sistema no admite escritura, usar/crear librería personal
+# sin preguntar (evita el prompt interactivo que CMD desatendido no puede responder)
+libs <- .libPaths()
+if (file.access(libs[1], mode = 2) != 0) {
+  user_lib <- Sys.getenv("R_LIBS_USER")
+  if (!dir.exists(user_lib)) dir.create(user_lib, recursive = TRUE)
+  .libPaths(user_lib)
+  cat("ℹ️  Librería del sistema no escribible. Usando librería personal:\n   ", user_lib, "\n\n")
+}
+
 # ------------------------------------------------------------------------------
 # Repositorios
 # ------------------------------------------------------------------------------
@@ -109,9 +119,31 @@ if (length(needed_bioc) > 0) {
 }
 
 # ------------------------------------------------------------------------------
+# Fuente 5 — Pandoc (requerido por rmarkdown/knitr para renderizar)
+# ------------------------------------------------------------------------------
+failed_pandoc <- character(0)
+if (!nzchar(Sys.which("pandoc")) && !rmarkdown::pandoc_available()) {
+  cat("📥 [Pandoc] Instalando...\n")
+  if (!requireNamespace("installr", quietly = TRUE)) {
+    install.packages("installr", repos = repo_cran)
+  }
+  if (.Platform$OS.type == "windows") {
+    installr::install.pandoc()
+  } else {
+    cat("⚠️  Instalación automática de Pandoc solo soportada en Windows.\n")
+    cat("   Instale manualmente: https://pandoc.org/installing.html\n")
+  }
+  if (!nzchar(Sys.which("pandoc")) && !rmarkdown::pandoc_available()) {
+    failed_pandoc <- "pandoc"
+  }
+} else {
+  cat("✔  [Pandoc] Ya instalado.\n")
+}
+
+# ------------------------------------------------------------------------------
 # Resumen
 # ------------------------------------------------------------------------------
-all_failed <- c(failed_cran, failed_lidar, failed_github, failed_bioc)
+all_failed <- c(failed_cran, failed_lidar, failed_github, failed_bioc, failed_pandoc)
 
 cat("\n")
 if (length(all_failed) == 0) {
