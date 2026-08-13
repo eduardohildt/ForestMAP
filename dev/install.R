@@ -148,7 +148,7 @@ all_failed <- c(failed_cran, failed_lidar, failed_github, failed_bioc, failed_pa
 cat("\n")
 if (length(all_failed) == 0) {
   cat("✅ Instalación completa.\n")
-  cat("   Ejecute 'Rscript run.R' o abra 'run.R' en RStudio.\n\n")
+  cat("   Ejecute 'Ejecutar_ForestMap.cmd' para lanzar la aplicación.\n\n")
 } else {
   cat("❌ Los siguientes paquetes NO pudieron instalarse:\n")
   cat("   ", paste(all_failed, collapse = ", "), "\n\n")
