@@ -67,13 +67,13 @@ cd ForestMAP
 
 ### 2. Instalar Dependencias
 
-**Windows:** ejecutar `Instalar_Dependencias.cmd` (doble clic).\
+**Windows:** ejecutar `Instalar_Dependencias.cmd` (doble clic).
 
 ------------------------------------------------------------------------
 
 ## Ejecución
 
-**Windows:** ejecutar `Ejecutar_ForestMap.cmd` (doble clic).\
+**Windows:** ejecutar `Ejecutar_ForestMap.cmd` (doble clic).
 
 La aplicación se abrirá automáticamente en el navegador en `http://localhost:3838`
 
@@ -83,7 +83,7 @@ La aplicación se abrirá automáticamente en el navegador en `http://localhost:
 
 ### Error: "No se encontró el paquete X"
 
-**Windows:** ejecutar `Instalar_Dependencias.cmd`\
+**Windows:** ejecutar `Instalar_Dependencias.cmd`
 
 ### Error: "Memory allocation failed"
 
