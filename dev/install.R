@@ -65,6 +65,7 @@ pkgs_cran <- c(
   "sf",           # vectorial (GDAL/GEOS/PROJ bundleados en Windows)
   "terra",        # raster/vector moderno
   "shiny",
+  "shiny.i18n",   # Primera alternativa desde CRAN
   "bslib",
   "DT",
   "plotly",
@@ -74,7 +75,9 @@ pkgs_cran <- c(
   "rstudioapi",
   "knitr",
   "pagedown",
-  "rmarkdown"
+  "rmarkdown",
+  "pandoc",      # Primera alternativa desde CRAN
+  "BiocManager"  # Primera alternativa desde CRAN
 )
 
 failed_cran <- install_missing(pkgs_cran, repo_cran, "CRAN")
