@@ -4,7 +4,7 @@
 # Autor      : Dr. Eduardo Hildt
 # Institución: INTA EEA Montecarlo - Grupo Forestal
 # Email      : hildt.eduardo@inta.gob.ar
-# Versión    : 2026.6
+# Versión    : 2026.9
 # ==============================================================================
 
 cat("═══════════════════════════════════════════════════════════\n")
@@ -16,8 +16,6 @@ cat("═════════════════════════
 # ══════════════════════════════════════════════════════════════════════════════
 cat("📦 Cargando bibliotecas...\n")
 library(shiny)
-library(shiny.i18n)
-library(rstudioapi)
 library(bslib)
 library(DT)
 library(plotly)

@@ -1,0 +1,653 @@
+{
+  "app": {
+    "title": "INTA ForestMap"
+  },
+  "nav": {
+    "tab": {
+      "config": "Konfiguration",
+      "data_load": "Datenimport",
+      "models": "Digitale Modelle",
+      "trees": "Bäume",
+      "export": "Export",
+      "about": "📚 Über ..."
+    }
+  },
+  "common": {
+    "btn": {
+      "cancel": "Abbrechen",
+      "save": "💾  Speichern",
+      "apply": "Anwenden",
+      "close": "Schließen",
+      "reset": "Empfohlene Werte wiederherstellen",
+      "apply_config": "Konfiguration anwenden",
+      "restore": "Zurücksetzen",
+      "confirm_continue": "Bestätigen und fortfahren",
+      "understood_continue": "Verstanden, weiter"
+    },
+    "status": {
+      "loaded": "✔ Geladen",
+      "pending": "⏳ Ausstehend",
+      "not_selected": "Nicht ausgewählt",
+      "selected": "✔ Ausgewählt",
+      "full_extent": "✔ Volle Ausdehnung"
+    },
+    "meta": {
+      "epsg_detected": "EPSG: %s ✔ erkannt",
+      "no_crs": "Kein CRS zugewiesen ⚠",
+      "no_crs_shp": "Kein CRS ⚠",
+      "cannot_read_header": "Header konnte nicht gelesen werden",
+      "not_calculable": "Nicht berechenbar (CRS nicht projiziert)",
+      "multiple_polygons_warning": "%d ⚠ Es wird empfohlen, nur 1 zu verwenden"
+    }
+  },
+  "config": {
+    "banner": {
+      "title": "Umfassende Analyse von Luftbildvermessungen",
+      "subtitle": "Angewendet auf forstwirtschaftlich genutzte Produktionslandschaften"
+    },
+    "pipeline": {
+      "project_step": "Projekt",
+      "project_configured": "✔ Konfiguriert",
+      "project_edit": "Projektdaten bearbeiten",
+      "las_title": "LiDAR- oder photogrammetrische Punktwolke (LAS/LAZ)",
+      "shp_title": "Interessengebiet für die Analyse (SHP / KML / GeoJSON)",
+      "dir_title": "Ausgabeordner für die Ergebnisse",
+      "cta_title": "Alles bereit, um fortzufahren",
+      "cta_desc": "Überprüfen Sie die Informationen und fahren Sie mit dem nächsten Schritt fort.",
+      "continue_btn": "Weiter →"
+    },
+    "modal": {
+      "title": "⚙️ Projektkonfiguration",
+      "instructions": "Diese Daten werden im HTML-Bericht verwendet. Wenn Sie ein Feld leer lassen, wird \"-\" eingetragen.",
+      "project_name_label": "Projektname",
+      "project_name_placeholder": "Bsp.: Nordbestand 2026",
+      "author_label": "Autor",
+      "author_placeholder": "Name des Autors",
+      "institution_label": "Institution",
+      "institution_placeholder": "Name der Institution",
+      "email_label": "E-Mail",
+      "email_placeholder": "email@beispiel.com",
+      "recipient_label": "Empfänger",
+      "recipient_placeholder": "Empfänger des Berichts"
+    },
+    "project_name": {
+      "required_error": "⚠ Sie müssen einen Projektnamen eingeben, um fortzufahren."
+    },
+    "table": {
+      "author": "Autor",
+      "institution": "Institution",
+      "email": "E-Mail",
+      "recipient": "Empfänger"
+    },
+    "file": {
+      "select_las_btn": "LAS/LAZ-Datei auswählen",
+      "change_file_btn": "Datei ändern",
+      "select_shp_btn": "Interessengebiet auswählen",
+      "select_polygon": "Polygon auswählen:",
+      "select_dir_btn": "Ausgabeordner auswählen",
+      "change_dir_btn": "Ordner ändern",
+      "meta_filename": "Datei",
+      "meta_size": "Größe",
+      "meta_projection": "Projektion",
+      "meta_modified": "Änderung",
+      "meta_polygons": "Polygone",
+      "meta_area": "Gesamtfläche",
+      "meta_path": "Pfad",
+      "dialog_las_caption": "Punktwolke auswählen (LAS/LAZ)",
+      "dialog_las_filter": "LAS/LAZ (*.las *.laz)",
+      "dialog_shp_caption": "Interessengebiet auswählen",
+      "dialog_shp_filter": "Vektordateien (*.shp *.kml *.geojson *.json)",
+      "dialog_dir_caption": "Ausgabeordner auswählen",
+      "use_full_extent": "Gesamte Ausdehnung verwenden",
+      "full_extent_hint": "Es wird der Umriss der Punktwolke verwendet"
+    },
+    "log": {
+      "las": "LAS  : %s",
+      "roi": "ROI  : %s",
+      "roi_bbox": "ROI  : [vollständige Ausdehnung der Punktwolke]",
+      "dir": "Verz.: %s",
+      "project_folder": "📁 Projektordner: %s"
+    },
+    "polygon_label": "Polygon"
+  },
+  "notification": {
+    "success": {
+      "project_saved": "✅ Projektdaten gespeichert.",
+      "config_saved": "✅ Konfiguration gespeichert.",
+      "preprocessing_done": "✅ Vorverarbeitung abgeschlossen.",
+      "models_done": "✅ Modelle erstellt.",
+      "export_done": "✅ Export abgeschlossen.",
+      "HTML_done": "✅ HTML-Bericht erstellt.",
+      "PDF_done": "✅ PDF-Bericht erstellt.",
+      "folder_opened": "📂 Ergebnisordner geöffnet."
+    },
+    "error": {
+      "shp_cannot_read": "❌ Die SHP-Datei des Interessengebiets konnte nicht gelesen werden.",
+      "shp_multiple_polygons": "❌ Die SHP-Datei enthält %d Polygone. Das Interessengebiet darf nur ein einziges Polygon enthalten. Bitte wählen Sie eine korrekte Datei.",
+      "folder_not_exists": "❌ Der Ergebnisordner existiert noch nicht.",
+      "prefix": "❌ FEHLER:",
+      "report_prefix": "❌ FEHLER Bericht:",
+      "generic": "Fehler: %s",
+      "report_generic": "Fehler Bericht: %s",
+      "folder_open_failed": "Der Ordner konnte nicht geöffnet werden: %s",
+      "no_gui_backend": "❌ Es wurde kein verfügbares Dateidialogsystem gefunden (RStudio oder Tcl/Tk). Installieren Sie das Paket 'tcltk' (oder die Systempakete tcl/tk) oder starten Sie die Anwendung über RStudio."
+    },
+    "warning": {
+      "crs_check": "Warnung bei der CRS-Prüfung: %s"
+    }
+  },
+  "progress": {
+    "preprocessing": {
+      "message": "Vorverarbeitung läuft...",
+      "loading": "Wird geladen...",
+      "filtering": "Filtern...",
+      "soil_classification": "Boden wird klassifiziert..."
+    },
+    "models": {
+      "message": "Modelle werden erstellt...",
+      "dem": "DEM...",
+      "contours": "Höhenlinien...",
+      "hillshade": "Schummerung...",
+      "chm": "Normalisierung + CHM...",
+      "cropping": "Zuschneiden auf das Interessengebiet..."
+    },
+    "trees": {
+      "message": "Bäume werden erkannt..."
+    },
+    "export": {
+      "message": "Export läuft..."
+    }
+  },
+  "modal": {
+    "crs": {
+      "las_title": "⚠️ Punktwolke ohne Projektion",
+      "las_body_1": "Die LAS/LAZ-Datei hat kein zugewiesenes Koordinatenreferenzsystem (CRS). Um fortzufahren, geben Sie den EPSG-Code ein, der den LAS-Daten entspricht.",
+      "las_body_shp_epsg": "Die geladene SHP-Datei verwendet %s. Wenn beide Dateien dieselbe Projektion verwenden, benutzen Sie denselben Code.",
+      "epsg_label": "EPSG-Code:",
+      "epsg_reference": "Siehe",
+      "epsg_reference_suffix": "um den EPSG-Code Ihres Referenzsystems zu ermitteln.",
+      "shp_title": "⚠️ Interessengebiet ohne Projektion",
+      "shp_body_1": "Die SHP-Datei hat kein zugewiesenes Koordinatenreferenzsystem (CRS). Um fortzufahren, geben Sie den EPSG-Code ein, der dem Interessengebiet entspricht.",
+      "shp_body_las_epsg": "Die LAS-Punktwolke verwendet %s. Wenn beide Dateien dieselbe Projektion verwenden, benutzen Sie denselben Code.",
+      "shp_epsg_label": "EPSG-Code der SHP-Datei:",
+      "mismatch_title": "⚠️ Unterschiedliche Referenzsysteme",
+      "mismatch_body_1": "Die Punktwolke und das Interessengebiet haben unterschiedliche Projektionen:",
+      "mismatch_las": "LAS: ",
+      "mismatch_shp": "SHP: ",
+      "mismatch_body_2": "Das Interessengebiet wird vor dem Zuschneiden automatisch in das CRS der Punktwolke (%s) umprojiziert."
+    }
+  },
+  "data_load": {
+    "subsample": {
+      "header": "⚙️ Untersampling der Punktwolke",
+      "desc": "Wählen Sie, wie viele Punkte pro m² geladen werden sollen. Höhere Dichte = höhere Genauigkeit und längere Verarbeitungszeit.",
+      "method_header": "Untersampling-Methode",
+      "random": "Zufällig",
+      "uniform": "Gleichmäßig",
+      "advanced_btn": "⚙ Erweiterte Einstellungen",
+      "method_tip": "Untersampling-Arten: Zufällig respektiert die ursprüngliche Verteilung. Gleichmäßig erzeugt eine homogene Verteilung."
+    },
+    "csf": {
+      "header": "🏔️ Bodenklassifizierung (CSF-Algorithmus)",
+      "desc": "Wählen Sie die vorherrschende Geländeform. Der CSF-Algorithmus modelliert ein Netz, das sich an das Gelände anpasst, um Boden von Vegetation zu trennen.",
+      "advanced_btn": "⚙️ Erweiterte Einstellungen (optional)"
+    },
+    "run_btn": "▶  Laden und Klassifizieren ausführen",
+    "metrics": {
+      "points_loaded": "Geladene Punkte",
+      "filtered": "Gefiltert",
+      "soil": "Boden",
+      "vegetation": "Vegetation"
+    },
+    "tabs": {
+      "log": "📊 Verarbeitungsprotokoll",
+      "cloud_original": "☁️ Originalwolke",
+      "cloud_classified": "🗺️ Klassifizierte Wolke"
+    },
+    "tips": {
+      "cloud_3d": "🖱️ Drehen: Klicken+Ziehen · Zoom: Mausrad · Verschieben: Rechtsklick",
+      "classified": "🎨 Farben: Boden vs. Vegetation"
+    }
+  },
+  "models": {
+    "dem": {
+      "header": "🏔️ Digitales Geländemodell (DEM)",
+      "resolution_label": "DEM-Auflösung (m)",
+      "contour_label": "Äquidistanz der Höhenlinien (m)",
+      "min_filter_label": "Filterung niedriger Vegetation",
+      "smooth_label": "Glättung des DEM und der Höhenlinien",
+      "advanced_btn": "⚙️ Erweiterte Einstellungen"
+    },
+    "chm": {
+      "header": "🌿 Kronenhöhenmodell (CHM)",
+      "resolution_label": "CHM-Auflösung (m)",
+      "gap_fill_label": "Lückenfüllung",
+      "advanced_btn": "⚙️ Erweiterte Einstellungen"
+    },
+    "run_btn": "▶  Alle Modelle erstellen",
+    "tabs": {
+      "dem": "🗺️ DEM",
+      "contours": "📏 Höhenlinien",
+      "hillshade": "🌓 Schattiertes Relief",
+      "chm": "🌿 CHM — Kronenhöhenmodell",
+      "profile": "📊 Vertikalprofil",
+      "log": "📝 Protokoll"
+    },
+    "tips": {
+      "dem": "Zoom mit Mausrad oder Auswahl. Schaltfläche 🏠 zum Zurücksetzen.",
+      "contours": "Auf dem DEM dargestellte Höhenlinien",
+      "hillshade": "Reliefschattierung entsprechend dem Sonnenwinkel.",
+      "chm": "Grau=Boden · Blau=niedrig · Grün=mittel · Gelb=hoch · Rot=überragend",
+      "profile": "Vertikale Verteilung der Höhen in der Punktwolke"
+    },
+    "sublabels": {
+      "dem_raw": "Ursprüngliches DEM",
+      "dem_smooth": "Geglättetes DEM"
+    },
+    "log": {
+      "cropping": "✂️  Modelle werden auf das Interessengebiet zugeschnitten...",
+      "crop_done": "✅ Zuschnitt abgeschlossen."
+    }
+  },
+  "trees": {
+    "detection": {
+      "header": "🌲 Gipfelerkennung",
+      "desc": "Der Algorithmus sucht den höchsten Punkt in gleitenden Fenstern. Jedes Maximum stellt einen Baum dar.",
+      "window_label": "Durchmesser des Suchfensters (m)",
+      "min_height_label": "Mindesthöhe der Bäume (m)",
+      "canopy_cutoff_label": "Schwellenhöhe für die Kronendeckung (m)",
+      "advanced_btn": "⚙️ Erweiterte Einstellungen"
+    },
+    "modal": {
+      "title": "Erweiterte Einstellungen — Bäume",
+      "close_aria": "Schließen",
+      "window_tip_label": "Fensterdurchmesser (m)",
+      "window_tip": "Durchmesser des Suchfensters, ähnlich der Kronengröße der Bäume",
+      "min_height_tip_label": "Mindesthöhe der Bäume (m)",
+      "min_height_tip": "Verhindert die Suche nach sehr niedrigen Bäumen. Reduziert Fehlerkennungen und beschleunigt die Suche",
+      "canopy_cutoff_tip_label": "Schwellenhöhe für die Kronendeckung (m)",
+      "canopy_cutoff_tip": "Schwellenwert zur Klassifizierung von Flächen, die von Baumkronen bedeckt sind. CHM-Flächen oberhalb dieses Werts gelten als bedeckt",
+      "apply_btn": "Anwenden",
+      "close_btn": "Schließen"
+    },
+    "metrics": {
+      "detected": "🌲 Erkannte Bäume",
+      "density": "Bäume/ha",
+      "avg_height": "Mittlere Höhe (m)",
+      "max_height": "Max. Höhe (m)",
+      "canopy_area": "Kronenfläche (ha)",
+      "canopy_pct": "% Bedeckt"
+    },
+    "run_btn": "▶  Bäume erkennen",
+    "tabs": {
+      "apex_map": "📍 Gipfelkarte",
+      "distribution": "📊 Verteilung",
+      "canopy": "🌳 Kronendeckung",
+      "log": "📝 Protokoll"
+    },
+    "tips": {
+      "apex": "Rote Kreuze = Gipfel über dem CHM. Zoom mit Mausrad oder Auswahl.",
+      "canopy": "Analyse der von Baumkronen bedeckten Fläche anhand des CHM und der konfigurierten Höhenschwelle."
+    },
+    "log": {
+      "detected": "✅ %d Bäume erkannt",
+      "coverage": "🌳 Bedeckung: %.1f%%"
+    }
+  },
+  "export": {
+    "raster_header": "🗺️ Raster-Modelle",
+    "vector_header": "📐 Vektorebenen",
+    "export_btn": "💾📄  Exportieren und Bericht erstellen",
+    "open_folder_btn": "📂  Ordner öffnen",
+    "log_header": "📝 Exportprotokoll",
+    "vector_format_label": "📐 Vektorformat",
+    "vector_format_shp": "SHP",
+    "vector_format_geojson": "GeoJSON",
+    "log": {
+      "generating_HTML": "📄 HTML-Beschreibungsbericht wird erstellt...",
+      "exporting_all": "💾 Alle Produkte werden exportiert...",
+      "folder_created": "  ✓ Ordner erstellt: %s",
+      "exporting_rasters": "  → GeoTIFF-Raster werden exportiert...",
+      "exporting_vectors": "  → Vektorebenen werden exportiert (%s)...",
+      "exporting_canopy": "  → Kronendeckung wird exportiert...",
+      "canopy_saved": "    ✓ %s gespeichert",
+      "canopy_error": "    ⚠ Fehler beim Exportieren der Kronendeckung: %s",
+      "canopy_unavailable": "  ⊗ Kronendeckung nicht verfügbar (übersprungen)",
+      "export_complete": "✅ Export abgeschlossen."
+    }
+  },
+  "about": {
+    "references_header": "📚 Bibliografische Referenzen",
+    "tool_header": "ℹ️ Über das INTA-Werkzeug zur umfassenden Analyse von Luftbild- und LiDAR-Vermessungen in forstwirtschaftlichen Produktionslandschaften",
+    "tool_description": "Entwickelt von der Forstgruppe der Landwirtschaftlichen Versuchsstation Montecarlo des INTA, bietet dieses Werkzeug einen Arbeitsablauf zur Analyse von Punktwolken, die durch Luftbild- oder LiDAR-Vermessungen erzeugt wurden.",
+    "functions_heading": "Integrierte Funktionen:",
+    "function_1": "Zuschneiden und Untersampling der Punktwolke",
+    "function_2": "Automatische Geländeklassifizierung",
+    "function_3": "Erstellung digitaler Modelle (DEM, CHM)",
+    "function_4": "Extraktion von Höhenlinien",
+    "function_5": "Erkennung einzelner Bäume",
+    "function_6": "Beschreibender Bericht im HTML-Format",
+    "version_label": "Version:",
+    "updated_label": "Letzte Aktualisierung:",
+    "updated_value": "September 2026",
+    "contact_label": "Kontakt:",
+    "lidr_ref_title": "lidR-Paket",
+    "csf_ref_title": "CSF-Algorithmus (Boden)",
+    "feedback_header": "💬 Kommentare und Vorschläge",
+    "feedback_desc": "Haben Sie Vorschläge oder einen Fehler gefunden? Ihre Meinung hilft uns, das Werkzeug zu verbessern.",
+    "feedback_btn": "Formular ausfüllen"
+  },
+  "presets": {
+    "csf": {
+      "flat_title": "Flaches Gelände",
+      "flat_desc": "Ebenes oder nahezu ebenes Relief",
+      "wavy_title": "Welliges Gelände",
+      "wavy_desc": "Sanfte Variationen (am häufigsten)",
+      "rugged_title": "Zerklüftetes Gelände",
+      "rugged_desc": "Schluchten, Terrassen, Bäche",
+      "custom_badge": "⚙ Benutzerdefinierte Konfiguration aktiv",
+      "modal_title": "⚙️ Erweiterte Einstellungen — CSF-Algorithmus",
+      "custom_badge_modal": "Benutzerdefiniert",
+      "modal_desc": "Manuelle Anpassung der Parameter des CSF-Algorithmus.",
+      "cloth_res_label": "Netzauflösung (m)",
+      "cloth_res_tip": "Zellgröße des Netzes, das das Gelände modelliert. Kleinere Werte passen sich besser dem Mikrorelief an, erfordern aber mehr Rechenleistung. Sehr niedrige Werte können das Geländeniveau unter dichter Vegetation überschätzen.",
+      "threshold_label": "Schwellenwert (m)",
+      "threshold_tip": "Maximaler Abstand zwischen einem Punkt und dem Netz, um ihn als Boden zu klassifizieren.",
+      "slope_label": "Anpassung an steile Hänge",
+      "slope_tip": "Verbessert die Anpassung des Netzes in Bereichen mit abrupten Höhenänderungen (Wegränder, Schluchten, Bäche).",
+      "slope_checkbox": "Hangglättung aktivieren"
+    },
+    "density": {
+      "custom_modal_title": "Benutzerdefinierte Dichte",
+      "custom_input_label": "Zieldichte (Pkt/m²):",
+      "low_label": "Niedrig",
+      "low_desc": "≈ 10 Pkt/m²",
+      "medium_label": "Mittel",
+      "medium_desc": "≈ 25 Pkt/m²",
+      "high_label": "Hoch",
+      "high_desc": "≈ 50 Pkt/m²",
+      "custom_badge": "⚙ Benutzerdefinierte Dichte aktiv"
+    },
+    "dem": {
+      "res_high_label": "Hoch",
+      "res_high_desc": "0.25 m/px",
+      "res_medium_label": "Mittel",
+      "res_medium_desc": "0.5 m/px",
+      "res_low_label": "Niedrig",
+      "res_low_desc": "1 m/px",
+      "contour_1_label": "0.5 m",
+      "contour_1_desc": "Detaillierte Topografie",
+      "contour_2_label": "1 m",
+      "contour_2_desc": "Normales Detail",
+      "contour_3_label": "5 m",
+      "contour_3_desc": "Wenig Detail",
+      "filter_conservative_label": "Konservativ",
+      "filter_conservative_desc": "3 px — behält mehr Details",
+      "filter_medium_label": "Mittel",
+      "filter_medium_desc": "5 px — ausgewogen",
+      "filter_aggressive_label": "Aggressiv",
+      "filter_aggressive_desc": "9 px — filtert niedrige Vegetation",
+      "smooth_conservative_label": "Konservativ",
+      "smooth_conservative_desc": "5 px — Mikrorelief erhalten",
+      "smooth_medium_label": "Mittel",
+      "smooth_medium_desc": "15 px — ausgewogene Glättung",
+      "smooth_aggressive_label": "Aggressiv",
+      "smooth_aggressive_desc": "27 px — starke Glättung",
+      "modal_title": "⚙️ Erweiterte Einstellungen — DEM",
+      "res_label": "DEM-Auflösung (m)",
+      "res_tip": "Pixelgröße des Höhenmodells. Niedrigere Werte = höheres Detail und mehr Rechenaufwand",
+      "contour_label": "Äquidistanz der Höhenlinien (m)",
+      "contour_tip": "Vertikaler Abstand zwischen den Höhenlinien. Kleinere Werte erzeugen mehr Linien",
+      "min_filter_label": "Minimierungsfilter (px)",
+      "min_filter_tip": "Entfernt hohe Punkte niedriger Vegetation. Höhere Werte filtern mehr Vegetation (ungerade, 3–15)",
+      "mean_filter_label": "Mittelwertfilter (px)",
+      "mean_filter_tip": "Glättet das Relief des DEM. Höhere Werte erzeugen glattere Oberflächen (ungerade, 3–81)"
+    },
+    "chm": {
+      "res_high_label": "Hoch",
+      "res_high_desc": "0.25 m/px",
+      "res_medium_label": "Mittel",
+      "res_medium_desc": "0.5 m/px",
+      "res_low_label": "Niedrig",
+      "res_low_desc": "1 m/px",
+      "gap_conservative_label": "Konservativ",
+      "gap_conservative_desc": "0.025 m — minimal",
+      "gap_medium_label": "Mittel",
+      "gap_medium_desc": "0.25 m — normal",
+      "gap_aggressive_label": "Aggressiv",
+      "gap_aggressive_desc": "0.5 m — maximal",
+      "modal_title": "⚙️ Erweiterte Einstellungen — CHM",
+      "res_label": "CHM-Auflösung (m)",
+      "res_tip": "Pixelgröße des Kronenhöhenmodells. Niedrigere Werte = höheres Detail (0.1–2 m)",
+      "gap_label": "Lückenfüllung (m)",
+      "gap_tip": "Suchradius für die Interpolation von Lücken im CHM. Höherer Wert = mehr Füllung (0–0.5 m)"
+    },
+    "tree": {
+      "ws_small_label": "Klein",
+      "ws_small_desc": "4 m",
+      "ws_medium_label": "Mittel",
+      "ws_medium_desc": "6 m",
+      "ws_large_label": "Groß",
+      "ws_large_desc": "8 m",
+      "hmin_low_label": "Niedrig",
+      "hmin_low_desc": "5 m",
+      "hmin_medium_label": "Mittel",
+      "hmin_medium_desc": "10 m",
+      "hmin_high_label": "Hoch",
+      "hmin_high_desc": "15 m",
+      "cutoff_low_label": "Niedrig",
+      "cutoff_low_desc": "2 m",
+      "cutoff_medium_label": "Mittel",
+      "cutoff_medium_desc": "4 m",
+      "cutoff_high_label": "Hoch",
+      "cutoff_high_desc": "8 m"
+    }
+  },
+  "plot": {
+    "title": {
+      "dem_raw": "Rohes DEM (TIN)",
+      "dem_smooth": "Geglättetes DEM",
+      "hillshade": "Hillshade — Reliefschattierung",
+      "chm": "CHM — Kronenhöhenmodell",
+      "dem_contours": "Geglättetes DEM + Höhenlinien",
+      "vertical_profile": "Vertikale Verteilung — Normalisierte Punktwolke",
+      "cloud_original": "Originalwolke — eingefärbt nach Höhe (Z)",
+      "cloud_classified": "Klassifizierte Wolke — Boden (gelb) / Vegetation (grün)",
+      "trees_on_chm": "Identifizierte Bäume auf dem CHM",
+      "tree_heights": "Höhenverteilung der erkannten Bäume",
+      "canopy_coverage": "Kronendeckung: %.1f%% der Fläche"
+    },
+    "axis": {
+      "height_m": "Höhe über dem Gelände (m)",
+      "frequency": "Häufigkeit",
+      "rel_frequency": "Relative Häufigkeit (%)",
+      "apex_height": "Gipfelhöhe (m)",
+      "x_m": "X (m)",
+      "y_m": "Y (m)",
+      "z_m": "Z (m)"
+    },
+    "colorbar": {
+      "elevation": "Höhe (m)",
+      "class": "Klasse",
+      "elev_short": "Höhe(m)",
+      "height_short": "Kronenhöhe(m)",
+      "coverage": "Deckung",
+      "light": "Licht"
+    },
+    "hover": {
+      "apex": "Gipfel: %s m"
+    },
+    "canopy": {
+      "no_canopy": "Keine Krone",
+      "canopy": "Krone"
+    }
+  },
+  "processing": {
+    "log": {
+      "loading_cloud": "📂 Punktwolke wird geladen...",
+      "cloud_loaded": "✅ Wolke geladen: %s Pkt | Dichte ≈ %.1f Pkt/m²",
+      "loading_roi": "🗺️  Interessengebiet wird geladen...",
+      "roi_area": "   Interessengebiet: %.2f ha",
+      "assigning_crs_las": "📐 CRS wird dem LAS zugewiesen: EPSG:%d",
+      "assigning_crs_shp": "📐 CRS wird dem SHP zugewiesen: EPSG:%d",
+      "shp_no_crs": "⚠️  SHP ohne Projektion. CRS des LAS wird dem Interessengebiet zugewiesen...",
+      "crs_assigned": "   Zugewiesenes CRS: EPSG:%d",
+      "crs_mismatch": "⚠️  Unterschiedliche CRS. Interessengebiet wird auf das CRS des LAS umprojiziert...",
+      "reprojection_done": "   Umprojektion abgeschlossen.",
+      "clipping": "✂️  Zuschneiden mit Puffer von %d m...",
+      "no_points_in_roi": "Das Interessengebiet enthält keine Punkte der Wolke. Überprüfen Sie, ob sich das SHP-Polygon mit der LAZ-Datei überschneidet.",
+      "cloud_clipped": "✅ Wolke zugeschnitten: %s Pkt",
+      "subsampling": "🔽 Untersampling auf Dichte %.0f Pkt/m² (%s)...",
+      "removing_duplicates": "🔍 Duplizierte Punkte werden entfernt...",
+      "removing_noise": "🔇 Rauschen wird klassifiziert und entfernt (SOR)...",
+      "density_after_subsampling": "📊 Dichte nach Untersampling: %.1f Pkt/m²",
+      "density_after_noise": "📊 Dichte nach Rauschentfernung: %.1f Pkt/m²",
+      "cloud_filtered": "✅ Gefilterte Wolke: %s Pkt",
+      "soil_classification": "🏔️ Boden wird klassifiziert — CSF (Steifigkeit: %s)...",
+      "soil_classified": "✅ Klassifizierte Bodenpunkte: %s",
+      "generating_dem": "📐 DEM wird erstellt — Auflösung %.2f m (TIN)...",
+      "smoothing": "🔀 Glättung: Min-Fenster %dx%d → Mittel-Fenster %dx%d...",
+      "dem_stats": "   Mindesthöhe: %.1f m | Max: %.1f m | Mittel: %.1f m",
+      "dem_done": "✅ DEM erstellt und geglättet.",
+      "contours": "📏 Höhenlinien (Äquidistanz %.2f m)...",
+      "contour_range": "   Bereich: %.2f – %.2f m → %d Stufen",
+      "contours_done": "✅ %d Höhenlinien erstellt.",
+      "hillshade": "☀️  Hillshade (Sonne: %.0f° Höhe, %.0f° Azimut)...",
+      "hillshade_done": "✅ Hillshade erstellt.",
+      "normalizing": "📉 Wolke wird auf Geländeniveau normalisiert...",
+      "cloud_normalized": "✅ Normalisierte Wolke: %s Pkt",
+      "chm": "🌿 CHM — Auflösung %.2f m (p2r + knnidw)...",
+      "chm_stats": "   Mindesthöhe: %.1f m | Max: %.1f m | Mittel: %.1f m",
+      "chm_done": "✅ CHM erstellt.",
+      "detecting_trees": "🌲 Bäume werden erkannt — LMF (ws=%.1f m, hmin=%.1f m)...",
+      "trees_detected_proc": "✅ %d Bäume erkannt."
+    },
+    "csf": {
+      "quebrado": "1 — Zerklüftet",
+      "ondulado": "2 — Wellig / Mittel",
+      "llano": "3 — Flach"
+    }
+  },
+  "preprocessing": {
+    "log": {
+      "crs_las_assigned": "📐 Vom Benutzer zugewiesenes CRS für LAS: EPSG:%d",
+      "crs_shp_assigned": "📐 Vom Benutzer zugewiesenes CRS für SHP: EPSG:%d",
+      "reprojection": "📐 Umprojektion bestätigt: SHP EPSG:%s → LAS EPSG:%s."
+    }
+  },
+  "footer": {
+    "main": "INTA ForestMap — Umfassende Analyse von Luftbildvermessungen — Dr. Eduardo Hildt — INTA EEA Montecarlo — "
+  },
+  "report": {
+    "error": {
+      "invalid_dir": "Ungültiges ruta_dir zur Berichtserstellung"
+    },
+    "log": {
+      "generating": "📄 HTML-Beschreibungsbericht wird erstellt ...",
+      "slope_warning": "  ⚠ Hangneigungen konnten nicht berechnet werden: %s",
+      "figure_coverage": "  ✓ Abbildung der Kronendeckung erstellt",
+      "figure_coverage_error": "  ⚠ Abbildung der Deckung konnte nicht erstellt werden: %s",
+      "pandoc_not_found": "⚠ Pandoc nicht gefunden. Installieren Sie es mit Ihrem Paketmanager (z. B. 'sudo apt install pandoc') oder von https://pandoc.org/installing.html.",
+      "html_saved": "✅ HTML gespeichert unter: %s"
+    },
+    "fig": {
+      "dem": "Digitales Geländemodell (DEM) mit Höhenlinien",
+      "hillshade": "Hillshade — Reliefschattierung",
+      "chm": "Kronenhöhenmodell (CHM)",
+      "trees": "Erkannte Bäume (N=%s)",
+      "tree_heights": "Höhenverteilung der Bäume",
+      "canopy": "Kronendeckung: %.1f%% der Fläche (Schwelle %.1f m)"
+    },
+    "homogeneity": {
+      "very_homogeneous": "sehr homogen",
+      "moderately_homogeneous": "mäßig homogen",
+      "moderately_heterogeneous": "mäßig heterogen",
+      "highly_heterogeneous": "stark heterogen"
+    },
+    "section": {
+      "survey_data": "Vermessungsdaten",
+      "area": "Beschreibung des analysierten Gebiets",
+      "pointcloud": "Punktwolke",
+      "soil": "Geländeklassifizierung",
+      "models": "Reliefanalyse",
+      "vertical": "Vertikale Struktur des Waldbestands",
+      "trees": "Erkennung einzelner Bäume",
+      "management": "Forstwirtschaftliche Kennzahlen",
+      "products": "Erstellte Produkte",
+      "references": "Referenzen"
+    },
+    "title": "Analysebericht der forstlichen Luftbildvermessung",
+    "table": {
+      "field": "Feld",
+      "detail": "Detail",
+      "recipient": "Empfänger",
+      "analysis_date": "Analysedatum",
+      "pointcloud_file": "Punktwolkendatei",
+      "roi": "Interessengebiet",
+      "analyst": "Analyst",
+      "institution": "Institution",
+      "email": "E-Mail"
+    },
+    "subsection": {
+      "survey_characteristics": "Merkmale der Vermessung",
+      "dem": "Digitales Geländemodell (DEM)",
+      "contours": "Höhenlinien",
+      "chm": "Normalisierung und Kronenhöhenmodell (CHM)",
+      "density": "Dichte und Struktur des Bestands",
+      "canopy": "Kronendeckung"
+    },
+    "content": {
+      "area": "Das analysierte Gebiet umfasst etwa **%s Hektar**, begrenzt durch den bereitgestellten Shapefile des Interessengebiets.",
+      "lidr_note": "Die Luftbildvermessung wurde vollständig mit den Werkzeugen des **lidR**-Pakets für R verarbeitet [@lidR2021; @lidR2023], das speziell für die Analyse von luftgestützten LiDAR-Daten in forstlichen Anwendungen entwickelt wurde und auch auf durch Fotogrammetrie gewonnene Punktwolken anwendbar ist.",
+      "pointcloud_density": "Die ursprüngliche Punktwolke wies eine geschätzte Dichte von etwa **%s Punkten/m²** auf, mit insgesamt **%s Punkten** im mit Puffer zugeschnittenen Bereich.",
+      "pointcloud_subsample": "Um die Verarbeitungszeit zu optimieren, wurde die Wolke auf eine Arbeitsdichte von **%s Punkten/m²** untersampelt, was nach der Filterung zu **%s Punkten** führte.",
+      "pointcloud_noise": "Zusätzlich wurden doppelte Punkte entfernt sowie Rauschpunkte mittels des **SOR**-Algorithmus (Statistical Outlier Removal) identifiziert und entfernt.",
+      "soil_csf": "Die Klassifizierung der Bodenpunkte erfolgte mittels des **CSF**-Algorithmus (Cloth Simulation Filter, Zhang et al. 2016), konfiguriert mit einem Steifigkeitsgrad **%s**, einem Klassifizierungsschwellenwert von **%s m** und einer Netzauflösung von **%s m**.",
+      "soil_result": "Als Ergebnis wurden **%s Punkte** identifiziert, die zum Boden gehören und für die Erstellung des digitalen Geländemodells verwendet wurden.",
+      "dem_generation": "Aus den als Boden klassifizierten Punkten wurde ein Digitales Geländemodell (DEM) mit einer räumlichen Auflösung von **%s m** unter Verwendung triangulärer Interpolation (TIN) erstellt.",
+      "dem_smoothing": "Das Modell wurde in zwei aufeinanderfolgenden Schritten geglättet: zunächst mit einem Minimumfenster von %sx%s Pixeln, um den Einfluss von Restvegetation zu reduzieren, und anschließend mit einem Mittelwertfenster von %sx%s Pixeln, um eine kontinuierliche Oberfläche zu erhalten.",
+      "dem_stats": "Das Gelände des analysierten Gebiets wies eine Mindesthöhe von **%s m**, eine Maximalhöhe von **%s m** und eine Durchschnittshöhe von **%s m** auf, mit einer Höhenspanne von **%s m**.",
+      "contours": "Aus dem geglätteten DEM wurden Höhenlinien mit einer Äquidistanz von **%s m** erstellt. Die Linien wurden auf die Grenzen des Interessengebiets zugeschnitten und im Shapefile-Format für die Verwendung in Geoinformationssystemen exportiert.",
+      "chm_normalization": "Die Punktwolke wurde auf Geländeniveau normalisiert, indem von jedem Punkt die Höhe des geglätteten DEM subtrahiert wurde. Dieser Prozess ermöglicht es, die Höhen relativ zum Boden (Höhen über dem Gelände) auszudrücken, unabhängig von der zugrunde liegenden Topografie.",
+      "chm_generation": "Aus der normalisierten Wolke wurde das Kronenhöhenmodell (CHM) mit einer Auflösung von **%s m** erstellt.",
+      "chm_stats": "Die Vegetationshöhe im analysierten Gebiet variierte zwischen **%s m** und **%s m**, mit einer Durchschnittshöhe von **%s m**.",
+      "trees_lmf": "Die Erkennung einzelner Bäume erfolgte mittels des **LMF**-Algorithmus (Local Maximum Filter), der die lokalen Maxima des CHM als Baumgipfel identifiziert.",
+      "trees_params": "Es wurde ein Suchfenster mit einem Durchmesser von **%s m** und eine Mindesthöhe von **%s m** verwendet, um Sträucher und Verjüngung auszuschließen.",
+      "trees_count": "Insgesamt wurden **%s Bäume** im analysierten Gebiet erkannt.",
+      "trees_heights": "Die geschätzten Einzelhöhen variierten zwischen **%s m** und **%s m**, mit einer Durchschnittshöhe von **%s m**.",
+      "density_sentence": "Die Dichte der erkannten Individuen beträgt **%s Bäume/ha**, mit einem geschätzten durchschnittlichen Abstand von **%s m** zwischen den Bäumen.",
+      "cv_sentence": "Der Variationskoeffizient der Höhen beträgt **%s%%**, was auf einen hinsichtlich der vertikalen Struktur **%s** Bestand hinweist (Avery und Burkhart, 2002).",
+      "cv_note": "Dieser Index ist nützlich, um die Wachstumshomogenität zu bewerten und differenzierte waldbauliche Eingriffe zu planen.",
+      "canopy_analysis": "Die Analyse der Kronendeckung, berechnet durch Vektorisierung der Binärmaske des CHM (Höhenschwelle = %s m), zeigt, dass die Kronen **%s%%** der Gesamtfläche bedecken, was **%s ha** entspricht.",
+      "canopy_importance": "Diese Kennzahl ist grundlegend für die Bewertung des Kronenschlusses, der Konkurrenz zwischen Individuen und der Effizienz der Raumnutzung. Sie ist auch entscheidend für die Überwachung von Agroforstsystemen, bei denen die Kronendeckung den Zeitpunkt für Beschnitt und Durchforstung bestimmt.",
+      "products_intro": "Alle Produkte wurden mit folgender Struktur in den ausgewählten Ausgabeordner exportiert:",
+      "footer": "*Bericht automatisch erstellt mit dem INTA-Werkzeug für LiDAR- und Forst-Fotogrammetrieanalyse (ForestMap - INTA EEA Montecarlo). Die statistischen Werte entsprechen der zum angegebenen Datum durchgeführten Verarbeitung.*"
+    },
+    "products": {
+      "dem_desc": "Geglättetes Digitales Geländemodell, zugeschnitten auf das Interessengebiet.",
+      "chm_desc": "Kronenhöhenmodell, zugeschnitten auf das Interessengebiet.",
+      "hillshade_desc": "Reliefschattierung.",
+      "contours_desc": "Höhenlinien.",
+      "trees_desc": "Punkte der erkannten Bäume mit Gipfelhöhe.",
+      "roi_desc": "Polygon des analysierten Interessengebiets.",
+      "canopy_desc": "Polygone der Kronendeckung (falls verfügbar)."
+    }
+  },
+  "folders": {
+    "project_prefix": "Projekt",
+    "raster": "RASTER",
+    "vector": "VEKTOR",
+    "report": "BERICHT"
+  },
+  "files": {
+    "dem": "DEM",
+    "chm": "CHM",
+    "hillshade": "Schummerung",
+    "contour_lines": "Hoehenlinien",
+    "trees": "Baeume",
+    "roi": "Interessengebiet",
+    "canopy_cover": "Kronendeckung",
+    "report_html": "Analysebericht",
+    "report_pdf": "Analysebericht"
+  }
+}

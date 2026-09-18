@@ -7,7 +7,7 @@
 # - Función tip_label() desde visualization.R
 # ==============================================================================
 # Versión de la aplicación (se usa en footer y sección "Acerca de")
-NVersion <- "2026.6"
+NVersion <- "2026.9"
 addResourcePath("assets", "www")
 # Las bibliotecas se cargan en app.R, pero las incluimos aquí por si se
 # ejecuta ui.R de forma independiente para pruebas
@@ -272,6 +272,9 @@ ui <- page_navbar(
             ),
             card(
               card_body(class="p-3",
+                textInput("cfg_nombre_proyecto_input", "Nombre de Proyecto",
+                  value = "", placeholder = "Ej: Rodal Norte 2026", width = "100%"),
+                uiOutput("cfg_nombre_proyecto_error"),
                 uiOutput("cfg_proyecto_html"),
                 div(class="mt-3",
                   actionButton("btn_abrir_cfg", "Editar datos del proyecto",
@@ -702,57 +705,43 @@ ui <- page_navbar(
         div(class="col-lg-10",
           # Resumen de productos
           div(class="row g-3 mb-4",
-            div(class="col-md-4",
-              card(
-                card_body(
-                  tags$h6(id="h6_export_clouds", style=paste0("color:",ACCENT_PRIMARY,";font-weight:700;margin-bottom:12px;"),
-                    "☁️ Nubes de puntos"),
-                  tags$ul(style=paste0("color:",TEXT_SECONDARY,";font-size:13px;list-style:none;padding:0;"),
-                    tags$li(style="padding:4px 0;","✓ puntos_clasificados.laz"),
-                    tags$li(style="padding:4px 0;","✓ puntos_normalizados.laz"))
-                )
-              )
-            ),
-            div(class="col-md-4",
+            div(class="col-md-6",
               card(
                 card_body(
                   tags$h6(id="h6_export_raster", style=paste0("color:",ACCENT_PRIMARY,";font-weight:700;margin-bottom:12px;"),
                     "🗺️ Modelos raster"),
-                  tags$ul(style=paste0("color:",TEXT_SECONDARY,";font-size:13px;list-style:none;padding:0;"),
-                    tags$li(style="padding:4px 0;","✓ DEM.tif"),
-                    tags$li(style="padding:4px 0;","✓ CHM.tif"),
-                    tags$li(style="padding:4px 0;","✓ Hillshade.tif"))
+                  uiOutput("ui_export_raster_list")
                 )
               )
             ),
-            div(class="col-md-4",
+            div(class="col-md-6",
               card(
                 card_body(
                   tags$h6(id="h6_export_vector", style=paste0("color:",ACCENT_PRIMARY,";font-weight:700;margin-bottom:12px;"),
                     "📐 Capas vectoriales"),
-                  tags$ul(style=paste0("color:",TEXT_SECONDARY,";font-size:13px;list-style:none;padding:0;"),
-                    tags$li(style="padding:4px 0;","✓ Curvas_Nivel.shp"),
-                    tags$li(style="padding:4px 0;","✓ Arboles.shp"),
-                    tags$li(style="padding:4px 0;","✓ Cobertura_Copas.shp"),
-                    tags$li(style="padding:4px 0;","✓ Area_Interes.shp"))
+                  uiOutput("ui_export_vector_list")
                 )
               )
             )
           ),
-          
-          # Botones de acción
+
+          # Formato vectorial + botones de acción
           card(
             card_body(
+              div(class="row g-3 mb-2",
+                div(class="col-md-12",
+                  radioButtons("sel_formato_vectorial", "📐 Formato vectorial",
+                    choiceNames  = list("SHP", "GeoJSON"),
+                    choiceValues = list("shp", "geojson"),
+                    selected = "shp", inline = TRUE)
+                )
+              ),
               div(class="row g-3",
-                div(class="col-md-4",
-                  actionButton("btn_exportar","💾  Exportar productos",
+                div(class="col-md-6",
+                  actionButton("btn_exportar","💾📄  Exportar y generar informe",
                     class="btn-run w-100", style="padding:14px;font-size:15px;")
                 ),
-                div(class="col-md-4",
-                  actionButton("btn_informe","📄  Generar informe HTML",
-                    class="btn btn-outline-info w-100", style="padding:14px;font-size:15px;")
-                ),
-                div(class="col-md-4",
+                div(class="col-md-6",
                   actionButton("btn_abrir_carpeta","📂  Abrir carpeta",
                     class="btn btn-outline-warning w-100", style="padding:14px;font-size:15px;")
                 )
@@ -788,7 +777,8 @@ ui <- page_navbar(
     selectInput(
       "lang_select",
       label    = NULL,
-      choices  = c("ES" = "es", "EN" = "en", "PT" = "pt"),
+      choices  = c("ES" = "es", "EN" = "en", "PT" = "pt",
+                   "DE" = "de", "FR" = "fr", "IT" = "it", "SV" = "sv"),
       selected = "es",
       width    = "80px"
     )

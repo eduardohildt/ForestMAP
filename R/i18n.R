@@ -22,7 +22,7 @@ library(jsonlite)
 
 # Lee y aplana los tres archivos de idioma
 .load_flat <- function(base_dir = "i18n") {
-  langs <- c("es", "en", "pt")
+  langs <- c("es", "en", "pt", "de", "fr", "it", "sv")
   flat  <- vector("list", length(langs))
   names(flat) <- langs
   for (l in langs) {
@@ -30,9 +30,9 @@ library(jsonlite)
     if (!file.exists(path)) stop("Archivo de traducción no encontrado: ", path)
     flat[[l]] <- .flatten_json(fromJSON(path, simplifyVector = FALSE))
   }
-  # Completar EN y PT con fallback a ES para claves faltantes
+  # Completar todos los idiomas salvo ES con fallback a ES para claves faltantes
   keys <- names(flat[["es"]])
-  for (l in c("en", "pt")) {
+  for (l in c("en", "pt", "de", "fr", "it", "sv")) {
     missing <- setdiff(keys, names(flat[[l]]))
     for (k in missing) flat[[l]][[k]] <- flat[["es"]][[k]]
   }

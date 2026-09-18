@@ -1,0 +1,653 @@
+{
+  "app": {
+    "title": "INTA ForestMap"
+  },
+  "nav": {
+    "tab": {
+      "config": "Konfiguration",
+      "data_load": "Dataimport",
+      "models": "Digitala modeller",
+      "trees": "Träd",
+      "export": "Exportera",
+      "about": "📚 Om ..."
+    }
+  },
+  "common": {
+    "btn": {
+      "cancel": "Avbryt",
+      "save": "💾  Spara",
+      "apply": "Tillämpa",
+      "close": "Stäng",
+      "reset": "Återställ rekommenderade värden",
+      "apply_config": "Tillämpa konfiguration",
+      "restore": "Återställ",
+      "confirm_continue": "Bekräfta och fortsätt",
+      "understood_continue": "Uppfattat, fortsätt"
+    },
+    "status": {
+      "loaded": "✔ Inläst",
+      "pending": "⏳ Väntar",
+      "not_selected": "Inte vald",
+      "selected": "✔ Vald",
+      "full_extent": "✔ Full utbredning"
+    },
+    "meta": {
+      "epsg_detected": "EPSG: %s ✔ upptäckt",
+      "no_crs": "Inget CRS tilldelat ⚠",
+      "no_crs_shp": "Inget CRS ⚠",
+      "cannot_read_header": "Kunde inte läsa headern",
+      "not_calculable": "Ej beräkningsbar (CRS ej projicerat)",
+      "multiple_polygons_warning": "%d ⚠ Det rekommenderas att endast använda 1"
+    }
+  },
+  "config": {
+    "banner": {
+      "title": "Övergripande analys av flygburna inmätningar",
+      "subtitle": "Tillämpad på produktiva skogslandskap"
+    },
+    "pipeline": {
+      "project_step": "Projekt",
+      "project_configured": "✔ Konfigurerat",
+      "project_edit": "Redigera projektdata",
+      "las_title": "LiDAR- eller fotogrammetriskt punktmoln (LAS/LAZ)",
+      "shp_title": "Intresseområde för analysen (SHP / KML / GeoJSON)",
+      "dir_title": "Utdatamapp för resultaten",
+      "cta_title": "Allt klart för att fortsätta",
+      "cta_desc": "Granska informationen och fortsätt till nästa steg.",
+      "continue_btn": "Fortsätt →"
+    },
+    "modal": {
+      "title": "⚙️ Projektkonfiguration",
+      "instructions": "Dessa uppgifter kommer att användas i HTML-rapporten. Om du lämnar ett fält tomt skrivs \"-\".",
+      "project_name_label": "Projektnamn",
+      "project_name_placeholder": "Ex: Norra beståndet 2026",
+      "author_label": "Författare",
+      "author_placeholder": "Författarens namn",
+      "institution_label": "Institution",
+      "institution_placeholder": "Institutionens namn",
+      "email_label": "E-post",
+      "email_placeholder": "epost@exempel.com",
+      "recipient_label": "Mottagare",
+      "recipient_placeholder": "Rapportens mottagare"
+    },
+    "project_name": {
+      "required_error": "⚠ Du måste ange ett projektnamn för att fortsätta."
+    },
+    "table": {
+      "author": "Författare",
+      "institution": "Institution",
+      "email": "E-post",
+      "recipient": "Mottagare"
+    },
+    "file": {
+      "select_las_btn": "Välj LAS/LAZ-fil",
+      "change_file_btn": "Byt fil",
+      "select_shp_btn": "Välj intresseområde",
+      "select_polygon": "Välj polygon:",
+      "select_dir_btn": "Välj utdatamapp",
+      "change_dir_btn": "Byt mapp",
+      "meta_filename": "Fil",
+      "meta_size": "Storlek",
+      "meta_projection": "Projektion",
+      "meta_modified": "Ändrad",
+      "meta_polygons": "Polygoner",
+      "meta_area": "Total yta",
+      "meta_path": "Sökväg",
+      "dialog_las_caption": "Välj punktmoln (LAS/LAZ)",
+      "dialog_las_filter": "LAS/LAZ (*.las *.laz)",
+      "dialog_shp_caption": "Välj intresseområde",
+      "dialog_shp_filter": "Vektorfiler (*.shp *.kml *.geojson *.json)",
+      "dialog_dir_caption": "Välj utdatamapp",
+      "use_full_extent": "Använd hela utbredningen",
+      "full_extent_hint": "Molnets omkrets kommer att användas"
+    },
+    "log": {
+      "las": "LAS  : %s",
+      "roi": "ROI  : %s",
+      "roi_bbox": "ROI  : [punktmolnets fullständiga utbredning]",
+      "dir": "Mapp : %s",
+      "project_folder": "📁 Projektmapp: %s"
+    },
+    "polygon_label": "Polygon"
+  },
+  "notification": {
+    "success": {
+      "project_saved": "✅ Projektdata sparad.",
+      "config_saved": "✅ Konfiguration sparad.",
+      "preprocessing_done": "✅ Förbehandling slutförd.",
+      "models_done": "✅ Modeller genererade.",
+      "export_done": "✅ Export slutförd.",
+      "HTML_done": "✅ HTML-rapport genererad.",
+      "PDF_done": "✅ PDF-rapport genererad.",
+      "folder_opened": "📂 Resultatmapp öppnad."
+    },
+    "error": {
+      "shp_cannot_read": "❌ Det gick inte att läsa SHP-filen för intresseområdet.",
+      "shp_multiple_polygons": "❌ SHP-filen innehåller %d polygoner. Intresseområdet måste ha en enda polygon. Välj en korrekt fil.",
+      "folder_not_exists": "❌ Resultatmappen finns inte än.",
+      "prefix": "❌ FEL:",
+      "report_prefix": "❌ FEL rapport:",
+      "generic": "Fel: %s",
+      "report_generic": "Fel rapport: %s",
+      "folder_open_failed": "Det gick inte att öppna mappen: %s",
+      "no_gui_backend": "❌ Inget tillgängligt system för fildialoger hittades (RStudio eller Tcl/Tk). Installera paketet 'tcltk' (eller systempaketen tcl/tk) eller kör programmet från RStudio."
+    },
+    "warning": {
+      "crs_check": "Varning vid kontroll av CRS: %s"
+    }
+  },
+  "progress": {
+    "preprocessing": {
+      "message": "Förbehandlar...",
+      "loading": "Läser in...",
+      "filtering": "Filtrerar...",
+      "soil_classification": "Klassificerar mark..."
+    },
+    "models": {
+      "message": "Genererar modeller...",
+      "dem": "DEM...",
+      "contours": "Höjdkurvor...",
+      "hillshade": "Skuggning...",
+      "chm": "Normalisering + CHM...",
+      "cropping": "Beskär till intresseområdet..."
+    },
+    "trees": {
+      "message": "Upptäcker träd..."
+    },
+    "export": {
+      "message": "Exporterar..."
+    }
+  },
+  "modal": {
+    "crs": {
+      "las_title": "⚠️ Punktmoln utan projektion",
+      "las_body_1": "LAS/LAZ-filen har inget tilldelat koordinatreferenssystem (CRS). För att fortsätta, ange den EPSG-kod som motsvarar LAS-datan.",
+      "las_body_shp_epsg": "Den inlästa SHP-filen använder %s. Om båda filerna delar samma projektion, använd samma kod.",
+      "epsg_label": "EPSG-kod:",
+      "epsg_reference": "Se",
+      "epsg_reference_suffix": "för att identifiera EPSG-koden för ditt referenssystem.",
+      "shp_title": "⚠️ Intresseområde utan projektion",
+      "shp_body_1": "SHP-filen har inget tilldelat koordinatreferenssystem (CRS). För att fortsätta, ange den EPSG-kod som motsvarar intresseområdet.",
+      "shp_body_las_epsg": "LAS-punktmolnet använder %s. Om båda filerna delar samma projektion, använd samma kod.",
+      "shp_epsg_label": "EPSG-kod för SHP:",
+      "mismatch_title": "⚠️ Olika referenssystem",
+      "mismatch_body_1": "Punktmolnet och intresseområdet har olika projektioner:",
+      "mismatch_las": "LAS: ",
+      "mismatch_shp": "SHP: ",
+      "mismatch_body_2": "Intresseområdet kommer automatiskt att omprojiceras till molnets CRS (%s) innan beskärning."
+    }
+  },
+  "data_load": {
+    "subsample": {
+      "header": "⚙️ Nedsampling av punktmolnet",
+      "desc": "Välj hur många punkter per m² som ska läsas in. Högre densitet = högre noggrannhet och längre bearbetningstid.",
+      "method_header": "Nedsamplingsmetod",
+      "random": "Slumpmässig",
+      "uniform": "Enhetlig",
+      "advanced_btn": "⚙ Avancerade inställningar",
+      "method_tip": "Typer av nedsampling: Slumpmässig respekterar den ursprungliga fördelningen. Enhetlig ger en homogen fördelning."
+    },
+    "csf": {
+      "header": "🏔️ Markklassificering (CSF-algoritm)",
+      "desc": "Välj den dominerande terrängtypen. CSF-algoritmen modellerar ett nät som anpassar sig till terrängen för att separera mark från vegetation.",
+      "advanced_btn": "⚙️ Avancerade inställningar (valfritt)"
+    },
+    "run_btn": "▶  Kör inläsning och klassificering",
+    "metrics": {
+      "points_loaded": "Inlästa punkter",
+      "filtered": "Filtrerade",
+      "soil": "Mark",
+      "vegetation": "Vegetation"
+    },
+    "tabs": {
+      "log": "📊 Bearbetningslogg",
+      "cloud_original": "☁️ Originalmoln",
+      "cloud_classified": "🗺️ Klassificerat moln"
+    },
+    "tips": {
+      "cloud_3d": "🖱️ Rotera: klicka+dra · Zoom: skrollhjul · Flytta: högerklick",
+      "classified": "🎨 Färger: mark vs. vegetation"
+    }
+  },
+  "models": {
+    "dem": {
+      "header": "🏔️ Digital höjdmodell (DEM)",
+      "resolution_label": "DEM-upplösning (m)",
+      "contour_label": "Ekvidistans för höjdkurvor (m)",
+      "min_filter_label": "Filtrering av låg vegetation",
+      "smooth_label": "Utjämning av DEM och höjdkurvor",
+      "advanced_btn": "⚙️ Avancerade inställningar"
+    },
+    "chm": {
+      "header": "🌿 Kronhöjdmodell (CHM)",
+      "resolution_label": "CHM-upplösning (m)",
+      "gap_fill_label": "Utfyllnad av luckor",
+      "advanced_btn": "⚙️ Avancerade inställningar"
+    },
+    "run_btn": "▶  Generera alla modeller",
+    "tabs": {
+      "dem": "🗺️ DEM",
+      "contours": "📏 Höjdkurvor",
+      "hillshade": "🌓 Skuggat relief",
+      "chm": "🌿 CHM — Kronhöjdmodell",
+      "profile": "📊 Vertikalprofil",
+      "log": "📝 Logg"
+    },
+    "tips": {
+      "dem": "Zoom med skrollhjul eller markering. Knappen 🏠 för att återställa.",
+      "contours": "Höjdkurvor ritade ovanpå DEM",
+      "hillshade": "Reliefskuggning baserad på solvinkel.",
+      "chm": "Grå=mark · Blå=låg · Grön=medel · Gul=hög · Röd=utstickande",
+      "profile": "Vertikal fördelning av höjder i punktmolnet"
+    },
+    "sublabels": {
+      "dem_raw": "Rå DEM",
+      "dem_smooth": "Utjämnad DEM"
+    },
+    "log": {
+      "cropping": "✂️  Beskär modeller till intresseområdet...",
+      "crop_done": "✅ Beskärning slutförd."
+    }
+  },
+  "trees": {
+    "detection": {
+      "header": "🌲 Trädtoppsdetektering",
+      "desc": "Algoritmen söker efter den högsta punkten i rörliga fönster. Varje maximum representerar ett träd.",
+      "window_label": "Diameter för sökfönster (m)",
+      "min_height_label": "Minsta trädhöjd (m)",
+      "canopy_cutoff_label": "Gränshöjd för kronskikt (m)",
+      "advanced_btn": "⚙️ Avancerade inställningar"
+    },
+    "modal": {
+      "title": "Avancerade inställningar — Träd",
+      "close_aria": "Stäng",
+      "window_tip_label": "Fönsterdiameter (m)",
+      "window_tip": "Diameter för sökfönstret, motsvarande trädens krondiameter",
+      "min_height_tip_label": "Minsta trädhöjd (m)",
+      "min_height_tip": "Förhindrar sökning efter mycket låga träd. Minskar falska positiva resultat och snabbar upp sökningen",
+      "canopy_cutoff_tip_label": "Gränshöjd för kronskikt (m)",
+      "canopy_cutoff_tip": "Tröskelvärde för att klassificera ytor täckta av trädkronor. CHM-ytor ovanför detta värde betraktas som täckta",
+      "apply_btn": "Tillämpa",
+      "close_btn": "Stäng"
+    },
+    "metrics": {
+      "detected": "🌲 Upptäckta träd",
+      "density": "träd/ha",
+      "avg_height": "Medelhöjd (m)",
+      "max_height": "Maxhöjd (m)",
+      "canopy_area": "Kronyta (ha)",
+      "canopy_pct": "% Täckt"
+    },
+    "run_btn": "▶  Upptäck träd",
+    "tabs": {
+      "apex_map": "📍 Trädtoppskarta",
+      "distribution": "📊 Fördelning",
+      "canopy": "🌳 Kronskikt",
+      "log": "📝 Logg"
+    },
+    "tips": {
+      "apex": "Röda kryss = trädtoppar ovanpå CHM. Zoom med skrollhjul eller markering.",
+      "canopy": "Analys av ytan täckt av kronskikt med hjälp av CHM och den inställda höjdtröskeln."
+    },
+    "log": {
+      "detected": "✅ %d träd upptäckta",
+      "coverage": "🌳 Täckning: %.1f%%"
+    }
+  },
+  "export": {
+    "raster_header": "🗺️ Rastermodeller",
+    "vector_header": "📐 Vektorlager",
+    "export_btn": "💾📄  Exportera och generera rapport",
+    "open_folder_btn": "📂  Öppna mapp",
+    "log_header": "📝 Exportlogg",
+    "vector_format_label": "📐 Vektorformat",
+    "vector_format_shp": "SHP",
+    "vector_format_geojson": "GeoJSON",
+    "log": {
+      "generating_HTML": "📄 Genererar beskrivande HTML-rapport...",
+      "exporting_all": "💾 Exporterar alla produkter...",
+      "folder_created": "  ✓ Mapp skapad: %s",
+      "exporting_rasters": "  → Exporterar GeoTIFF-raster...",
+      "exporting_vectors": "  → Exporterar vektorlager (%s)...",
+      "exporting_canopy": "  → Exporterar kronskikt...",
+      "canopy_saved": "    ✓ %s sparad",
+      "canopy_error": "    ⚠ Fel vid export av kronskikt: %s",
+      "canopy_unavailable": "  ⊗ Kronskikt inte tillgängligt (hoppas över)",
+      "export_complete": "✅ Export slutförd."
+    }
+  },
+  "about": {
+    "references_header": "📚 Bibliografiska referenser",
+    "tool_header": "ℹ️ Om INTA-verktyget för övergripande analys av flygfotogrammetriska och LiDAR-inmätningar i produktiva skogslandskap",
+    "tool_description": "Utvecklat av Skogsgruppen vid INTA:s jordbruksexperimentstation Montecarlo, presenterar detta verktyg ett arbetsflöde för analys av punktmoln genererade genom flygfotogrammetriska eller LiDAR-inmätningar.",
+    "functions_heading": "Inbyggda funktioner:",
+    "function_1": "Beskärning och nedsampling av punktmolnet",
+    "function_2": "Automatisk terrängklassificering",
+    "function_3": "Generering av digitala modeller (DEM, CHM)",
+    "function_4": "Extraktion av höjdkurvor",
+    "function_5": "Detektering av enskilda träd",
+    "function_6": "Beskrivande rapport i HTML",
+    "version_label": "Version:",
+    "updated_label": "Senast uppdaterad:",
+    "updated_value": "September 2026",
+    "contact_label": "Kontakt:",
+    "lidr_ref_title": "lidR-paketet",
+    "csf_ref_title": "CSF-algoritm (mark)",
+    "feedback_header": "💬 Kommentarer och förslag",
+    "feedback_desc": "Har du förslag eller hittat ett fel? Din åsikt hjälper oss att förbättra verktyget.",
+    "feedback_btn": "Fyll i formuläret"
+  },
+  "presets": {
+    "csf": {
+      "flat_title": "Flack terräng",
+      "flat_desc": "Platt eller nästan platt relief",
+      "wavy_title": "Kuperad terräng",
+      "wavy_desc": "Milda variationer (vanligast)",
+      "rugged_title": "Bruten terräng",
+      "rugged_desc": "Raviner, terrasser, bäckar",
+      "custom_badge": "⚙ Anpassad konfiguration aktiv",
+      "modal_title": "⚙️ Avancerade inställningar — CSF-algoritm",
+      "custom_badge_modal": "Anpassad",
+      "modal_desc": "Manuell justering av CSF-algoritmens parametrar.",
+      "cloth_res_label": "Nätupplösning (m)",
+      "cloth_res_tip": "Cellstorlek för nätet som modellerar terrängen. Lägre värden anpassar sig bättre till mikroreliefen men kräver mer beräkningskraft. Alltför låga värden kan överskatta marknivån under tät vegetation.",
+      "threshold_label": "Tröskelvärde (m)",
+      "threshold_tip": "Maximalt avstånd mellan en punkt och nätet för att klassificera den som mark.",
+      "slope_label": "Anpassning till branta sluttningar",
+      "slope_tip": "Förbättrar nätets anpassning i områden med abrupta nivåförändringar (vägkanter, raviner, bäckar).",
+      "slope_checkbox": "Aktivera sluttningsutjämning"
+    },
+    "density": {
+      "custom_modal_title": "Anpassad densitet",
+      "custom_input_label": "Måldensitet (pkt/m²):",
+      "low_label": "Låg",
+      "low_desc": "≈ 10 pkt/m²",
+      "medium_label": "Medel",
+      "medium_desc": "≈ 25 pkt/m²",
+      "high_label": "Hög",
+      "high_desc": "≈ 50 pkt/m²",
+      "custom_badge": "⚙ Anpassad densitet aktiv"
+    },
+    "dem": {
+      "res_high_label": "Hög",
+      "res_high_desc": "0.25 m/px",
+      "res_medium_label": "Medel",
+      "res_medium_desc": "0.5 m/px",
+      "res_low_label": "Låg",
+      "res_low_desc": "1 m/px",
+      "contour_1_label": "0.5 m",
+      "contour_1_desc": "Detaljerad topografi",
+      "contour_2_label": "1 m",
+      "contour_2_desc": "Normal detaljnivå",
+      "contour_3_label": "5 m",
+      "contour_3_desc": "Låg detaljnivå",
+      "filter_conservative_label": "Konservativ",
+      "filter_conservative_desc": "3 px — behåller fler detaljer",
+      "filter_medium_label": "Medel",
+      "filter_medium_desc": "5 px — balanserad",
+      "filter_aggressive_label": "Aggressiv",
+      "filter_aggressive_desc": "9 px — filtrerar låg vegetation",
+      "smooth_conservative_label": "Konservativ",
+      "smooth_conservative_desc": "5 px — mikrorelief bevarad",
+      "smooth_medium_label": "Medel",
+      "smooth_medium_desc": "15 px — balanserad utjämning",
+      "smooth_aggressive_label": "Aggressiv",
+      "smooth_aggressive_desc": "27 px — kraftig utjämning",
+      "modal_title": "⚙️ Avancerade inställningar — DEM",
+      "res_label": "DEM-upplösning (m)",
+      "res_tip": "Pixelstorlek för höjdmodellen. Lägre värden = högre detaljnivå och beräkningskostnad",
+      "contour_label": "Ekvidistans för höjdkurvor (m)",
+      "contour_tip": "Vertikalt avstånd mellan höjdkurvor. Mindre värden ger fler kurvor",
+      "min_filter_label": "Minimeringsfilter (px)",
+      "min_filter_tip": "Tar bort höga punkter från låg vegetation. Högre värden filtrerar mer vegetation (udda, 3–15)",
+      "mean_filter_label": "Medelvärdesfilter (px)",
+      "mean_filter_tip": "Jämnar ut DEM:s relief. Högre värden ger jämnare ytor (udda, 3–81)"
+    },
+    "chm": {
+      "res_high_label": "Hög",
+      "res_high_desc": "0.25 m/px",
+      "res_medium_label": "Medel",
+      "res_medium_desc": "0.5 m/px",
+      "res_low_label": "Låg",
+      "res_low_desc": "1 m/px",
+      "gap_conservative_label": "Konservativ",
+      "gap_conservative_desc": "0.025 m — minimal",
+      "gap_medium_label": "Medel",
+      "gap_medium_desc": "0.25 m — normal",
+      "gap_aggressive_label": "Aggressiv",
+      "gap_aggressive_desc": "0.5 m — maximal",
+      "modal_title": "⚙️ Avancerade inställningar — CHM",
+      "res_label": "CHM-upplösning (m)",
+      "res_tip": "Pixelstorlek för kronhöjdmodellen. Lägre värden = högre detaljnivå (0.1–2 m)",
+      "gap_label": "Utfyllnad av luckor (m)",
+      "gap_tip": "Sökradie för interpolering av luckor i CHM. Högre värde = mer utfyllnad (0–0.5 m)"
+    },
+    "tree": {
+      "ws_small_label": "Liten",
+      "ws_small_desc": "4 m",
+      "ws_medium_label": "Medel",
+      "ws_medium_desc": "6 m",
+      "ws_large_label": "Stor",
+      "ws_large_desc": "8 m",
+      "hmin_low_label": "Låg",
+      "hmin_low_desc": "5 m",
+      "hmin_medium_label": "Medel",
+      "hmin_medium_desc": "10 m",
+      "hmin_high_label": "Hög",
+      "hmin_high_desc": "15 m",
+      "cutoff_low_label": "Låg",
+      "cutoff_low_desc": "2 m",
+      "cutoff_medium_label": "Medel",
+      "cutoff_medium_desc": "4 m",
+      "cutoff_high_label": "Hög",
+      "cutoff_high_desc": "8 m"
+    }
+  },
+  "plot": {
+    "title": {
+      "dem_raw": "Rå DEM (TIN)",
+      "dem_smooth": "Utjämnad DEM",
+      "hillshade": "Hillshade — Reliefskuggning",
+      "chm": "CHM — Kronhöjdmodell",
+      "dem_contours": "Utjämnad DEM + höjdkurvor",
+      "vertical_profile": "Vertikal fördelning — normaliserat moln",
+      "cloud_original": "Originalmoln — färgat efter höjd (Z)",
+      "cloud_classified": "Klassificerat moln — mark (gul) / vegetation (grön)",
+      "trees_on_chm": "Identifierade träd ovanpå CHM",
+      "tree_heights": "Höjdfördelning för upptäckta träd",
+      "canopy_coverage": "Kronskikt: %.1f%% av ytan"
+    },
+    "axis": {
+      "height_m": "Höjd över mark (m)",
+      "frequency": "Frekvens",
+      "rel_frequency": "Relativ frekvens (%)",
+      "apex_height": "Trädtoppshöjd (m)",
+      "x_m": "X (m)",
+      "y_m": "Y (m)",
+      "z_m": "Z (m)"
+    },
+    "colorbar": {
+      "elevation": "Höjd (m)",
+      "class": "Klass",
+      "elev_short": "Höjd(m)",
+      "height_short": "Kronhöjd(m)",
+      "coverage": "Täckning",
+      "light": "Ljus"
+    },
+    "hover": {
+      "apex": "Trädtopp: %s m"
+    },
+    "canopy": {
+      "no_canopy": "Ingen krona",
+      "canopy": "Krona"
+    }
+  },
+  "processing": {
+    "log": {
+      "loading_cloud": "📂 Läser in punktmolnet...",
+      "cloud_loaded": "✅ Moln inläst: %s pkt | densitet ≈ %.1f pkt/m²",
+      "loading_roi": "🗺️  Läser in intresseområdet...",
+      "roi_area": "   Intresseområde: %.2f ha",
+      "assigning_crs_las": "📐 Tilldelar CRS till LAS: EPSG:%d",
+      "assigning_crs_shp": "📐 Tilldelar CRS till SHP: EPSG:%d",
+      "shp_no_crs": "⚠️  SHP utan projektion. Tilldelar LAS:ens CRS till intresseområdet...",
+      "crs_assigned": "   Tilldelat CRS: EPSG:%d",
+      "crs_mismatch": "⚠️  Olika CRS. Omprojicerar intresseområdet till LAS:ens CRS...",
+      "reprojection_done": "   Omprojicering slutförd.",
+      "clipping": "✂️  Beskär med buffert på %d m...",
+      "no_points_in_roi": "Intresseområdet innehåller inga punkter från molnet. Kontrollera att SHP-polygonen överlappar LAZ-filen.",
+      "cloud_clipped": "✅ Beskuret moln: %s pkt",
+      "subsampling": "🔽 Nedsamplar till densitet %.0f pkt/m² (%s)...",
+      "removing_duplicates": "🔍 Tar bort dubblettpunkter...",
+      "removing_noise": "🔇 Klassificerar och tar bort brus (SOR)...",
+      "density_after_subsampling": "📊 Densitet efter nedsampling: %.1f pkt/m²",
+      "density_after_noise": "📊 Densitet efter brusborttagning: %.1f pkt/m²",
+      "cloud_filtered": "✅ Filtrerat moln: %s pkt",
+      "soil_classification": "🏔️ Klassificerar mark — CSF (styvhet: %s)...",
+      "soil_classified": "✅ Klassificerade markpunkter: %s",
+      "generating_dem": "📐 Genererar DEM — upplösning %.2f m (TIN)...",
+      "smoothing": "🔀 Utjämnar: minfönster %dx%d → medelfönster %dx%d...",
+      "dem_stats": "   Min. höjd: %.1f m | max: %.1f m | medel: %.1f m",
+      "dem_done": "✅ DEM genererad och utjämnad.",
+      "contours": "📏 Höjdkurvor (ekvidistans %.2f m)...",
+      "contour_range": "   Intervall: %.2f – %.2f m → %d nivåer",
+      "contours_done": "✅ %d kurvor genererade.",
+      "hillshade": "☀️  Skuggning (sol: %.0f° höjd, %.0f° azimut)...",
+      "hillshade_done": "✅ Skuggning genererad.",
+      "normalizing": "📉 Normaliserar molnet till marknivå...",
+      "cloud_normalized": "✅ Normaliserat moln: %s pkt",
+      "chm": "🌿 CHM — upplösning %.2f m (p2r + knnidw)...",
+      "chm_stats": "   Min. höjd: %.1f m | max: %.1f m | medel: %.1f m",
+      "chm_done": "✅ CHM genererad.",
+      "detecting_trees": "🌲 Upptäcker träd — LMF (ws=%.1f m, hmin=%.1f m)...",
+      "trees_detected_proc": "✅ %d träd upptäckta."
+    },
+    "csf": {
+      "quebrado": "1 — Bruten",
+      "ondulado": "2 — Kuperad / Medel",
+      "llano": "3 — Flack"
+    }
+  },
+  "preprocessing": {
+    "log": {
+      "crs_las_assigned": "📐 CRS tilldelat av användaren till LAS: EPSG:%d",
+      "crs_shp_assigned": "📐 CRS tilldelat av användaren till SHP: EPSG:%d",
+      "reprojection": "📐 Omprojicering bekräftad: SHP EPSG:%s → LAS EPSG:%s."
+    }
+  },
+  "footer": {
+    "main": "INTA ForestMap — Övergripande analys av flygburna inmätningar — Dr. Eduardo Hildt — INTA EEA Montecarlo — "
+  },
+  "report": {
+    "error": {
+      "invalid_dir": "ogiltig ruta_dir för att generera rapport"
+    },
+    "log": {
+      "generating": "📄 Genererar beskrivande HTML-rapport ...",
+      "slope_warning": "  ⚠ Det gick inte att beräkna lutningar: %s",
+      "figure_coverage": "  ✓ Figur för kronskikt genererad",
+      "figure_coverage_error": "  ⚠ Det gick inte att generera täckningsfigur: %s",
+      "pandoc_not_found": "⚠ Pandoc hittades inte. Installera det med din pakethanterare (t.ex. 'sudo apt install pandoc') eller från https://pandoc.org/installing.html.",
+      "html_saved": "✅ HTML sparad i: %s"
+    },
+    "fig": {
+      "dem": "Digital höjdmodell (DEM) med höjdkurvor",
+      "hillshade": "Hillshade — Reliefskuggning",
+      "chm": "Kronhöjdmodell (CHM)",
+      "trees": "Upptäckta träd (N=%s)",
+      "tree_heights": "Höjdfördelning för träd",
+      "canopy": "Kronskikt: %.1f%% av ytan (tröskel %.1f m)"
+    },
+    "homogeneity": {
+      "very_homogeneous": "mycket homogent",
+      "moderately_homogeneous": "måttligt homogent",
+      "moderately_heterogeneous": "måttligt heterogent",
+      "highly_heterogeneous": "mycket heterogent"
+    },
+    "section": {
+      "survey_data": "Inmätningsdata",
+      "area": "Beskrivning av det analyserade området",
+      "pointcloud": "Punktmoln",
+      "soil": "Terrängklassificering",
+      "models": "Reliefanalys",
+      "vertical": "Skogsbeståndets vertikala struktur",
+      "trees": "Detektering av enskilda träd",
+      "management": "Nyckeltal för skogsskötsel",
+      "products": "Genererade produkter",
+      "references": "Referenser"
+    },
+    "title": "Analysrapport för flygburen skoglig inmätning",
+    "table": {
+      "field": "Fält",
+      "detail": "Detalj",
+      "recipient": "Mottagare",
+      "analysis_date": "Analysdatum",
+      "pointcloud_file": "Punktmolnsfil",
+      "roi": "Intresseområde",
+      "analyst": "Analytiker",
+      "institution": "Institution",
+      "email": "E-post"
+    },
+    "subsection": {
+      "survey_characteristics": "Inmätningens egenskaper",
+      "dem": "Digital höjdmodell (DEM)",
+      "contours": "Höjdkurvor",
+      "chm": "Normalisering och kronhöjdmodell (CHM)",
+      "density": "Densitet och beståndsstruktur",
+      "canopy": "Kronskikt"
+    },
+    "content": {
+      "area": "Det analyserade området täcker cirka **%s hektar**, avgränsat av det tillhandahållna shapefilet för intresseområdet.",
+      "lidr_note": "Den flygburna inmätningen behandlades i sin helhet med verktygssviten i R-paketet **lidR** [@lidR2021; @lidR2023], utvecklat specifikt för analys av flygburen LiDAR-data i skogliga tillämpningar och tillämpligt på punktmoln erhållna genom fotogrammetri.",
+      "pointcloud_density": "Det ursprungliga punktmolnet uppvisade en uppskattad densitet på cirka **%s punkter/m²**, med totalt **%s punkter** inom det buffrat beskurna området.",
+      "pointcloud_subsample": "För att optimera bearbetningstiden nedsamplades molnet till en arbetsdensitet på **%s punkter/m²**, vilket resulterade i **%s punkter** efter filtrering.",
+      "pointcloud_noise": "Dessutom togs dubblettpunkter bort och bruspunkter identifierades och togs bort med hjälp av algoritmen **SOR** (Statistical Outlier Removal).",
+      "soil_csf": "Klassificeringen av markpunkter utfördes med algoritmen **CSF** (Cloth Simulation Filter, Zhang et al. 2016), konfigurerad med en styvhetsnivå på **%s**, ett klassificeringströskelvärde på **%s m** och en nätupplösning på **%s m**.",
+      "soil_result": "Som resultat identifierades **%s punkter** som tillhör marken, vilka användes för konstruktionen av den digitala höjdmodellen.",
+      "dem_generation": "Utifrån de punkter som klassificerats som mark genererades en digital höjdmodell (DEM) med en rumslig upplösning på **%s m**, med hjälp av triangulär interpolation (TIN).",
+      "dem_smoothing": "Modellen utjämnades i två på varandra följande steg: först med ett minimifönster på %sx%s pixlar för att minska inflytandet från kvarvarande vegetation, och därefter med ett medelvärdesfönster på %sx%s pixlar för att erhålla en kontinuerlig yta.",
+      "dem_stats": "Terrängen i det analyserade området uppvisade en minsta höjd på **%s m**, högsta på **%s m** och medelhöjd på **%s m**, med ett höjdintervall på **%s m**.",
+      "contours": "Höjdkurvor genererades utifrån den utjämnade DEM:en, med en ekvidistans på **%s m**. Kurvorna beskars till intresseområdets gränser och exporterades i shapefile-format för användning i geografiska informationssystem.",
+      "chm_normalization": "Punktmolnet normaliserades till marknivå genom att för varje punkt subtrahera höjden från den utjämnade DEM:en. Denna process gör det möjligt att uttrycka höjder i förhållande till marken (höjd över mark), oberoende av den underliggande topografin.",
+      "chm_generation": "Utifrån det normaliserade molnet genererades kronhöjdmodellen (CHM) med en upplösning på **%s m**.",
+      "chm_stats": "Vegetationshöjden inom det analyserade området varierade mellan **%s m** och **%s m**, med en medelhöjd på **%s m**.",
+      "trees_lmf": "Detekteringen av enskilda träd utfördes med algoritmen **LMF** (Local Maximum Filter), som identifierar lokala maxima i CHM:en som trädtoppar.",
+      "trees_params": "Ett sökfönster med en diameter på **%s m** och en minsta höjd på **%s m** användes för att utesluta buskar och föryngring.",
+      "trees_count": "Totalt **%s träd** upptäcktes inom det analyserade området.",
+      "trees_heights": "De uppskattade individuella höjderna varierade mellan **%s m** och **%s m**, med en medelhöjd på **%s m**.",
+      "density_sentence": "Densiteten av upptäckta individer är **%s träd/ha**, med ett uppskattat genomsnittligt avstånd på **%s m** mellan träden.",
+      "cv_sentence": "Variationskoefficienten för höjderna är **%s%%**, vilket indikerar ett bestånd som är **%s** med avseende på vertikal struktur (Avery och Burkhart, 2002).",
+      "cv_note": "Detta index är användbart för att bedöma tillväxtens homogenitet och planera differentierade skogsskötselåtgärder.",
+      "canopy_analysis": "Analysen av kronskiktet, beräknad genom vektorisering av CHM:ens binära mask (höjdtröskel = %s m), visar att kronorna täcker **%s%%** av den totala ytan, motsvarande **%s ha**.",
+      "canopy_importance": "Detta mått är grundläggande för att bedöma kronslutenhet, konkurrens mellan individer och effektivitet i utnyttjandet av utrymmet. Det är också avgörande för övervakning av skogsbetessystem, där kronskiktet avgör när beskärning och gallring bör utföras.",
+      "products_intro": "Alla produkter exporterades till den valda utdatamappen enligt följande struktur:",
+      "footer": "*Rapport genererad automatiskt med INTA-verktyget för LiDAR- och fotogrammetrisk skogsanalys (ForestMap - INTA EEA Montecarlo). De statistiska värdena motsvarar den bearbetning som utfördes vid angivet datum.*"
+    },
+    "products": {
+      "dem_desc": "Utjämnad digital höjdmodell, beskuren till intresseområdet.",
+      "chm_desc": "Kronhöjdmodell, beskuren till intresseområdet.",
+      "hillshade_desc": "Reliefskuggning.",
+      "contours_desc": "Höjdkurvor.",
+      "trees_desc": "Punkter för upptäckta träd med trädtoppshöjd.",
+      "roi_desc": "Polygon för det analyserade intresseområdet.",
+      "canopy_desc": "Polygoner för kronskikt (om tillgängligt)."
+    }
+  },
+  "folders": {
+    "project_prefix": "Projekt",
+    "raster": "RASTER",
+    "vector": "VEKTOR",
+    "report": "RAPPORT"
+  },
+  "files": {
+    "dem": "DEM",
+    "chm": "CHM",
+    "hillshade": "Skuggning",
+    "contour_lines": "Hojdkurvor",
+    "trees": "Trad",
+    "roi": "Intresseomrade",
+    "canopy_cover": "Krontackning",
+    "report_html": "Analysrapport",
+    "report_pdf": "Analysrapport"
+  }
+}

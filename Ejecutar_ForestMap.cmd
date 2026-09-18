@@ -13,6 +13,7 @@ if not defined RHOME (
 
 if not defined RHOME (
     echo No se encontro una instalacion de R.
+    echo R installation not found.
     pause
     exit /b 1
 )

@@ -5,17 +5,6 @@
 # generación de modelos digitales y detección de árboles
 # ==============================================================================
 
-# ──────────────────────────────────────────────────────────────────────────────
-# GESTIÓN DE ARCHIVOS
-# ──────────────────────────────────────────────────────────────────────────────
-crear_estructura_carpetas <- function(carpeta_trabajo) {
-  dirs <- c("Salidas_NUBES", "Salidas_RASTER", "Salidas_VECTORIALES", "Salidas_INFORME")
-  for (d in dirs) {
-    dir.create(file.path(carpeta_trabajo, d), showWarnings = FALSE, recursive = TRUE)
-  }
-  invisible(dirs)
-}
-
 validar_shp_un_poligono <- function(ruta_shp) {
   roi <- vect(ruta_shp)
   n   <- nrow(roi)
@@ -157,12 +146,22 @@ filtrar_nube <- function(las, densidad = 10, tipo = "aleatorio", log_fn = messag
     random(density = densidad)
   las <- decimate_points(las, algorithm = algo)
 
+  bb_sub   <- ext(las)
+  area_sub <- as.numeric((bb_sub[2]-bb_sub[1]) * (bb_sub[4]-bb_sub[3]))
+  dens_sub <- if (nrow(las@data) > 0 && area_sub > 0) round(nrow(las@data)/area_sub, 1) else NA_real_
+  log_fn(tr("processing.log.density_after_subsampling", lang, dens_sub))
+
   log_fn(tr("processing.log.removing_duplicates", lang))
   las <- filter_duplicates(las)
 
   log_fn(tr("processing.log.removing_noise", lang))
   las <- classify_noise(las, algorithm = sor())
   las <- filter_poi(las, Classification != LASNOISE)
+
+  bb_n   <- ext(las)
+  area_n <- as.numeric((bb_n[2]-bb_n[1]) * (bb_n[4]-bb_n[3]))
+  dens_n <- if (nrow(las@data) > 0 && area_n > 0) round(nrow(las@data)/area_n, 1) else NA_real_
+  log_fn(tr("processing.log.density_after_noise", lang, dens_n))
 
   log_fn(tr("processing.log.cloud_filtered", lang, format(nrow(las@data), big.mark=".")))
   las

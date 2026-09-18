@@ -54,12 +54,28 @@ register_config <- function(input, output, session, rv, ag, lang) {
     rv$cfg_institucion  <- if (nchar(inst)  == 0) "-" else inst
     rv$cfg_email        <- if (nchar(email) == 0) "-" else email
     rv$cfg_destinatario <- if (nchar(dest)  == 0) "-" else dest
+
     removeModal()
     showNotification(tr("notification.success.project_saved", lang()), type = "message")
   })
 
   output$cfg_resumen_autor       <- renderText(rv$cfg_autor)
   output$cfg_resumen_institucion <- renderText(rv$cfg_institucion)
+
+  # ── Nombre de Proyecto (obligatorio, fuera del modal) ──────────────────────
+  observeEvent(input$cfg_nombre_proyecto_input, {
+    nombre_proy <- trimws(input$cfg_nombre_proyecto_input)
+    nombre_proy <- gsub('[/\\\\:*?"<>|]', "_", nombre_proy)
+    nombre_proy <- sub("[. ]+$", "", nombre_proy)
+    rv$cfg_nombre_proyecto <- nombre_proy
+  }, ignoreInit = FALSE)
+
+  output$cfg_nombre_proyecto_error <- renderUI({
+    if (nchar(trimws(rv$cfg_nombre_proyecto)) == 0) {
+      tags$p(style="font-size:12px;color:#c0392b;margin:4px 0 0;",
+             tr("config.project_name.required_error", lang()))
+    }
+  })
 
   # ── LAS ──────────────────────────────────────────────────────────────────
   observeEvent(input$btn_las, {
@@ -70,6 +86,9 @@ register_config <- function(input, output, session, rv, ag, lang) {
       filtros_rstudio  = tr("config.file.dialog_las_filter",  lang()),
       dir_inicio       = rv$ultima_carpeta
     )
+    if (length(ruta) == 0 && !dialogo_backend_disponible()) {
+      showNotification(tr("notification.error.no_gui_backend", lang()), type = "error")
+    }
     if (length(ruta) > 0 && !is.na(ruta) && nchar(ruta) > 0) {
       rv$ruta_las       <- ruta
       rv$ultima_carpeta <- dirname(ruta)
@@ -105,6 +124,9 @@ register_config <- function(input, output, session, rv, ag, lang) {
       filtros_rstudio  = tr("config.file.dialog_shp_filter",  lang()),
       dir_inicio       = rv$ultima_carpeta
     )
+    if (length(ruta) == 0 && !dialogo_backend_disponible()) {
+      showNotification(tr("notification.error.no_gui_backend", lang()), type = "error")
+    }
     if (length(ruta) > 0 && !is.na(ruta) && nchar(ruta) > 0) {
       rv$ruta_shp       <- ruta
       rv$ultima_carpeta <- dirname(ruta)
@@ -146,6 +168,9 @@ register_config <- function(input, output, session, rv, ag, lang) {
       caption    = tr("config.file.dialog_dir_caption", lang()),
       dir_inicio = rv$ultima_carpeta
     )
+    if (is.na(ruta) && !dialogo_backend_disponible()) {
+      showNotification(tr("notification.error.no_gui_backend", lang()), type = "error")
+    }
     if (!is.na(ruta) && nchar(ruta) > 0)
       rv$ruta_dir <- ruta
   })
@@ -344,7 +369,8 @@ register_config <- function(input, output, session, rv, ag, lang) {
   # ── Botón Continuar: habilitar solo cuando todo está completo ─────────────
   observe({
     shp_ok     <- !is.null(rv$ruta_shp) || isTRUE(rv$usar_extension_completa)
-    todo_listo <- !is.null(rv$ruta_las) && shp_ok && !is.null(rv$ruta_dir)
+    nombre_ok  <- nchar(trimws(rv$cfg_nombre_proyecto)) > 0
+    todo_listo <- nombre_ok && !is.null(rv$ruta_las) && shp_ok && !is.null(rv$ruta_dir)
     if (todo_listo) session$sendCustomMessage("btnEnable",  "btn_continuar")
     else            session$sendCustomMessage("btnDisable", "btn_continuar")
   })
@@ -352,8 +378,10 @@ register_config <- function(input, output, session, rv, ag, lang) {
   observeEvent(input$btn_continuar, {
     req(rv$ruta_las, rv$ruta_dir)
     if (!isTRUE(rv$usar_extension_completa)) req(rv$ruta_shp)
+    req(nchar(trimws(rv$cfg_nombre_proyecto)) > 0)
     l <- lang()
-    crear_estructura_carpetas(rv$ruta_dir)
+    rv$ruta_proyecto <- file.path(rv$ruta_dir,
+                          paste0(tr("folders.project_prefix", l), "_", rv$cfg_nombre_proyecto))
     rv$configurado <- TRUE
     ag("log_config", tr("config.log.las", l, basename(rv$ruta_las)))
     if (isTRUE(rv$usar_extension_completa))
@@ -361,7 +389,7 @@ register_config <- function(input, output, session, rv, ag, lang) {
     else
       ag("log_config", tr("config.log.roi", l, basename(rv$ruta_shp)))
     ag("log_config", tr("config.log.dir", l, rv$ruta_dir))
-    ag("log_config", tr("config.log.folders_ready", l))
+    ag("log_config", tr("config.log.project_folder", l, rv$ruta_proyecto))
     showNotification(tr("notification.success.config_saved", l), type = "message")
     session$sendCustomMessage("tabEnable", "tab_prepro")
     updateNavbarPage(session, inputId = "main_nav", selected = "tab_prepro")

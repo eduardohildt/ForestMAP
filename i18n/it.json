@@ -1,0 +1,653 @@
+{
+  "app": {
+    "title": "INTA ForestMap"
+  },
+  "nav": {
+    "tab": {
+      "config": "Configurazione",
+      "data_load": "Caricamento dati",
+      "models": "Modelli digitali",
+      "trees": "Alberi",
+      "export": "Esporta",
+      "about": "📚 Informazioni ..."
+    }
+  },
+  "common": {
+    "btn": {
+      "cancel": "Annulla",
+      "save": "💾  Salva",
+      "apply": "Applica",
+      "close": "Chiudi",
+      "reset": "Ripristina valori consigliati",
+      "apply_config": "Applica configurazione",
+      "restore": "Ripristina",
+      "confirm_continue": "Conferma e continua",
+      "understood_continue": "Capito, continua"
+    },
+    "status": {
+      "loaded": "✔ Caricato",
+      "pending": "⏳ In attesa",
+      "not_selected": "Non selezionato",
+      "selected": "✔ Selezionato",
+      "full_extent": "✔ Estensione completa"
+    },
+    "meta": {
+      "epsg_detected": "EPSG: %s ✔ rilevato",
+      "no_crs": "Nessun CRS assegnato ⚠",
+      "no_crs_shp": "Nessun CRS ⚠",
+      "cannot_read_header": "Impossibile leggere l'intestazione",
+      "not_calculable": "Non calcolabile (CRS non proiettato)",
+      "multiple_polygons_warning": "%d ⚠ Si consiglia di usarne solo 1"
+    }
+  },
+  "config": {
+    "banner": {
+      "title": "Analisi integrale dei rilievi aerei",
+      "subtitle": "Applicata ai paesaggi produttivi forestali"
+    },
+    "pipeline": {
+      "project_step": "Progetto",
+      "project_configured": "✔ Configurato",
+      "project_edit": "Modifica dati del progetto",
+      "las_title": "Nuvola di punti LiDAR o fotogrammetrica (LAS/LAZ)",
+      "shp_title": "Area di interesse per l'analisi (SHP / KML / GeoJSON)",
+      "dir_title": "Cartella di output per i risultati",
+      "cta_title": "Tutto pronto per continuare",
+      "cta_desc": "Verifica le informazioni e prosegui con il passaggio successivo.",
+      "continue_btn": "Continua →"
+    },
+    "modal": {
+      "title": "⚙️ Configurazione del progetto",
+      "instructions": "Questi dati verranno utilizzati nel rapporto HTML. Se lasci un campo vuoto verrà scritto \"-\".",
+      "project_name_label": "Nome del progetto",
+      "project_name_placeholder": "Es: Bosco Nord 2026",
+      "author_label": "Autore",
+      "author_placeholder": "Nome dell'autore",
+      "institution_label": "Istituzione",
+      "institution_placeholder": "Nome dell'istituzione",
+      "email_label": "Email",
+      "email_placeholder": "email@esempio.com",
+      "recipient_label": "Destinatario",
+      "recipient_placeholder": "Destinatario del rapporto"
+    },
+    "project_name": {
+      "required_error": "⚠ È necessario inserire un nome di progetto per continuare."
+    },
+    "table": {
+      "author": "Autore",
+      "institution": "Istituzione",
+      "email": "Email",
+      "recipient": "Destinatario"
+    },
+    "file": {
+      "select_las_btn": "Seleziona file LAS/LAZ",
+      "change_file_btn": "Cambia file",
+      "select_shp_btn": "Seleziona area di interesse",
+      "select_polygon": "Seleziona poligono:",
+      "select_dir_btn": "Seleziona cartella di output",
+      "change_dir_btn": "Cambia cartella",
+      "meta_filename": "File",
+      "meta_size": "Dimensione",
+      "meta_projection": "Proiezione",
+      "meta_modified": "Modifica",
+      "meta_polygons": "Poligoni",
+      "meta_area": "Area totale",
+      "meta_path": "Percorso",
+      "dialog_las_caption": "Seleziona nuvola di punti (LAS/LAZ)",
+      "dialog_las_filter": "LAS/LAZ (*.las *.laz)",
+      "dialog_shp_caption": "Seleziona area di interesse",
+      "dialog_shp_filter": "File vettoriali (*.shp *.kml *.geojson *.json)",
+      "dialog_dir_caption": "Seleziona cartella di output",
+      "use_full_extent": "Usa l'intera estensione",
+      "full_extent_hint": "Verrà usato il perimetro della nuvola"
+    },
+    "log": {
+      "las": "LAS  : %s",
+      "roi": "ROI  : %s",
+      "roi_bbox": "ROI  : [estensione completa della nuvola di punti]",
+      "dir": "Dir  : %s",
+      "project_folder": "📁 Cartella del progetto: %s"
+    },
+    "polygon_label": "Poligono"
+  },
+  "notification": {
+    "success": {
+      "project_saved": "✅ Dati del progetto salvati.",
+      "config_saved": "✅ Configurazione salvata.",
+      "preprocessing_done": "✅ Pre-elaborazione completata.",
+      "models_done": "✅ Modelli generati.",
+      "export_done": "✅ Esportazione completata.",
+      "HTML_done": "✅ Rapporto HTML generato.",
+      "PDF_done": "✅ Rapporto PDF generato.",
+      "folder_opened": "📂 Cartella dei risultati aperta."
+    },
+    "error": {
+      "shp_cannot_read": "❌ Impossibile leggere lo SHP dell'area di interesse.",
+      "shp_multiple_polygons": "❌ Lo SHP contiene %d poligoni. L'area di interesse deve avere un unico poligono. Selezionare un file corretto.",
+      "folder_not_exists": "❌ La cartella dei risultati non esiste ancora.",
+      "prefix": "❌ ERRORE:",
+      "report_prefix": "❌ ERRORE rapporto:",
+      "generic": "Errore: %s",
+      "report_generic": "Errore rapporto: %s",
+      "folder_open_failed": "Impossibile aprire la cartella: %s",
+      "no_gui_backend": "❌ Non è stato trovato alcun sistema di finestre di dialogo per i file disponibile (RStudio o Tcl/Tk). Installare il pacchetto 'tcltk' (o i pacchetti di sistema tcl/tk) oppure eseguire l'applicazione da RStudio."
+    },
+    "warning": {
+      "crs_check": "Avviso durante la verifica del CRS: %s"
+    }
+  },
+  "progress": {
+    "preprocessing": {
+      "message": "Pre-elaborazione in corso...",
+      "loading": "Caricamento...",
+      "filtering": "Filtraggio...",
+      "soil_classification": "Classificazione del suolo..."
+    },
+    "models": {
+      "message": "Generazione modelli...",
+      "dem": "DEM...",
+      "contours": "Curve di livello...",
+      "hillshade": "Ombreggiatura...",
+      "chm": "Normalizzazione + CHM...",
+      "cropping": "Ritaglio sull'area di interesse..."
+    },
+    "trees": {
+      "message": "Rilevamento alberi..."
+    },
+    "export": {
+      "message": "Esportazione..."
+    }
+  },
+  "modal": {
+    "crs": {
+      "las_title": "⚠️ Nuvola di punti senza proiezione",
+      "las_body_1": "Il file LAS/LAZ non ha un sistema di riferimento delle coordinate (CRS) assegnato. Per continuare, inserire il codice EPSG corrispondente ai dati LAS.",
+      "las_body_shp_epsg": "Lo SHP caricato utilizza %s. Se entrambi i file condividono la stessa proiezione, usare lo stesso codice.",
+      "epsg_label": "Codice EPSG:",
+      "epsg_reference": "Consultare",
+      "epsg_reference_suffix": "per identificare il codice EPSG del proprio sistema di riferimento.",
+      "shp_title": "⚠️ Area di interesse senza proiezione",
+      "shp_body_1": "Il file SHP non ha un sistema di riferimento delle coordinate (CRS) assegnato. Per continuare, inserire il codice EPSG corrispondente all'area di interesse.",
+      "shp_body_las_epsg": "La nuvola di punti LAS utilizza %s. Se entrambi i file condividono la stessa proiezione, usare lo stesso codice.",
+      "shp_epsg_label": "Codice EPSG dello SHP:",
+      "mismatch_title": "⚠️ Sistemi di riferimento diversi",
+      "mismatch_body_1": "La nuvola di punti e l'area di interesse hanno proiezioni diverse:",
+      "mismatch_las": "LAS: ",
+      "mismatch_shp": "SHP: ",
+      "mismatch_body_2": "L'area di interesse verrà riproiettata automaticamente nel CRS della nuvola (%s) prima del ritaglio."
+    }
+  },
+  "data_load": {
+    "subsample": {
+      "header": "⚙️ Sottocampionamento della nuvola di punti",
+      "desc": "Scegli quanti punti per m² verranno caricati. Densità maggiore = maggiore fedeltà e tempo di elaborazione più lungo.",
+      "method_header": "Metodo di sottocampionamento",
+      "random": "Casuale",
+      "uniform": "Uniforme",
+      "advanced_btn": "⚙ Configurazione avanzata",
+      "method_tip": "Tipi di sottocampionamento: Casuale rispetta la distribuzione originale. Uniforme produce una distribuzione omogenea."
+    },
+    "csf": {
+      "header": "🏔️ Classificazione del suolo (algoritmo CSF)",
+      "desc": "Seleziona il tipo di rilievo predominante. L'algoritmo CSF modella una maglia che si adatta al terreno per separare il suolo dalla vegetazione.",
+      "advanced_btn": "⚙️ Configurazione avanzata (opzionale)"
+    },
+    "run_btn": "▶  Esegui caricamento e classificazione",
+    "metrics": {
+      "points_loaded": "Punti caricati",
+      "filtered": "Filtrati",
+      "soil": "Suolo",
+      "vegetation": "Vegetazione"
+    },
+    "tabs": {
+      "log": "📊 Log di elaborazione",
+      "cloud_original": "☁️ Nuvola originale",
+      "cloud_classified": "🗺️ Nuvola classificata"
+    },
+    "tips": {
+      "cloud_3d": "🖱️ Ruotare: clic+trascina · Zoom: rotellina · Spostare: clic destro",
+      "classified": "🎨 Colori: suolo vs. vegetazione"
+    }
+  },
+  "models": {
+    "dem": {
+      "header": "🏔️ Modello digitale di elevazione (DEM)",
+      "resolution_label": "Risoluzione del DEM (m)",
+      "contour_label": "Equidistanza delle curve di livello (m)",
+      "min_filter_label": "Filtraggio della vegetazione bassa",
+      "smooth_label": "Levigatura del DEM e delle curve di livello",
+      "advanced_btn": "⚙️ Configurazione avanzata"
+    },
+    "chm": {
+      "header": "🌿 Modello di altezza della chioma (CHM)",
+      "resolution_label": "Risoluzione del CHM (m)",
+      "gap_fill_label": "Riempimento dei vuoti",
+      "advanced_btn": "⚙️ Configurazione avanzata"
+    },
+    "run_btn": "▶  Genera tutti i modelli",
+    "tabs": {
+      "dem": "🗺️ DEM",
+      "contours": "📏 Curve di livello",
+      "hillshade": "🌓 Rilievo ombreggiato",
+      "chm": "🌿 CHM — Modello di altezza della chioma",
+      "profile": "📊 Profilo verticale",
+      "log": "📝 Log"
+    },
+    "tips": {
+      "dem": "Zoom con rotellina o selezione. Pulsante 🏠 per ripristinare.",
+      "contours": "Curve di livello tracciate sul DEM",
+      "hillshade": "Ombreggiatura del rilievo in base all'angolo solare.",
+      "chm": "Grigio=suolo · Blu=bassa · Verde=media · Giallo=alta · Rosso=emergenti",
+      "profile": "Distribuzione verticale delle altezze nella nuvola di punti"
+    },
+    "sublabels": {
+      "dem_raw": "DEM grezzo",
+      "dem_smooth": "DEM levigato"
+    },
+    "log": {
+      "cropping": "✂️  Ritaglio dei modelli sull'area di interesse...",
+      "crop_done": "✅ Ritaglio completato."
+    }
+  },
+  "trees": {
+    "detection": {
+      "header": "🌲 Rilevamento delle cime",
+      "desc": "L'algoritmo cerca il punto più alto in finestre mobili. Ogni massimo rappresenta un albero.",
+      "window_label": "Diametro della finestra di ricerca (m)",
+      "min_height_label": "Altezza minima degli alberi (m)",
+      "canopy_cutoff_label": "Altezza di soglia per la copertura (m)",
+      "advanced_btn": "⚙️ Configurazione avanzata"
+    },
+    "modal": {
+      "title": "Configurazione avanzata — Alberi",
+      "close_aria": "Chiudi",
+      "window_tip_label": "Diametro della finestra (m)",
+      "window_tip": "Diametro della finestra di ricerca, simile alla dimensione della chioma degli alberi",
+      "min_height_tip_label": "Altezza minima degli alberi (m)",
+      "min_height_tip": "Evita di cercare alberi molto bassi. Riduce i falsi positivi e velocizza la ricerca",
+      "canopy_cutoff_tip_label": "Altezza di soglia per la copertura (m)",
+      "canopy_cutoff_tip": "Soglia per classificare le aree coperte dalle chiome. Le aree del CHM al di sopra di questo valore sono considerate coperte",
+      "apply_btn": "Applica",
+      "close_btn": "Chiudi"
+    },
+    "metrics": {
+      "detected": "🌲 Alberi rilevati",
+      "density": "alb/ha",
+      "avg_height": "Altezza media (m)",
+      "max_height": "Altezza max (m)",
+      "canopy_area": "Area chiome (ha)",
+      "canopy_pct": "% Coperto"
+    },
+    "run_btn": "▶  Rileva alberi",
+    "tabs": {
+      "apex_map": "📍 Mappa delle cime",
+      "distribution": "📊 Distribuzione",
+      "canopy": "🌳 Copertura delle chiome",
+      "log": "📝 Log"
+    },
+    "tips": {
+      "apex": "Croci rosse = cime sul CHM. Zoom con rotellina o selezione.",
+      "canopy": "Analisi dell'area coperta dalle chiome utilizzando il CHM e la soglia di altezza configurata."
+    },
+    "log": {
+      "detected": "✅ %d alberi rilevati",
+      "coverage": "🌳 Copertura: %.1f%%"
+    }
+  },
+  "export": {
+    "raster_header": "🗺️ Modelli raster",
+    "vector_header": "📐 Livelli vettoriali",
+    "export_btn": "💾📄  Esporta e genera rapporto",
+    "open_folder_btn": "📂  Apri cartella",
+    "log_header": "📝 Log di esportazione",
+    "vector_format_label": "📐 Formato vettoriale",
+    "vector_format_shp": "SHP",
+    "vector_format_geojson": "GeoJSON",
+    "log": {
+      "generating_HTML": "📄 Generazione del rapporto descrittivo HTML...",
+      "exporting_all": "💾 Esportazione di tutti i prodotti...",
+      "folder_created": "  ✓ Cartella creata: %s",
+      "exporting_rasters": "  → Esportazione raster GeoTIFF...",
+      "exporting_vectors": "  → Esportazione livelli vettoriali (%s)...",
+      "exporting_canopy": "  → Esportazione copertura delle chiome...",
+      "canopy_saved": "    ✓ %s salvato",
+      "canopy_error": "    ⚠ Errore durante l'esportazione della copertura delle chiome: %s",
+      "canopy_unavailable": "  ⊗ Copertura delle chiome non disponibile (omessa)",
+      "export_complete": "✅ Esportazione completata."
+    }
+  },
+  "about": {
+    "references_header": "📚 Riferimenti bibliografici",
+    "tool_header": "ℹ️ Informazioni sullo strumento INTA per l'analisi integrale dei rilievi aerofotogrammetrici e LiDAR nei paesaggi produttivi forestali",
+    "tool_description": "Sviluppato dal Gruppo Forestale della Stazione Sperimentale Agricola Montecarlo dell'INTA, questo strumento presenta un flusso di lavoro per l'analisi di nuvole di punti generate da rilievi aerofotogrammetrici o LiDAR.",
+    "functions_heading": "Funzioni integrate:",
+    "function_1": "Ritaglio e sottocampionamento della nuvola di punti",
+    "function_2": "Classificazione automatica del terreno",
+    "function_3": "Generazione di modelli digitali (DEM, CHM)",
+    "function_4": "Estrazione delle curve di livello",
+    "function_5": "Rilevamento di alberi individuali",
+    "function_6": "Rapporto descrittivo in HTML",
+    "version_label": "Versione:",
+    "updated_label": "Ultimo aggiornamento:",
+    "updated_value": "Settembre 2026",
+    "contact_label": "Contatto:",
+    "lidr_ref_title": "Pacchetto lidR",
+    "csf_ref_title": "Algoritmo CSF (suolo)",
+    "feedback_header": "💬 Commenti e suggerimenti",
+    "feedback_desc": "Hai suggerimenti o hai trovato un errore? La tua opinione ci aiuta a migliorare lo strumento.",
+    "feedback_btn": "Compila il modulo"
+  },
+  "presets": {
+    "csf": {
+      "flat_title": "Terreno pianeggiante",
+      "flat_desc": "Rilievo piatto o quasi piatto",
+      "wavy_title": "Terreno ondulato",
+      "wavy_desc": "Variazioni lievi (più comune)",
+      "rugged_title": "Terreno accidentato",
+      "rugged_desc": "Burroni, terrazze, torrenti",
+      "custom_badge": "⚙ Configurazione personalizzata attiva",
+      "modal_title": "⚙️ Configurazione avanzata — Algoritmo CSF",
+      "custom_badge_modal": "Personalizzata",
+      "modal_desc": "Regolazione manuale dei parametri dell'algoritmo CSF.",
+      "cloth_res_label": "Risoluzione della maglia (m)",
+      "cloth_res_tip": "Dimensione della cella della maglia che modella il terreno. Valori più bassi si adattano meglio al micro-rilievo ma richiedono più calcolo. Valori troppo bassi possono sovrastimare il livello del terreno sotto vegetazione fitta.",
+      "threshold_label": "Soglia (m)",
+      "threshold_tip": "Distanza massima tra un punto e la maglia per classificarlo come suolo.",
+      "slope_label": "Adattamento a pendii ripidi",
+      "slope_tip": "Migliora l'aderenza della maglia in zone con variazioni di livello brusche (bordi di strade, burroni, torrenti).",
+      "slope_checkbox": "Attiva la levigatura dei pendii"
+    },
+    "density": {
+      "custom_modal_title": "Densità personalizzata",
+      "custom_input_label": "Densità obiettivo (pt/m²):",
+      "low_label": "Bassa",
+      "low_desc": "≈ 10 pt/m²",
+      "medium_label": "Media",
+      "medium_desc": "≈ 25 pt/m²",
+      "high_label": "Alta",
+      "high_desc": "≈ 50 pt/m²",
+      "custom_badge": "⚙ Densità personalizzata attiva"
+    },
+    "dem": {
+      "res_high_label": "Alta",
+      "res_high_desc": "0.25 m/px",
+      "res_medium_label": "Media",
+      "res_medium_desc": "0.5 m/px",
+      "res_low_label": "Bassa",
+      "res_low_desc": "1 m/px",
+      "contour_1_label": "0.5 m",
+      "contour_1_desc": "Topografia dettagliata",
+      "contour_2_label": "1 m",
+      "contour_2_desc": "Dettaglio normale",
+      "contour_3_label": "5 m",
+      "contour_3_desc": "Poco dettaglio",
+      "filter_conservative_label": "Conservativo",
+      "filter_conservative_desc": "3 px — mantiene più dettagli",
+      "filter_medium_label": "Medio",
+      "filter_medium_desc": "5 px — equilibrato",
+      "filter_aggressive_label": "Aggressivo",
+      "filter_aggressive_desc": "9 px — filtra la vegetazione bassa",
+      "smooth_conservative_label": "Conservativo",
+      "smooth_conservative_desc": "5 px — micro-rilievo preservato",
+      "smooth_medium_label": "Medio",
+      "smooth_medium_desc": "15 px — levigatura equilibrata",
+      "smooth_aggressive_label": "Aggressivo",
+      "smooth_aggressive_desc": "27 px — levigatura forte",
+      "modal_title": "⚙️ Configurazione avanzata — DEM",
+      "res_label": "Risoluzione DEM (m)",
+      "res_tip": "Dimensione del pixel del modello di elevazione. Valori più bassi = maggiore dettaglio e costo computazionale",
+      "contour_label": "Equidistanza delle curve di livello (m)",
+      "contour_tip": "Separazione verticale tra le curve di livello. Valori più piccoli generano più curve",
+      "min_filter_label": "Filtro di minimizzazione (px)",
+      "min_filter_tip": "Elimina punti alti di vegetazione bassa. Valori più alti filtrano più vegetazione (dispari, 3–15)",
+      "mean_filter_label": "Filtro di media (px)",
+      "mean_filter_tip": "Leviga il rilievo del DEM. Valori più alti producono superfici più lisce (dispari, 3–81)"
+    },
+    "chm": {
+      "res_high_label": "Alta",
+      "res_high_desc": "0.25 m/px",
+      "res_medium_label": "Media",
+      "res_medium_desc": "0.5 m/px",
+      "res_low_label": "Bassa",
+      "res_low_desc": "1 m/px",
+      "gap_conservative_label": "Conservativo",
+      "gap_conservative_desc": "0.025 m — minimo",
+      "gap_medium_label": "Medio",
+      "gap_medium_desc": "0.25 m — normale",
+      "gap_aggressive_label": "Aggressivo",
+      "gap_aggressive_desc": "0.5 m — massimo",
+      "modal_title": "⚙️ Configurazione avanzata — CHM",
+      "res_label": "Risoluzione CHM (m)",
+      "res_tip": "Dimensione del pixel del modello di altezza della chioma. Valori più bassi = maggiore dettaglio (0.1–2 m)",
+      "gap_label": "Riempimento dei vuoti (m)",
+      "gap_tip": "Raggio di ricerca per l'interpolazione dei vuoti nel CHM. Valore maggiore = più riempimento (0–0.5 m)"
+    },
+    "tree": {
+      "ws_small_label": "Piccola",
+      "ws_small_desc": "4 m",
+      "ws_medium_label": "Media",
+      "ws_medium_desc": "6 m",
+      "ws_large_label": "Grande",
+      "ws_large_desc": "8 m",
+      "hmin_low_label": "Bassa",
+      "hmin_low_desc": "5 m",
+      "hmin_medium_label": "Media",
+      "hmin_medium_desc": "10 m",
+      "hmin_high_label": "Alta",
+      "hmin_high_desc": "15 m",
+      "cutoff_low_label": "Bassa",
+      "cutoff_low_desc": "2 m",
+      "cutoff_medium_label": "Media",
+      "cutoff_medium_desc": "4 m",
+      "cutoff_high_label": "Alta",
+      "cutoff_high_desc": "8 m"
+    }
+  },
+  "plot": {
+    "title": {
+      "dem_raw": "DEM grezzo (TIN)",
+      "dem_smooth": "DEM levigato",
+      "hillshade": "Hillshade — Ombreggiatura del rilievo",
+      "chm": "CHM — Modello di altezza della chioma",
+      "dem_contours": "DEM levigato + curve di livello",
+      "vertical_profile": "Distribuzione verticale — nuvola normalizzata",
+      "cloud_original": "Nuvola originale — colorata per elevazione (Z)",
+      "cloud_classified": "Nuvola classificata — suolo (giallo) / vegetazione (verde)",
+      "trees_on_chm": "Alberi identificati sul CHM",
+      "tree_heights": "Distribuzione delle altezze degli alberi rilevati",
+      "canopy_coverage": "Copertura delle chiome: %.1f%% dell'area"
+    },
+    "axis": {
+      "height_m": "Altezza sul terreno (m)",
+      "frequency": "Frequenza",
+      "rel_frequency": "Frequenza relativa (%)",
+      "apex_height": "Altezza della cima (m)",
+      "x_m": "X (m)",
+      "y_m": "Y (m)",
+      "z_m": "Z (m)"
+    },
+    "colorbar": {
+      "elevation": "Elevazione (m)",
+      "class": "Classe",
+      "elev_short": "Elev.(m)",
+      "height_short": "Alt.(m)",
+      "coverage": "Copertura",
+      "light": "Luce"
+    },
+    "hover": {
+      "apex": "Cima: %s m"
+    },
+    "canopy": {
+      "no_canopy": "Senza chioma",
+      "canopy": "Chioma"
+    }
+  },
+  "processing": {
+    "log": {
+      "loading_cloud": "📂 Caricamento della nuvola di punti...",
+      "cloud_loaded": "✅ Nuvola caricata: %s pt | densità ≈ %.1f pt/m²",
+      "loading_roi": "🗺️  Caricamento dell'area di interesse...",
+      "roi_area": "   Area di interesse: %.2f ha",
+      "assigning_crs_las": "📐 Assegnazione del CRS al LAS: EPSG:%d",
+      "assigning_crs_shp": "📐 Assegnazione del CRS allo SHP: EPSG:%d",
+      "shp_no_crs": "⚠️  SHP senza proiezione. Assegnazione del CRS del LAS all'area di interesse...",
+      "crs_assigned": "   CRS assegnato: EPSG:%d",
+      "crs_mismatch": "⚠️  CRS diversi. Riproiezione dell'area di interesse nel CRS del LAS...",
+      "reprojection_done": "   Riproiezione completata.",
+      "clipping": "✂️  Ritaglio con buffer di %d m...",
+      "no_points_in_roi": "L'area di interesse non contiene punti della nuvola. Verificare che il poligono SHP si sovrapponga al file LAZ.",
+      "cloud_clipped": "✅ Nuvola ritagliata: %s pt",
+      "subsampling": "🔽 Sottocampionamento a densità %.0f pt/m² (%s)...",
+      "removing_duplicates": "🔍 Rimozione dei punti duplicati...",
+      "removing_noise": "🔇 Classificazione e rimozione del rumore (SOR)...",
+      "density_after_subsampling": "📊 Densità dopo il sottocampionamento: %.1f pt/m²",
+      "density_after_noise": "📊 Densità dopo la rimozione del rumore: %.1f pt/m²",
+      "cloud_filtered": "✅ Nuvola filtrata: %s pt",
+      "soil_classification": "🏔️ Classificazione del suolo — CSF (rigidità: %s)...",
+      "soil_classified": "✅ Punti di suolo classificati: %s",
+      "generating_dem": "📐 Generazione del DEM — risoluzione %.2f m (TIN)...",
+      "smoothing": "🔀 Levigatura: finestra minima %dx%d → finestra media %dx%d...",
+      "dem_stats": "   Elevazione minima: %.1f m | massima: %.1f m | media: %.1f m",
+      "dem_done": "✅ DEM generato e levigato.",
+      "contours": "📏 Curve di livello (equidistanza %.2f m)...",
+      "contour_range": "   Intervallo: %.2f – %.2f m → %d livelli",
+      "contours_done": "✅ %d curve generate.",
+      "hillshade": "☀️  Ombreggiatura (sole: %.0f° elevazione, %.0f° azimut)...",
+      "hillshade_done": "✅ Ombreggiatura generata.",
+      "normalizing": "📉 Normalizzazione della nuvola al livello del terreno...",
+      "cloud_normalized": "✅ Nuvola normalizzata: %s pt",
+      "chm": "🌿 CHM — risoluzione %.2f m (p2r + knnidw)...",
+      "chm_stats": "   Altezza minima: %.1f m | massima: %.1f m | media: %.1f m",
+      "chm_done": "✅ CHM generato.",
+      "detecting_trees": "🌲 Rilevamento alberi — LMF (ws=%.1f m, hmin=%.1f m)...",
+      "trees_detected_proc": "✅ %d alberi rilevati."
+    },
+    "csf": {
+      "quebrado": "1 — Accidentato",
+      "ondulado": "2 — Ondulato / Medio",
+      "llano": "3 — Pianeggiante"
+    }
+  },
+  "preprocessing": {
+    "log": {
+      "crs_las_assigned": "📐 CRS assegnato dall'utente al LAS: EPSG:%d",
+      "crs_shp_assigned": "📐 CRS assegnato dall'utente allo SHP: EPSG:%d",
+      "reprojection": "📐 Riproiezione confermata: SHP EPSG:%s → LAS EPSG:%s."
+    }
+  },
+  "footer": {
+    "main": "INTA ForestMap — Analisi integrale dei rilievi aerei — Dr. Eduardo Hildt — INTA EEA Montecarlo — "
+  },
+  "report": {
+    "error": {
+      "invalid_dir": "ruta_dir non valido per generare il rapporto"
+    },
+    "log": {
+      "generating": "📄 Generazione del rapporto descrittivo HTML ...",
+      "slope_warning": "  ⚠ Impossibile calcolare le pendenze: %s",
+      "figure_coverage": "  ✓ Figura di copertura delle chiome generata",
+      "figure_coverage_error": "  ⚠ Impossibile generare la figura di copertura: %s",
+      "pandoc_not_found": "⚠ Pandoc non trovato. Installarlo con il proprio gestore di pacchetti (es. 'sudo apt install pandoc') o da https://pandoc.org/installing.html.",
+      "html_saved": "✅ HTML salvato in: %s"
+    },
+    "fig": {
+      "dem": "Modello digitale di elevazione (DEM) con curve di livello",
+      "hillshade": "Hillshade — Ombreggiatura del rilievo",
+      "chm": "Modello di altezza della chioma (CHM)",
+      "trees": "Alberi rilevati (N=%s)",
+      "tree_heights": "Distribuzione delle altezze degli alberi",
+      "canopy": "Copertura delle chiome: %.1f%% dell'area (soglia %.1f m)"
+    },
+    "homogeneity": {
+      "very_homogeneous": "molto omogeneo",
+      "moderately_homogeneous": "moderatamente omogeneo",
+      "moderately_heterogeneous": "moderatamente eterogeneo",
+      "highly_heterogeneous": "altamente eterogeneo"
+    },
+    "section": {
+      "survey_data": "Dati del rilievo",
+      "area": "Descrizione dell'area analizzata",
+      "pointcloud": "Nuvola di punti",
+      "soil": "Classificazione del terreno",
+      "models": "Analisi del rilievo",
+      "vertical": "Struttura verticale del popolamento forestale",
+      "trees": "Rilevamento di alberi individuali",
+      "management": "Indicatori di gestione forestale",
+      "products": "Prodotti generati",
+      "references": "Riferimenti"
+    },
+    "title": "Rapporto di analisi del rilievo aereo forestale",
+    "table": {
+      "field": "Campo",
+      "detail": "Dettaglio",
+      "recipient": "Destinatario",
+      "analysis_date": "Data di analisi",
+      "pointcloud_file": "File della nuvola di punti",
+      "roi": "Area di interesse",
+      "analyst": "Analista",
+      "institution": "Istituzione",
+      "email": "Email"
+    },
+    "subsection": {
+      "survey_characteristics": "Caratteristiche del rilievo",
+      "dem": "Modello digitale di elevazione (DEM)",
+      "contours": "Curve di livello",
+      "chm": "Normalizzazione e modello di altezza della chioma (CHM)",
+      "density": "Densità e struttura del popolamento",
+      "canopy": "Copertura delle chiome"
+    },
+    "content": {
+      "area": "L'area analizzata copre approssimativamente **%s ettari**, delimitata dallo shapefile dell'area di interesse fornito.",
+      "lidr_note": "Il rilievo aereo è stato elaborato interamente con la suite di strumenti del pacchetto **lidR** per R [@lidR2021; @lidR2023], sviluppato specificamente per l'analisi di dati LiDAR aviotrasportati in applicazioni forestali e applicabile a nuvole di punti ottenute tramite fotogrammetria.",
+      "pointcloud_density": "La nuvola di punti originale presentava una densità stimata di circa **%s punti/m²**, con un totale di **%s punti** nell'area ritagliata con buffer.",
+      "pointcloud_subsample": "Per ottimizzare i tempi di elaborazione, la nuvola è stata sottocampionata a una densità di lavoro di **%s punti/m²**, risultando in **%s punti** dopo il filtraggio.",
+      "pointcloud_noise": "Inoltre, sono stati rimossi i punti duplicati e sono stati identificati e rimossi i punti di rumore mediante l'algoritmo **SOR** (Statistical Outlier Removal).",
+      "soil_csf": "La classificazione dei punti di suolo è stata eseguita utilizzando l'algoritmo **CSF** (Cloth Simulation Filter, Zhang et al. 2016), configurato con un livello di rigidità **%s**, una soglia di classificazione di **%s m** e una risoluzione della maglia di **%s m**.",
+      "soil_result": "Come risultato, sono stati identificati **%s punti** appartenenti al suolo, utilizzati per la costruzione del modello digitale di elevazione.",
+      "dem_generation": "A partire dai punti classificati come suolo, è stato generato un Modello Digitale di Elevazione (DEM) con una risoluzione spaziale di **%s m**, utilizzando interpolazione triangolare (TIN).",
+      "dem_smoothing": "Il modello è stato levigato in due fasi consecutive: prima con una finestra minima di %sx%s pixel per ridurre l'influenza della vegetazione residua, e poi con una finestra media di %sx%s pixel per ottenere una superficie continua.",
+      "dem_stats": "Il terreno dell'area analizzata presentava un'elevazione minima di **%s m**, massima di **%s m** e media di **%s m**, con un intervallo altitudinale di **%s m**.",
+      "contours": "Sono state generate curve di livello a partire dal DEM levigato, con un'equidistanza di **%s m**. Le curve sono state ritagliate ai limiti dell'area di interesse ed esportate in formato shapefile per l'uso in sistemi informativi geografici.",
+      "chm_normalization": "La nuvola di punti è stata normalizzata al livello del terreno sottraendo a ogni punto l'elevazione del DEM levigato. Questo processo consente di esprimere le altezze in termini relativi al suolo (altezze sul terreno), indipendentemente dalla topografia sottostante.",
+      "chm_generation": "A partire dalla nuvola normalizzata è stato generato il Modello di Altezza della Chioma (CHM) con una risoluzione di **%s m**.",
+      "chm_stats": "L'altezza della vegetazione nell'area analizzata variava tra **%s m** e **%s m**, con un'altezza media di **%s m**.",
+      "trees_lmf": "Il rilevamento di alberi individuali è stato eseguito mediante l'algoritmo **LMF** (Local Maximum Filter), che identifica i massimi locali del CHM come cime degli alberi.",
+      "trees_params": "È stata utilizzata una finestra di ricerca di **%s m** di diametro e un'altezza minima di **%s m** per escludere arbusti e rinnovazione.",
+      "trees_count": "Sono stati rilevati in totale **%s alberi** nell'area analizzata.",
+      "trees_heights": "Le altezze individuali stimate variavano tra **%s m** e **%s m**, con un'altezza media di **%s m**.",
+      "density_sentence": "La densità degli individui rilevati è di **%s alberi/ha**, con una spaziatura media stimata di **%s m** tra gli alberi.",
+      "cv_sentence": "Il coefficiente di variazione delle altezze è del **%s%%**, il che indica un popolamento **%s** in termini di struttura verticale (Avery e Burkhart, 2002).",
+      "cv_note": "Questo indice è utile per valutare l'omogeneità della crescita e pianificare interventi selvicolturali differenziati.",
+      "canopy_analysis": "L'analisi della copertura delle chiome, calcolata mediante vettorializzazione della maschera binaria del CHM (soglia di altezza = %s m), indica che le chiome coprono il **%s%%** dell'area totale, pari a **%s ha**.",
+      "canopy_importance": "Questa metrica è fondamentale per valutare la chiusura della chioma, la competizione tra individui e l'efficienza nell'uso dello spazio. Risulta inoltre chiave per il monitoraggio dei sistemi silvopastorali, dove la copertura delle chiome determina il momento in cui devono essere eseguite potature e diradamenti.",
+      "products_intro": "Tutti i prodotti sono stati esportati nella cartella di output selezionata con la seguente struttura:",
+      "footer": "*Rapporto generato automaticamente con lo Strumento INTA per l'Analisi LiDAR e Fotogrammetrica Forestale (ForestMap - INTA EEA Montecarlo). I valori statistici corrispondono all'elaborazione effettuata alla data indicata.*"
+    },
+    "products": {
+      "dem_desc": "Modello digitale di elevazione levigato, ritagliato sull'area di interesse.",
+      "chm_desc": "Modello di altezza della chioma, ritagliato sull'area di interesse.",
+      "hillshade_desc": "Ombreggiatura del rilievo.",
+      "contours_desc": "Curve di livello.",
+      "trees_desc": "Punti degli alberi rilevati con altezza della cima.",
+      "roi_desc": "Poligono dell'area di interesse analizzata.",
+      "canopy_desc": "Poligoni di copertura delle chiome (se disponibili)."
+    }
+  },
+  "folders": {
+    "project_prefix": "Progetto",
+    "raster": "RASTER",
+    "vector": "VETTORIALE",
+    "report": "RAPPORTO"
+  },
+  "files": {
+    "dem": "DEM",
+    "chm": "CHM",
+    "hillshade": "Ombreggiatura",
+    "contour_lines": "Curve_Livello",
+    "trees": "Alberi",
+    "roi": "Area_Interesse",
+    "canopy_cover": "Copertura_Chiome",
+    "report_html": "Rapporto_Analisi",
+    "report_pdf": "Rapporto_Analisi"
+  }
+}

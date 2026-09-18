@@ -13,11 +13,13 @@ if not defined RHOME (
 
 if not defined RHOME (
     echo No se encontro una instalacion de R.
+    echo R installation not found.
     pause
     exit /b 1
 )
 
 echo Instalando dependencias de ForestMap...
+echo Installing ForestMap dependencies...
 echo.
 "%RHOME%\bin\Rscript.exe" dev\install.R
 

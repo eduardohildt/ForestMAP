@@ -14,9 +14,11 @@
 #' @return Path to generated HTML.
 #' @export
 generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message) {
-  if (is.null(rv$ruta_dir) || !nzchar(rv$ruta_dir)) {
+  if (is.null(rv$ruta_proyecto) || !nzchar(rv$ruta_proyecto)) {
     stop(tr("report.error.invalid_dir", lang))
   }
+
+  ext_vect <- if (identical(input$sel_formato_vectorial, "geojson")) ".geojson" else ".shp"
 
   log_fn(tr("report.log.generating", lang))
 
@@ -125,7 +127,7 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
   # ============================================================================
   # GENERACIÓN DE FIGURAS
   # ============================================================================
-  dir_inf <- file.path(rv$ruta_dir, "Salidas_INFORME")
+  dir_inf <- file.path(rv$ruta_proyecto, tr("folders.report", lang))
   if (!dir.exists(dir_inf)) dir.create(dir_inf, recursive = TRUE)
   dir_inf_rmd <- gsub("\\\\", "/", dir_inf)  # forward slashes para uso en código Rmd
   # Unified ggplot2 theme and save helper
@@ -224,9 +226,9 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
   # ============================================================================
   # GENERACIÓN DEL DOCUMENTO RMD
   # ============================================================================
-  rmd_p <- file.path(rv$ruta_dir, "informe.Rmd")
-  out_h <- file.path(rv$ruta_dir, "Salidas_INFORME", "Informe_Analisis.html")
-  out_p <- file.path(rv$ruta_dir, "Salidas_INFORME", "Informe_Analisis.pdf")
+  rmd_p <- file.path(rv$ruta_proyecto, "informe.Rmd")
+  out_h <- file.path(dir_inf, paste0(tr("files.report_html", lang), ".html"))
+  out_p <- file.path(dir_inf, paste0(tr("files.report_pdf", lang), ".pdf"))
 
   writeLines(con = rmd_p, c(
     "---",
@@ -356,23 +358,18 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     "",
     tr("report.content.products_intro", lang),
     "",
-    tr("report.products.clouds_header", lang),
+    paste0("**", tr("folders.raster", lang), "/**"),
     "",
-    tr("report.products.classified", lang),
-    tr("report.products.normalized", lang),
+    paste0("- `", tr("files.dem", lang), ".tif`: ", tr("report.products.dem_desc", lang)),
+    paste0("- `", tr("files.chm", lang), ".tif`: ", tr("report.products.chm_desc", lang)),
+    paste0("- `", tr("files.hillshade", lang), ".tif`: ", tr("report.products.hillshade_desc", lang)),
     "",
-    tr("report.products.raster_header", lang),
+    paste0("**", tr("folders.vector", lang), "/**"),
     "",
-    tr("report.products.dem", lang),
-    tr("report.products.chm", lang),
-    tr("report.products.hillshade", lang),
-    "",
-    tr("report.products.vector_header", lang),
-    "",
-    tr("report.products.contours_shp", lang),
-    tr("report.products.trees_shp", lang),
-    tr("report.products.roi_shp", lang),
-    tr("report.products.canopy_shp", lang),
+    paste0("- `", tr("files.contour_lines", lang), ext_vect, "`: ", tr("report.products.contours_desc", lang)),
+    paste0("- `", tr("files.trees", lang), ext_vect, "`: ", tr("report.products.trees_desc", lang)),
+    paste0("- `", tr("files.roi", lang), ext_vect, "`: ", tr("report.products.roi_desc", lang)),
+    paste0("- `", tr("files.canopy_cover", lang), ext_vect, "`: ", tr("report.products.canopy_desc", lang)),
     "",
     paste0("# ", tr("report.section.references", lang)),
     "",
@@ -391,18 +388,23 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
 
   # Buscar pandoc si no está disponible (ejecución desde CMD sin RStudio)
   if (!rmarkdown::pandoc_available()) {
-    pandoc_dirs <- c(
-      file.path(Sys.getenv("PROGRAMFILES"),      "RStudio/resources/app/bin/quarto/bin/tools"),
-      file.path(Sys.getenv("PROGRAMFILES(X86)"), "RStudio/resources/app/bin/quarto/bin/tools"),
-      file.path(Sys.getenv("LOCALAPPDATA"), "Programs/RStudio/resources/app/bin/quarto/bin/tools"),
-      file.path(Sys.getenv("PROGRAMFILES"),      "RStudio/bin/pandoc"),
-      file.path(Sys.getenv("PROGRAMFILES(X86)"), "RStudio/bin/pandoc")
-    )
-    for (d in pandoc_dirs) {
-      if (file.exists(file.path(d, "pandoc.exe"))) {
-        rmarkdown::find_pandoc(dir = d, cache = FALSE)
-        break
+    if (.Platform$OS.type == "windows") {
+      pandoc_dirs <- c(
+        file.path(Sys.getenv("PROGRAMFILES"),      "RStudio/resources/app/bin/quarto/bin/tools"),
+        file.path(Sys.getenv("PROGRAMFILES(X86)"), "RStudio/resources/app/bin/quarto/bin/tools"),
+        file.path(Sys.getenv("LOCALAPPDATA"), "Programs/RStudio/resources/app/bin/quarto/bin/tools"),
+        file.path(Sys.getenv("PROGRAMFILES"),      "RStudio/bin/pandoc"),
+        file.path(Sys.getenv("PROGRAMFILES(X86)"), "RStudio/bin/pandoc")
+      )
+      for (d in pandoc_dirs) {
+        if (file.exists(file.path(d, "pandoc.exe"))) {
+          rmarkdown::find_pandoc(dir = d, cache = FALSE)
+          break
+        }
       }
+    }
+    if (!rmarkdown::pandoc_available()) {
+      log_fn(tr("report.log.pandoc_not_found", lang))
     }
   }
 
@@ -410,7 +412,7 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
                     envir = new.env(parent = globalenv()), quiet = TRUE)
   unlink(rmd_p)
 
-  log_fn(paste("✅ HTML guardado en:", out_h))
+  log_fn(tr("report.log.html_saved", lang, out_h))
   invisible(out_h)
 
   Sys.sleep(1)

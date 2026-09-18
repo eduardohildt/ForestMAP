@@ -59,6 +59,8 @@
     "modal": {
       "title": "⚙️ Project configuration",
       "instructions": "This data will be used in the HTML report. If a field is left empty, \"-\" will be written.",
+      "project_name_label": "Project Name",
+      "project_name_placeholder": "E.g.: North Stand 2026",
       "author_label": "Author",
       "author_placeholder": "Author name",
       "institution_label": "Institution",
@@ -67,6 +69,9 @@
       "email_placeholder": "email@example.com",
       "recipient_label": "Recipient",
       "recipient_placeholder": "Report recipient"
+    },
+    "project_name": {
+      "required_error": "⚠ You must enter a project name to continue."
     },
     "table": {
       "author": "Author",
@@ -101,7 +106,7 @@
       "roi": "ROI  : %s",
       "roi_bbox": "ROI  : [full point cloud extent]",
       "dir": "Dir  : %s",
-      "folders_ready": "Folders: CLOUDS / RASTER / VECTORS / REPORT — ✅ ready"
+      "project_folder": "📁 Project folder: %s"
     },
     "polygon_label": "Polygon"
   },
@@ -124,7 +129,8 @@
       "report_prefix": "❌ REPORT ERROR:",
       "generic": "Error: %s",
       "report_generic": "Report error: %s",
-      "folder_open_failed": "Could not open folder: %s"
+      "folder_open_failed": "Could not open folder: %s",
+      "no_gui_backend": "❌ No native file dialog backend is available (RStudio or Tcl/Tk). Install the 'tcltk' package (or your OS tcl/tk packages) or run the app from RStudio."
     },
     "warning": {
       "crs_check": "Warning verifying CRS: %s"
@@ -289,15 +295,25 @@
     }
   },
   "export": {
-    "clouds_header": "☁️ Point clouds",
     "raster_header": "🗺️ Raster models",
     "vector_header": "📐 Vector layers",
-    "export_btn": "💾  Export products",
-    "HTML_btn": "📄  Generate HTML report",
+    "export_btn": "💾📄  Export & generate report",
     "open_folder_btn": "📂  Open folder",
     "log_header": "📝 Export log",
+    "vector_format_label": "📐 Vector format",
+    "vector_format_shp": "SHP",
+    "vector_format_geojson": "GeoJSON",
     "log": {
-      "generating_HTML": "📄 Generating descriptive HTML report..."
+      "generating_HTML": "📄 Generating descriptive HTML report...",
+      "exporting_all": "💾 Exporting all products...",
+      "folder_created": "  ✓ Folder created: %s",
+      "exporting_rasters": "  → Exporting GeoTIFF rasters...",
+      "exporting_vectors": "  → Exporting vector layers (%s)...",
+      "exporting_canopy": "  → Exporting canopy coverage...",
+      "canopy_saved": "    ✓ %s saved",
+      "canopy_error": "    ⚠ Error exporting canopy coverage: %s",
+      "canopy_unavailable": "  ⊗ Canopy coverage not available (skipped)",
+      "export_complete": "✅ Export complete."
     }
   },
   "about": {
@@ -313,7 +329,7 @@
     "function_6": "Descriptive HTML report",
     "version_label": "Version:",
     "updated_label": "Last update:",
-    "updated_value": "June 2026",
+    "updated_value": "September 2026",
     "contact_label": "Contact:",
     "lidr_ref_title": "lidR package",
     "csf_ref_title": "CSF algorithm (ground)",
@@ -484,6 +500,8 @@
       "subsampling": "🔽 Subsampling to density %.0f pts/m² (%s)...",
       "removing_duplicates": "🔍 Removing duplicate points...",
       "removing_noise": "🔇 Classifying and removing noise (SOR)...",
+      "density_after_subsampling": "📊 Density after subsampling: %.1f pts/m²",
+      "density_after_noise": "📊 Density after noise removal: %.1f pts/m²",
       "cloud_filtered": "✅ Filtered cloud: %s pts",
       "soil_classification": "🏔️ Classifying ground — CSF (rigidity: %s)...",
       "soil_classified": "✅ Ground points classified: %s",
@@ -528,7 +546,9 @@
       "generating": "📄 Generating descriptive HTML report...",
       "slope_warning": "  ⚠ Could not calculate slopes: %s",
       "figure_coverage": "  ✓ Canopy coverage figure generated",
-      "figure_coverage_error": "  ⚠ Could not generate coverage figure: %s"
+      "figure_coverage_error": "  ⚠ Could not generate coverage figure: %s",
+      "pandoc_not_found": "⚠ Pandoc not found. Install it with your package manager (e.g. 'sudo apt install pandoc') or from https://pandoc.org/installing.html.",
+      "html_saved": "✅ HTML saved to: %s"
     },
     "fig": {
       "dem": "Digital Elevation Model (DEM) with contour lines",
@@ -604,18 +624,30 @@
       "footer": "*Report automatically generated with the INTA Tool for LiDAR Analysis and Forest Photogrammetry (ForestMap - INTA EEA Montecarlo). Statistical values correspond to the processing performed on the indicated date.*"
     },
     "products": {
-      "clouds_header": "**Salidas_NUBES/**",
-      "classified": "- `puntos_clasificados.laz`: Point cloud with ground (Class 2) and vegetation classification.",
-      "normalized": "- `puntos_normalizados.laz`: Point cloud normalized to terrain level.",
-      "raster_header": "**Salidas_RASTER/**",
-      "dem": "- `DEM.tif`: Smoothed Digital Elevation Model, clipped to the area of interest.",
-      "chm": "- `CHM.tif`: Canopy Height Model, clipped to the area of interest.",
-      "hillshade": "- `Hillshade.tif`: Shaded relief.",
-      "vector_header": "**Salidas_VECTORIALES/**",
-      "contours_shp": "- `Curvas_Nivel.shp`:Contour lines in shapefile format.",
-      "trees_shp": "- `Arboles.shp`: Detected tree points with tree top height.",
-      "roi_shp": "- `Area_Interes.shp`: Area of interest polygon.",
-      "canopy_shp": "- `Cobertura_Copas.shp`: Canopy coverage polygons (if available)."
+      "dem_desc": "Smoothed Digital Elevation Model, clipped to the area of interest.",
+      "chm_desc": "Canopy Height Model, clipped to the area of interest.",
+      "hillshade_desc": "Shaded relief.",
+      "contours_desc": "Contour lines.",
+      "trees_desc": "Detected tree points with tree top height.",
+      "roi_desc": "Area of interest polygon.",
+      "canopy_desc": "Canopy coverage polygons (if available)."
     }
+  },
+  "folders": {
+    "project_prefix": "Project",
+    "raster": "RASTER",
+    "vector": "VECTOR",
+    "report": "REPORT"
+  },
+  "files": {
+    "dem": "DEM",
+    "chm": "CHM",
+    "hillshade": "Hillshade",
+    "contour_lines": "Contour_Lines",
+    "trees": "Trees",
+    "roi": "Area_of_Interest",
+    "canopy_cover": "Canopy_Cover",
+    "report_html": "Analysis_Report",
+    "report_pdf": "Analysis_Report"
   }
 }

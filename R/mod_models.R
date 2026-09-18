@@ -103,8 +103,11 @@ register_models <- function(input, output, session, rv, ag, lang) {
     l  <- lang()
     z  <- rv$datos_norm@data$Z
     if (length(z) > 100000) z <- sample(z, 100000)
+    rng      <- range(z)
+    h_breaks <- seq(floor(rng[1]), ceiling(rng[2]), by = 1)
     ggplot(data.frame(Z = z), aes(x = Z)) +
-      geom_histogram(bins = 60, fill = GREEN, color = BG_CARD, alpha = 0.85) +
+      geom_histogram(breaks = h_breaks, fill = GREEN, color = BG_CARD, alpha = 0.85) +
+      scale_x_continuous(breaks = h_breaks) +
       labs(title = tr("plot.title.vertical_profile", l),
            x     = tr("plot.axis.height_m",          l),
            y     = tr("plot.axis.frequency",          l)) +
@@ -114,6 +117,7 @@ register_models <- function(input, output, session, rv, ag, lang) {
             panel.grid       = element_line(color = BORDER_COLOR),
             text             = element_text(color = TEXT_PRIMARY),
             axis.text        = element_text(color = TEXT_SECONDARY),
+            axis.text.x      = element_text(angle = 90, vjust = 0.5, size = 9),
             plot.title       = element_text(color = ACCENT_PRIMARY, face = "bold"))
   })
 }

@@ -25,9 +25,11 @@ missing <- required[!sapply(required, requireNamespace, quietly = TRUE)]
 
 if (length(missing) > 0) {
   cat("❌ ERROR: Paquetes faltantes:\n")
+  cat("❌ ERROR: Missing packages:\n")
   cat("   ", paste(missing, collapse = ", "), "\n\n")
-  cat("   Ejecute primero: Rscript dev/install.R\n\n")
-  stop("Dependencias faltantes")
+  cat("   Ejecute primero: Rscript dev/install.R\n")
+  cat("   Please run first: Rscript dev/install.R\n\n")
+  stop("Dependencias faltantes / Missing dependencies")
 }
 
 # Forzar la detección del número de nucleos existentes en la CPU

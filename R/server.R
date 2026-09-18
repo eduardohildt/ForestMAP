@@ -24,6 +24,7 @@ server <- function(input, output, session) {
     ruta_las       = NULL,
     ruta_shp       = NULL,
     ruta_dir       = NULL,
+    ruta_proyecto  = NULL,
     usar_extension_completa = FALSE,
     # Última carpeta conocida — arranca en Home, se actualiza tras cada selección
     ultima_carpeta = path.expand("~"),
@@ -43,10 +44,11 @@ server <- function(input, output, session) {
     log_export     = character(0),
     crs_pendiente  = NULL,
     # Configuración del proyecto (editable)
-    cfg_autor        = "-",
-    cfg_institucion  = "-",
-    cfg_email        = "-",
-    cfg_destinatario = "-",
+    cfg_autor           = "-",
+    cfg_institucion     = "-",
+    cfg_email           = "-",
+    cfg_destinatario    = "-",
+    cfg_nombre_proyecto = "",
     # Metadata de archivos leída del header (sin cargar la nube completa)
     las_meta              = NULL,
     shp_meta              = NULL,
@@ -109,13 +111,21 @@ server <- function(input, output, session) {
     updateActionButton(session, "btn_arb_config_aplicar", label = tr("trees.modal.apply_btn",            l))
     updateActionButton(session, "btn_arboles",         label = tr("trees.run_btn",                       l))
     updateActionButton(session, "btn_exportar",        label = tr("export.export_btn",                   l))
-    updateActionButton(session, "btn_informe",         label = tr("export.HTML_btn",                      l))
     updateActionButton(session, "btn_abrir_carpeta",   label = tr("export.open_folder_btn",              l))
 
     # RadioButtons
     updateRadioButtons(session, "decimate_tipo",
       choiceNames  = list(tr("data_load.subsample.random",  l), tr("data_load.subsample.uniform", l)),
       choiceValues = list("aleatorio", "uniforme"))
+    updateRadioButtons(session, "sel_formato_vectorial",
+      label        = tr("export.vector_format_label", l),
+      choiceNames  = list(tr("export.vector_format_shp", l), tr("export.vector_format_geojson", l)),
+      choiceValues = list("shp", "geojson"))
+
+    # Nombre de proyecto (campo obligatorio, Bloque 0)
+    updateTextInput(session, "cfg_nombre_proyecto_input",
+      label       = tr("config.modal.project_name_label",       l),
+      placeholder = tr("config.modal.project_name_placeholder", l))
 
     # Textos estáticos via JS
     session$sendCustomMessage("update_ui_text", list(
@@ -181,7 +191,6 @@ server <- function(input, output, session) {
       lbl_canopy_pct      = tr("trees.metrics.canopy_pct",        l),
       btn_arb_open_modal  = tr("trees.detection.advanced_btn",    l),
       # Tab 5 — Exportar
-      h6_export_clouds    = tr("export.clouds_header",            l),
       h6_export_raster    = tr("export.raster_header",            l),
       h6_export_vector    = tr("export.vector_header",            l),
       h5_export_log       = tr("export.log_header",               l),

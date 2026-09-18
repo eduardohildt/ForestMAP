@@ -59,6 +59,8 @@
     "modal": {
       "title": "⚙️ Configuración del proyecto",
       "instructions": "Estos datos se usarán en el informe HTML. Si deja un campo vacío se escribirá \"-\".",
+      "project_name_label": "Nombre de Proyecto",
+      "project_name_placeholder": "Ej: Rodal Norte 2026",
       "author_label": "Autor",
       "author_placeholder": "Nombre del autor",
       "institution_label": "Institución",
@@ -67,6 +69,9 @@
       "email_placeholder": "correo@ejemplo.com",
       "recipient_label": "Destinatario",
       "recipient_placeholder": "Destinatario del informe"
+    },
+    "project_name": {
+      "required_error": "⚠ Debe ingresar un nombre de proyecto para continuar."
     },
     "table": {
       "author": "Autor",
@@ -101,7 +106,7 @@
       "roi": "ROI  : %s",
       "roi_bbox": "ROI  : [extensión completa de la nube de puntos]",
       "dir": "Dir  : %s",
-      "folders_ready": "Carpetas: NUBES / RASTER / VECTORIALES / INFORME — ✅ listas"
+      "project_folder": "📁 Carpeta del proyecto: %s"
     },
     "polygon_label": "Polígono"
   },
@@ -124,7 +129,8 @@
       "report_prefix": "❌ ERROR informe:",
       "generic": "Error: %s",
       "report_generic": "Error informe: %s",
-      "folder_open_failed": "No se pudo abrir la carpeta: %s"
+      "folder_open_failed": "No se pudo abrir la carpeta: %s",
+      "no_gui_backend": "❌ No se encontró ningún sistema de diálogos de archivo disponible (RStudio o Tcl/Tk). Instale el paquete 'tcltk' (o los paquetes de sistema tcl/tk) o ejecute la aplicación desde RStudio."
     },
     "warning": {
       "crs_check": "Advertencia al verificar CRS: %s"
@@ -289,15 +295,25 @@
     }
   },
   "export": {
-    "clouds_header": "☁️ Nubes de puntos",
     "raster_header": "🗺️ Modelos raster",
     "vector_header": "📐 Capas vectoriales",
-    "export_btn": "💾  Exportar productos",
-    "HTML_btn": "📄  Generar informe HTML",
+    "export_btn": "💾📄  Exportar y generar informe",
     "open_folder_btn": "📂  Abrir carpeta",
     "log_header": "📝 Log de exportación",
+    "vector_format_label": "📐 Formato vectorial",
+    "vector_format_shp": "SHP",
+    "vector_format_geojson": "GeoJSON",
     "log": {
-      "generating_HTML": "📄 Generando informe descriptivo HTML..."
+      "generating_HTML": "📄 Generando informe descriptivo HTML...",
+      "exporting_all": "💾 Exportando todos los productos...",
+      "folder_created": "  ✓ Creada carpeta: %s",
+      "exporting_rasters": "  → Exportando rasters GeoTIFF...",
+      "exporting_vectors": "  → Exportando capas vectoriales (%s)...",
+      "exporting_canopy": "  → Exportando cobertura de copas...",
+      "canopy_saved": "    ✓ %s guardado",
+      "canopy_error": "    ⚠ Error al exportar cobertura de copas: %s",
+      "canopy_unavailable": "  ⊗ Cobertura de copas no disponible (omitido)",
+      "export_complete": "✅ Exportación completa."
     }
   },
   "about": {
@@ -313,7 +329,7 @@
     "function_6": "Informe descriptivo en HTML",
     "version_label": "Versión:",
     "updated_label": "Última actualización:",
-    "updated_value": "Junio 2026",
+    "updated_value": "Septiembre 2026",
     "contact_label": "Contacto:",
     "lidr_ref_title": "Paquete lidR",
     "csf_ref_title": "Algoritmo CSF (suelo)",
@@ -484,6 +500,8 @@
       "subsampling": "🔽 Submuestreando a densidad %.0f pts/m² (%s)...",
       "removing_duplicates": "🔍 Eliminando puntos duplicados...",
       "removing_noise": "🔇 Clasificando y eliminando ruido (SOR)...",
+      "density_after_subsampling": "📊 Densidad tras submuestreo: %.1f pts/m²",
+      "density_after_noise": "📊 Densidad tras remoción de ruido: %.1f pts/m²",
       "cloud_filtered": "✅ Nube filtrada: %s pts",
       "soil_classification": "🏔️ Clasificando suelo — CSF (rigidez: %s)...",
       "soil_classified": "✅ Puntos de suelo clasificados: %s",
@@ -528,7 +546,9 @@
       "generating": "📄 Generando informe descriptivo HTML ...",
       "slope_warning": "  ⚠ No se pudieron calcular pendientes: %s",
       "figure_coverage": "  ✓ Figura de cobertura de copas generada",
-      "figure_coverage_error": "  ⚠ No se pudo generar figura de cobertura: %s"
+      "figure_coverage_error": "  ⚠ No se pudo generar figura de cobertura: %s",
+      "pandoc_not_found": "⚠ Pandoc no encontrado. Instálelo con su gestor de paquetes (ej. 'sudo apt install pandoc') o desde https://pandoc.org/installing.html.",
+      "html_saved": "✅ HTML guardado en: %s"
     },
     "fig": {
       "dem": "Modelo Digital de Elevación (DEM) con curvas de nivel",
@@ -604,18 +624,30 @@
       "footer": "*Informe generado automáticamente con la Herramienta INTA para Análisis LiDAR y Fotogrametría Forestal (ForestMap - INTA EEA Montecarlo). Los valores estadísticos corresponden al procesamiento realizado en la fecha indicada.*"
     },
     "products": {
-      "clouds_header": "**Salidas_NUBES/**",
-      "classified": "- `puntos_clasificados.laz`: Nube de puntos con clasificación de suelo (Clase 2) y vegetación.",
-      "normalized": "- `puntos_normalizados.laz`: Nube normalizada al nivel del terreno.",
-      "raster_header": "**Salidas_RASTER/**",
-      "dem": "- `DEM.tif`: Modelo Digital de Elevación suavizado, recortado al área de interés.",
-      "chm": "- `CHM.tif`: Modelo de Altura de Copas, recortado al área de interés.",
-      "hillshade": "- `Hillshade.tif`: Sombreado del relieve.",
-      "vector_header": "**Salidas_VECTORIALES/**",
-      "contours_shp": "- `Curvas_Nivel.shp`:Curvas de nivel en formato shapefile.",
-      "trees_shp": "- `Arboles.shp`: Puntos de árboles detectados con altura del ápice.",
-      "roi_shp": "- `Area_Interes.shp`: Polígono del área de interés analizada.",
-      "canopy_shp": "- `Cobertura_Copas.shp`: Polígonos de cobertura de copas (si disponible)."
+      "dem_desc": "Modelo Digital de Elevación suavizado, recortado al área de interés.",
+      "chm_desc": "Modelo de Altura de Copas, recortado al área de interés.",
+      "hillshade_desc": "Sombreado del relieve.",
+      "contours_desc": "Curvas de nivel.",
+      "trees_desc": "Puntos de árboles detectados con altura del ápice.",
+      "roi_desc": "Polígono del área de interés analizada.",
+      "canopy_desc": "Polígonos de cobertura de copas (si disponible)."
     }
+  },
+  "folders": {
+    "project_prefix": "Proyecto",
+    "raster": "RASTER",
+    "vector": "VECTORIALES",
+    "report": "INFORME"
+  },
+  "files": {
+    "dem": "DEM",
+    "chm": "CHM",
+    "hillshade": "Hillshade",
+    "contour_lines": "Curvas_Nivel",
+    "trees": "Arboles",
+    "roi": "Area_Interes",
+    "canopy_cover": "Cobertura_Copas",
+    "report_html": "Informe_Analisis",
+    "report_pdf": "Informe_Analisis"
   }
 }

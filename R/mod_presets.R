@@ -501,7 +501,7 @@ register_presets <- function(input, output, session, rv, ag, lang) {
       ),
       div(class = "mb-3",
         tip_label(tr("presets.dem.contour_label",    l), tr("presets.dem.contour_tip",    l)),
-        sliderInput("modal_cn_equidist", NULL, min=0.25, max=10, value=rv$cn_equidist_sel, step=0.25, ticks=TRUE, width="100%")
+        sliderInput("modal_cn_equidist", NULL, min=0.1, max=10, value=rv$cn_equidist_sel, step=0.05, ticks=TRUE, width="100%")
       ),
       div(class = "mb-3",
         tip_label(tr("presets.dem.min_filter_label", l), tr("presets.dem.min_filter_tip", l)),
@@ -602,7 +602,7 @@ register_presets <- function(input, output, session, rv, ag, lang) {
       title = tr("presets.chm.modal_title", l),
       div(class = "mb-3",
         tip_label(tr("presets.chm.res_label", l), tr("presets.chm.res_tip", l)),
-        sliderInput("modal_chm_res", NULL, min=0.1, max=2, value=rv$chm_res_sel, step=0.05, ticks=FALSE, width="100%")
+        sliderInput("modal_chm_res", NULL, min=0.05, max=2, value=rv$chm_res_sel, step=0.05, ticks=FALSE, width="100%")
       ),
       div(class = "mb-2",
         tip_label(tr("presets.chm.gap_label", l), tr("presets.chm.gap_tip", l)),
