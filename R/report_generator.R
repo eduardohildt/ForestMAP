@@ -230,10 +230,14 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
   out_h <- file.path(dir_inf, paste0(tr("files.report_html", lang), ".html"))
   out_p <- file.path(dir_inf, paste0(tr("files.report_pdf", lang), ".pdf"))
 
+  # Escapes para texto traducido/ingresado por el usuario (p. ej. apóstrofos en fr/it)
+  yaml_q <- function(x) paste0("'", gsub("'", "''", paste(x, collapse = " "), fixed = TRUE), "'")
+  r_q    <- function(x) paste0("\"", gsub("\"", "\\\"", gsub("\\", "\\\\", x, fixed = TRUE), fixed = TRUE), "\"")
+
   writeLines(con = rmd_p, c(
     "---",
-    paste0("title: '", tr("report.title", lang), "'"),
-    paste0("subtitle: '", rv$cfg_destinatario, "'"),
+    paste0("title: ", yaml_q(tr("report.title", lang))),
+    paste0("subtitle: ", yaml_q(rv$cfg_destinatario)),
     "date: '`r format(Sys.Date(), \"%d de %B de %Y\")`'",
     "output:",
     "  html_document:",
@@ -291,11 +295,11 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     tr("report.content.dem_smoothing", lang, rv$dem_win_min_sel, rv$dem_win_min_sel, rv$dem_win_mean_sel, rv$dem_win_mean_sel),
     tr("report.content.dem_stats", lang, dem_min_v, dem_max_v, dem_mean_v, dem_rango_v),
     "",
-    paste0("```{r fig-dem, fig.cap='", tr("report.fig.dem", lang), "'}"),
+    paste0("```{r fig-dem, fig.cap=", r_q(tr("report.fig.dem", lang)), "}"),
     paste0("if(file.exists('", file.path(dir_inf_rmd,"fig_dem.png"), "')) knitr::include_graphics('", file.path(dir_inf_rmd,"fig_dem.png"), "')"),
     "```",
     "",
-    paste0("```{r fig-hs, fig.cap='", tr("report.fig.hillshade", lang), "'}"),
+    paste0("```{r fig-hs, fig.cap=", r_q(tr("report.fig.hillshade", lang)), "}"),
     paste0("if(file.exists('", file.path(dir_inf_rmd,"fig_hillshade.png"), "')) knitr::include_graphics('", file.path(dir_inf_rmd,"fig_hillshade.png"), "')"),
     "```",
     "",
@@ -311,7 +315,7 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     tr("report.content.chm_generation", lang, rv$chm_res_sel),
     tr("report.content.chm_stats", lang, chm_min_v, chm_max_v, chm_mean_v),
     "",
-    paste0("```{r fig-chm, fig.cap='", tr("report.fig.chm", lang), "'}"),
+    paste0("```{r fig-chm, fig.cap=", r_q(tr("report.fig.chm", lang)), "}"),
     paste0("if(file.exists('", file.path(dir_inf_rmd,"fig_chm.png"), "')) knitr::include_graphics('", file.path(dir_inf_rmd,"fig_chm.png"), "')"),
     "```",
     "",
@@ -322,11 +326,11 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     tr("report.content.trees_count", lang, n_arb),
     tr("report.content.trees_heights", lang, alt_min_v, alt_max_v, alt_med_v),
     "",
-    paste0("```{r fig-arb, fig.cap='", tr("report.fig.trees", lang, n_arb), "'}"),
+    paste0("```{r fig-arb, fig.cap=", r_q(tr("report.fig.trees", lang, n_arb)), "}"),
     paste0("if(file.exists('", file.path(dir_inf_rmd,"fig_arboles.png"), "')) knitr::include_graphics('", file.path(dir_inf_rmd,"fig_arboles.png"), "')"),
     "```",
     "",
-    paste0("```{r fig-hist, fig.cap='", tr("report.fig.tree_heights", lang), "', out.width='70%'}"),
+    paste0("```{r fig-hist, fig.cap=", r_q(tr("report.fig.tree_heights", lang)), ", out.width='70%'}"),
     paste0("if(file.exists('", file.path(dir_inf_rmd,"fig_hist_arb.png"), "')) knitr::include_graphics('", file.path(dir_inf_rmd,"fig_hist_arb.png"), "')"),
     "```",
     "",
@@ -345,7 +349,7 @@ generar_informe_descriptivo <- function(rv, input, lang = "es", log_fn = message
     "",
     if (file.exists(file.path(dir_inf, "fig_cobertura.png"))) {
       c(
-        paste0("```{r fig-cobertura, fig.cap='", tr("report.fig.canopy", lang, as.numeric(cob_pct), as.numeric(cob_umbral)), "'}"),
+        paste0("```{r fig-cobertura, fig.cap=", r_q(tr("report.fig.canopy", lang, as.numeric(cob_pct), as.numeric(cob_umbral))), "}"),
         paste0("knitr::include_graphics('", file.path(dir_inf_rmd,"fig_cobertura.png"), "')"),
         "```",
         ""
