@@ -45,7 +45,7 @@ plotly_raster <- function(df, titulo, colores, legend_title = "Valor", lang = "e
 # ──────────────────────────────────────────────────────────────────────────────
 # VISOR 3D NUBES DE PUNTOS
 # ──────────────────────────────────────────────────────────────────────────────
-plotly_nube_3d <- function(las_obj, max_pts = 80000,
+plotly_nube_3d <- function(las_obj, max_pts = 120000,
                            color_var = "Z", titulo = "Nube de Puntos", lang = "es") {
   df <- as.data.frame(las_obj@data)
   if (nrow(df) > max_pts) df <- df[sample(nrow(df), max_pts), ]
