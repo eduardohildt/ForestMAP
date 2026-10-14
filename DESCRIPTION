@@ -1,7 +1,7 @@
 Package: ForestMap
 Title: LiDAR and Photogrammetry Forest Analysis Tool
-Version: 2026.9
-Date: 2026-09-17
+Version: 2026.10
+Date: 2026-10-13
 Authors@R: person("Eduardo", "Hildt",
     email = "hildt.eduardo@inta.gob.ar",
     role  = c("aut", "cre"))
@@ -16,6 +16,8 @@ Imports:
     bslib (>= 0.10.0),
     DT,
     plotly (>= 4.12.0),
+    leaflet (>= 2.2.3),
+    leafem (>= 0.2.5),
     lidR (>= 4.2.3),
     terra (>= 1.9.11),
     sf,

@@ -302,30 +302,50 @@ register_config <- function(input, output, session, rv, ag, lang) {
     rv$shp_poligono_idx <- as.integer(input$sel_poligono)
   })
 
-  output$plot_shp_preview_container <- renderUI({
-    req(rv$shp_sf, !isTRUE(rv$usar_extension_completa))
-    plotOutput("plot_shp_preview", height = "180px")
-  })
-
-  output$plot_shp_preview <- renderPlot({
-    req(rv$shp_sf)
-    sf_all <- rv$shp_sf
-    n      <- nrow(sf_all)
-    idx    <- rv$shp_poligono_idx %||% 1L
-    sf_sel <- if (n > 1) sf_all[idx, ] else sf_all
-    tit    <- if (n > 1)
+  shp_titulo <- function(idx) {
+    n <- nrow(rv$shp_sf)
+    if (n > 1)
       paste0(tr("config.polygon_label", lang()), " ", idx, " / ", n,
              "  —  ", basename(rv$ruta_shp))
     else
       basename(rv$ruta_shp)
-    ggplot() +
-      geom_sf(data = sf_all, fill = "#e8f4e8", color = "#888888", linewidth = 0.4) +
-      geom_sf(data = sf_sel, fill = "#2d7a3d55", color = "#2d7a3d", linewidth = 1.2) +
-      labs(title = tit) +
-      theme_void() +
-      theme(plot.title = element_text(size = 10, color = "#444444",
-                                      margin = margin(b = 4)))
-  }, bg = "transparent")
+  }
+
+  output$plot_shp_preview_container <- renderUI({
+    req(rv$shp_sf, !isTRUE(rv$usar_extension_completa))
+    uiOutput("plot_shp_preview")
+  })
+
+  # Mapa sobre fondo cartográfico; el polígono seleccionado se actualiza con
+  # leafletProxy para no redibujar el mapa. Respaldo: ggplot si el SHP no tiene CRS.
+  registrar_mapa(output, "plot_shp_preview", height = "300px",
+    mapa = function() {
+      req(rv$shp_sf)
+      idx <- isolate(rv$shp_poligono_idx) %||% 1L
+      mapa_shp(rv$shp_sf, idx, isolate(shp_titulo(idx)), lang = lang())
+    },
+    respaldo = function() {
+      req(rv$shp_sf)
+      sf_all <- rv$shp_sf
+      n      <- nrow(sf_all)
+      idx    <- rv$shp_poligono_idx %||% 1L
+      sf_sel <- if (n > 1) sf_all[idx, ] else sf_all
+      ggplot() +
+        geom_sf(data = sf_all, fill = "#e8f4e8", color = "#888888", linewidth = 0.4) +
+        geom_sf(data = sf_sel, fill = "#2d7a3d55", color = "#2d7a3d", linewidth = 1.2) +
+        labs(title = shp_titulo(idx)) +
+        theme_void() +
+        theme(plot.title = element_text(size = 10, color = "#444444",
+                                        margin = margin(b = 4)))
+    },
+    tipo_respaldo = "plot")
+
+  observeEvent(rv$shp_poligono_idx, {
+    req(rv$shp_sf, tiene_crs(rv$shp_sf))
+    idx <- rv$shp_poligono_idx %||% 1L
+    leaflet::leafletProxy("plot_shp_preview_mapa") |>
+      mapa_shp_seleccion(a_wgs84(rv$shp_sf), idx, shp_titulo(idx))
+  }, ignoreInit = TRUE)
 
   output$cfg_shp_badge <- renderUI({
     l <- lang()

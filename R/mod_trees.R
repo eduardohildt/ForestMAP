@@ -93,25 +93,33 @@ register_trees <- function(input, output, session, rv, ag, lang) {
     sprintf("%.1f ha", rv$cobertura_copas$area_copa_total / 10000)
   })
 
-  output$plot_arb_chm <- renderPlotly({
-    req(rv$chm, rv$arboles)
-    l      <- lang()
-    df_chm <- raster_to_df(rv$chm)
-    co_arb <- as.data.frame(st_coordinates(rv$arboles))
-    co_arb$altura <- rv$arboles$Z
+  # Mapas sobre fondo cartográfico; respaldo: heatmap plotly si no hay CRS.
+  registrar_mapa(output, "plot_arb_chm", height = "480px",
+    mapa = function() {
+      req(rv$chm, rv$arboles)
+      l <- lang()
+      mapa_arboles(rv$chm, rv$arboles, tr("plot.title.trees_on_chm", l),
+                   tr("plot.colorbar.height_short", l), roi = rv$roi, lang = l)
+    },
+    respaldo = function() {
+      req(rv$chm, rv$arboles)
+      l      <- lang()
+      df_chm <- raster_to_df(rv$chm)
+      co_arb <- as.data.frame(st_coordinates(rv$arboles))
+      co_arb$altura <- rv$arboles$Z
 
-    plotly_raster(df_chm, tr("plot.title.trees_on_chm", l), PAL_CHM, tr("plot.colorbar.height_short", l), lang = l) |>
-      add_trace(
-        data = co_arb, x = ~X, y = ~Y,
-        type = "scatter", mode = "markers",
-        inherit = FALSE,
-        marker = list(symbol = "cross", size = 9, color = MARKER_TREE_COLOR,
-                      line = list(color = MARKER_TREE_LINE, width = 1.2)),
-        text          = ~sprintf(tr("plot.hover.apex", l), round(altura, 1)),
-        hovertemplate = "%{text}<extra></extra>",
-        showlegend    = FALSE
-      )
-  })
+      plotly_raster(df_chm, tr("plot.title.trees_on_chm", l), PAL_CHM, tr("plot.colorbar.height_short", l), lang = l) |>
+        add_trace(
+          data = co_arb, x = ~X, y = ~Y,
+          type = "scatter", mode = "markers",
+          inherit = FALSE,
+          marker = list(symbol = "cross", size = 9, color = MARKER_TREE_COLOR,
+                        line = list(color = MARKER_TREE_LINE, width = 1.2)),
+          text          = ~sprintf(tr("plot.hover.apex", l), round(altura, 1)),
+          hovertemplate = "%{text}<extra></extra>",
+          showlegend    = FALSE
+        )
+    })
 
   output$plot_hist_arb <- renderPlot({
     req(rv$arboles)
@@ -149,31 +157,39 @@ register_trees <- function(input, output, session, rv, ag, lang) {
             plot.title       = element_text(color = ACCENT_PRIMARY, face = "bold"))
   })
 
-  output$plot_canopy_coverage <- renderPlotly({
-    req(rv$cobertura_copas)
-    l      <- lang()
-    df_cov <- rv$cobertura_copas$mascara_df
-    names(df_cov) <- tolower(names(df_cov))
-    col_val <- setdiff(names(df_cov), c("x", "y"))[1]
-    df_cov$valor <- df_cov[[col_val]]
-    df_cov$valor <- ifelse(df_cov$valor > 0, 1, 0)
+  registrar_mapa(output, "plot_canopy_coverage", height = "480px",
+    mapa = function() {
+      req(rv$cobertura_copas)
+      l <- lang()
+      mapa_cobertura(rv$cobertura_copas$copas_vect, rv$roi, rv$chm,
+                     tr("plot.title.canopy_coverage", l, rv$cobertura_copas$porc_cobertura),
+                     lang = l)
+    },
+    respaldo = function() {
+      req(rv$cobertura_copas)
+      l      <- lang()
+      df_cov <- rv$cobertura_copas$mascara_df
+      names(df_cov) <- tolower(names(df_cov))
+      col_val <- setdiff(names(df_cov), c("x", "y"))[1]
+      df_cov$valor <- df_cov[[col_val]]
+      df_cov$valor <- ifelse(df_cov$valor > 0, 1, 0)
 
-    plotly_raster(
-      df_cov,
-      tr("plot.title.canopy_coverage", l, rv$cobertura_copas$porc_cobertura),
-      PAL_TERRENO_VEGETACION,
-      tr("plot.colorbar.coverage", l),
-      lang = l
-    ) |>
-      layout(
-        coloraxis = list(
-          colorbar = list(
-            tickmode = "array",
-            tickvals = c(0, 1),
-            ticktext = c(tr("plot.canopy.no_canopy", l), tr("plot.canopy.canopy", l))
-          )
-        ),
-        showlegend = FALSE
-      )
-  })
+      plotly_raster(
+        df_cov,
+        tr("plot.title.canopy_coverage", l, rv$cobertura_copas$porc_cobertura),
+        PAL_TERRENO_VEGETACION,
+        tr("plot.colorbar.coverage", l),
+        lang = l
+      ) |>
+        layout(
+          coloraxis = list(
+            colorbar = list(
+              tickmode = "array",
+              tickvals = c(0, 1),
+              ticktext = c(tr("plot.canopy.no_canopy", l), tr("plot.canopy.canopy", l))
+            )
+          ),
+          showlegend = FALSE
+        )
+    })
 }

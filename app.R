@@ -4,7 +4,7 @@
 # Autor      : Dr. Eduardo Hildt
 # Institución: INTA EEA Montecarlo - Grupo Forestal
 # Email      : hildt.eduardo@inta.gob.ar
-# Versión    : 2026.9
+# Versión    : 2026.10
 # ==============================================================================
 
 cat("═══════════════════════════════════════════════════════════\n")
@@ -19,6 +19,8 @@ library(shiny)
 library(bslib)
 library(DT)
 library(plotly)
+library(leaflet)
+library(leafem)
 library(lidR)
 library(terra)
 library(sf)

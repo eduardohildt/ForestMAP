@@ -234,7 +234,7 @@
       "log": "📝 Journal"
     },
     "tips": {
-      "dem": "Zoom avec la molette ou sélection. Bouton 🏠 pour réinitialiser.",
+      "dem": "Zoom avec la molette ou les boutons +/− ; glisser pour déplacer. Fond de carte : icône des couches. Valeur du pixel sous le curseur.",
       "contours": "Courbes de niveau tracées sur le MNT",
       "hillshade": "Ombrage du relief selon l'angle solaire.",
       "chm": "Gris=sol · Bleu=basse · Vert=moyenne · Jaune=haute · Rouge=émergents",
@@ -286,7 +286,7 @@
       "log": "📝 Journal"
     },
     "tips": {
-      "apex": "Croix rouges = cimes sur le MHC. Zoom avec la molette ou sélection.",
+      "apex": "Cercles rouges = cimes sur le MHC (survoler pour voir la hauteur). Zoom avec la molette ou les boutons +/−.",
       "canopy": "Analyse de la surface couverte par la canopée à l'aide du MHC et du seuil de hauteur configuré."
     },
     "log": {
@@ -329,7 +329,7 @@
     "function_6": "Rapport descriptif en HTML",
     "version_label": "Version :",
     "updated_label": "Dernière mise à jour :",
-    "updated_value": "Septembre 2026",
+    "updated_value": "Octobre 2026",
     "contact_label": "Contact :",
     "lidr_ref_title": "Paquet lidR",
     "csf_ref_title": "Algorithme CSF (sol)",
@@ -649,5 +649,16 @@
     "canopy_cover": "Couverture_Canopee",
     "report_html": "Rapport_Analyse",
     "report_pdf": "Rapport_Analyse"
+  },
+  "map": {
+    "layer": {
+      "ign": "IGN Argentine (Argenmap)",
+      "osm": "OpenStreetMap",
+      "satellite": "Satellite (Sentinel-2)"
+    },
+    "offline_notice": "Fond de carte indisponible (hors ligne)",
+    "popup": {
+      "contour": "Courbe de niveau : %s m"
+    }
   }
 }

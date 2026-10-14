@@ -234,7 +234,7 @@
       "log": "📝 Log"
     },
     "tips": {
-      "dem": "Zoom with scroll or selection. 🏠 button to reset.",
+      "dem": "Zoom with scroll or +/− buttons; drag to pan. Basemap: layers icon. Pixel value under the cursor.",
       "contours": "Contour lines plotted over the DEM",
       "hillshade": "Relief shading based on solar angle.",
       "chm": "Grey=ground · Blue=low · Green=medium · Yellow=high · Red=emergent",
@@ -286,7 +286,7 @@
       "log": "📝 Log"
     },
     "tips": {
-      "apex": "Red crosses = apices on CHM. Zoom with scroll or selection.",
+      "apex": "Red circles = apices on CHM (hover to see height). Zoom with scroll or +/− buttons.",
       "canopy": "Analysis of canopy-covered area using CHM and the configured height threshold."
     },
     "log": {
@@ -329,7 +329,7 @@
     "function_6": "Descriptive HTML report",
     "version_label": "Version:",
     "updated_label": "Last update:",
-    "updated_value": "September 2026",
+    "updated_value": "October 2026",
     "contact_label": "Contact:",
     "lidr_ref_title": "lidR package",
     "csf_ref_title": "CSF algorithm (ground)",
@@ -649,5 +649,16 @@
     "canopy_cover": "Canopy_Cover",
     "report_html": "Analysis_Report",
     "report_pdf": "Analysis_Report"
+  },
+  "map": {
+    "layer": {
+      "ign": "IGN Argentina (Argenmap)",
+      "osm": "OpenStreetMap",
+      "satellite": "Satellite (Sentinel-2)"
+    },
+    "offline_notice": "Basemap unavailable (offline)",
+    "popup": {
+      "contour": "Contour line: %s m"
+    }
   }
 }

@@ -66,37 +66,50 @@ register_models <- function(input, output, session, rv, ag, lang) {
 
   output$log_modelos <- renderText(paste(rv$log_modelos, collapse = "\n"))
 
-  output$plot_dem_bruto <- renderPlotly({
-    req(rv$dem)
-    l <- lang()
-    plotly_raster(raster_to_df(rv$dem), tr("plot.title.dem_raw", l), PAL_TERRAIN, tr("plot.colorbar.elev_short", l), lang = l)
-  })
-  output$plot_dem_suav <- renderPlotly({
-    req(rv$dem_suav)
-    l <- lang()
-    plotly_raster(raster_to_df(rv$dem_suav), tr("plot.title.dem_smooth", l), PAL_TERRAIN, tr("plot.colorbar.elev_short", l), lang = l)
-  })
-  output$plot_hillshade <- renderPlotly({
-    req(rv$hillshade)
-    l <- lang()
-    plotly_raster(raster_to_df(rv$hillshade), tr("plot.title.hillshade", l), PAL_HILLSHADE, tr("plot.colorbar.light", l), lang = l)
-  })
-  output$plot_chm <- renderPlotly({
-    req(rv$chm)
-    l <- lang()
-    plotly_raster(raster_to_df(rv$chm), tr("plot.title.chm", l), PAL_CHM, tr("plot.colorbar.height_short", l), lang = l)
-  })
+  # Mapas sobre fondo cartográfico; respaldo: heatmap plotly si el raster no tiene CRS.
+  registrar_raster <- function(id, valor, titulo_key, pal_mapa, pal_plotly, leyenda_key,
+                               opacity = 0.85) {
+    registrar_mapa(output, id, height = "640px",
+      mapa = function() {
+        r <- req(valor())
+        l <- lang()
+        mapa_raster(r, pal_mapa, tr(titulo_key, l), tr(leyenda_key, l),
+                    roi = rv$roi, opacity = opacity, lang = l)
+      },
+      respaldo = function() {
+        r <- req(valor())
+        l <- lang()
+        plotly_raster(raster_to_df(r), tr(titulo_key, l), pal_plotly, tr(leyenda_key, l), lang = l)
+      })
+  }
 
-  output$plot_curvas <- renderPlot({
-    req(rv$dem_suav, rv$curvas)
-    l <- lang()
-    par(mar = c(4, 4, 3, 5))
-    plot(rv$dem_suav,
-         main = tr("plot.title.dem_contours", l),
-         col  = terrain.colors(50),
-         mar  = c(3, 1, 3, 5))
-    plot(rv$curvas, add = TRUE, col = "black", lwd = 0.8)
-  }, height = 640)
+  registrar_raster("plot_dem_bruto", reactive(rv$dem),       "plot.title.dem_raw",
+                   PAL_TERRAIN_PNG, PAL_TERRAIN, "plot.colorbar.elev_short")
+  registrar_raster("plot_dem_suav",  reactive(rv$dem_suav),  "plot.title.dem_smooth",
+                   PAL_TERRAIN_PNG, PAL_TERRAIN, "plot.colorbar.elev_short")
+  registrar_raster("plot_hillshade", reactive(rv$hillshade), "plot.title.hillshade",
+                   PAL_HILLSHADE_PNG, PAL_HILLSHADE, "plot.colorbar.light", opacity = 0.6)
+  registrar_raster("plot_chm",       reactive(rv$chm),       "plot.title.chm",
+                   PAL_CHM_PNG, PAL_CHM, "plot.colorbar.height_short")
+
+  registrar_mapa(output, "plot_curvas", height = "640px",
+    mapa = function() {
+      req(rv$dem_suav, rv$curvas)
+      l <- lang()
+      mapa_curvas(rv$dem_suav, rv$curvas, tr("plot.title.dem_contours", l),
+                  tr("plot.colorbar.elev_short", l), roi = rv$roi, lang = l)
+    },
+    respaldo = function() {
+      req(rv$dem_suav, rv$curvas)
+      l <- lang()
+      par(mar = c(4, 4, 3, 5))
+      plot(rv$dem_suav,
+           main = tr("plot.title.dem_contours", l),
+           col  = terrain.colors(50),
+           mar  = c(3, 1, 3, 5))
+      plot(rv$curvas, add = TRUE, col = "black", lwd = 0.8)
+    },
+    tipo_respaldo = "plot")
 
   output$plot_hist_z <- renderPlot({
     req(rv$datos_norm)

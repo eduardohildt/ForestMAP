@@ -112,6 +112,8 @@ PAL_CHM_PNG <- c(COL_CANOPY_1, COL_CANOPY_2, COL_CANOPY_3,
 
 PAL_DEM_PNG <- PAL_TERRAIN_PNG  # Alias compatibilidad
 
+PAL_HILLSHADE_PNG <- c("#3d3d3d", "#ffffff")
+
 # ──────────────────────────────────────────────────────────────────────────────
 # ELEMENTOS ESPECÍFICOS
 # ──────────────────────────────────────────────────────────────────────────────

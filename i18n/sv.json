@@ -234,7 +234,7 @@
       "log": "📝 Logg"
     },
     "tips": {
-      "dem": "Zoom med skrollhjul eller markering. Knappen 🏠 för att återställa.",
+      "dem": "Zooma med skrollhjul eller +/−-knappar; dra för att panorera. Bakgrundskarta: lagerikonen. Pixelvärde under markören.",
       "contours": "Höjdkurvor ritade ovanpå DEM",
       "hillshade": "Reliefskuggning baserad på solvinkel.",
       "chm": "Grå=mark · Blå=låg · Grön=medel · Gul=hög · Röd=utstickande",
@@ -286,7 +286,7 @@
       "log": "📝 Logg"
     },
     "tips": {
-      "apex": "Röda kryss = trädtoppar ovanpå CHM. Zoom med skrollhjul eller markering.",
+      "apex": "Röda cirklar = trädtoppar ovanpå CHM (hovra för att se höjden). Zooma med skrollhjul eller +/−-knappar.",
       "canopy": "Analys av ytan täckt av kronskikt med hjälp av CHM och den inställda höjdtröskeln."
     },
     "log": {
@@ -329,7 +329,7 @@
     "function_6": "Beskrivande rapport i HTML",
     "version_label": "Version:",
     "updated_label": "Senast uppdaterad:",
-    "updated_value": "September 2026",
+    "updated_value": "Oktober 2026",
     "contact_label": "Kontakt:",
     "lidr_ref_title": "lidR-paketet",
     "csf_ref_title": "CSF-algoritm (mark)",
@@ -649,5 +649,16 @@
     "canopy_cover": "Krontackning",
     "report_html": "Analysrapport",
     "report_pdf": "Analysrapport"
+  },
+  "map": {
+    "layer": {
+      "ign": "IGN Argentina (Argenmap)",
+      "osm": "OpenStreetMap",
+      "satellite": "Satellit (Sentinel-2)"
+    },
+    "offline_notice": "Bakgrundskarta ej tillgänglig (offline)",
+    "popup": {
+      "contour": "Höjdkurva: %s m"
+    }
   }
 }

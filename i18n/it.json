@@ -234,7 +234,7 @@
       "log": "📝 Log"
     },
     "tips": {
-      "dem": "Zoom con rotellina o selezione. Pulsante 🏠 per ripristinare.",
+      "dem": "Zoom con rotellina o pulsanti +/−; trascina per spostare. Mappa di sfondo: icona dei livelli. Valore del pixel sotto il cursore.",
       "contours": "Curve di livello tracciate sul DEM",
       "hillshade": "Ombreggiatura del rilievo in base all'angolo solare.",
       "chm": "Grigio=suolo · Blu=bassa · Verde=media · Giallo=alta · Rosso=emergenti",
@@ -286,7 +286,7 @@
       "log": "📝 Log"
     },
     "tips": {
-      "apex": "Croci rosse = cime sul CHM. Zoom con rotellina o selezione.",
+      "apex": "Cerchi rossi = cime sul CHM (passa il cursore per vedere l'altezza). Zoom con rotellina o pulsanti +/−.",
       "canopy": "Analisi dell'area coperta dalle chiome utilizzando il CHM e la soglia di altezza configurata."
     },
     "log": {
@@ -329,7 +329,7 @@
     "function_6": "Rapporto descrittivo in HTML",
     "version_label": "Versione:",
     "updated_label": "Ultimo aggiornamento:",
-    "updated_value": "Settembre 2026",
+    "updated_value": "Ottobre 2026",
     "contact_label": "Contatto:",
     "lidr_ref_title": "Pacchetto lidR",
     "csf_ref_title": "Algoritmo CSF (suolo)",
@@ -649,5 +649,16 @@
     "canopy_cover": "Copertura_Chiome",
     "report_html": "Rapporto_Analisi",
     "report_pdf": "Rapporto_Analisi"
+  },
+  "map": {
+    "layer": {
+      "ign": "IGN Argentina (Argenmap)",
+      "osm": "OpenStreetMap",
+      "satellite": "Satellitare (Sentinel-2)"
+    },
+    "offline_notice": "Mappa di sfondo non disponibile (offline)",
+    "popup": {
+      "contour": "Curva di livello: %s m"
+    }
   }
 }

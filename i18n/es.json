@@ -234,7 +234,7 @@
       "log": "📝 Log"
     },
     "tips": {
-      "dem": "Zoom con rueda o selección. Botón 🏠 para restablecer.",
+      "dem": "Zoom con rueda o botones +/−; arrastrar para desplazar. Mapa base: ícono de capas. Valor del píxel bajo el cursor.",
       "contours": "Curvas de nivel graficadas sobre el DEM",
       "hillshade": "Sombreado del relieve según ángulo solar.",
       "chm": "Gris=suelo · Azul=baja · Verde=media · Amarillo=alta · Rojo=emergentes",
@@ -286,7 +286,7 @@
       "log": "📝 Log"
     },
     "tips": {
-      "apex": "Cruces rojas = ápices sobre CHM. Zoom con rueda o selección.",
+      "apex": "Círculos rojos = ápices sobre el CHM (pasá el cursor para ver la altura). Zoom con rueda o botones +/−.",
       "canopy": "Análisis del área cubierta por las copas usando el CHM y el umbral de altura configurado."
     },
     "log": {
@@ -329,7 +329,7 @@
     "function_6": "Informe descriptivo en HTML",
     "version_label": "Versión:",
     "updated_label": "Última actualización:",
-    "updated_value": "Septiembre 2026",
+    "updated_value": "Octubre 2026",
     "contact_label": "Contacto:",
     "lidr_ref_title": "Paquete lidR",
     "csf_ref_title": "Algoritmo CSF (suelo)",
@@ -649,5 +649,16 @@
     "canopy_cover": "Cobertura_Copas",
     "report_html": "Informe_Analisis",
     "report_pdf": "Informe_Analisis"
+  },
+  "map": {
+    "layer": {
+      "ign": "IGN Argentina (Argenmap)",
+      "osm": "OpenStreetMap",
+      "satellite": "Satelital (Sentinel-2)"
+    },
+    "offline_notice": "Fondo cartográfico no disponible (sin conexión)",
+    "popup": {
+      "contour": "Curva de nivel: %s m"
+    }
   }
 }

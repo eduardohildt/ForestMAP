@@ -7,7 +7,7 @@
 # - Función tip_label() desde visualization.R
 # ==============================================================================
 # Versión de la aplicación (se usa en footer y sección "Acerca de")
-NVersion <- "2026.9"
+NVersion <- "2026.10"
 addResourcePath("assets", "www")
 # Las bibliotecas se cargan en app.R, pero las incluimos aquí por si se
 # ejecuta ui.R de forma independiente para pruebas
@@ -178,6 +178,7 @@ ui <- page_navbar(
     #lang_select{font-size:0.82rem;padding:2px 6px;border-radius:4px;
       background:",BG_CARD," !important;border-color:",BORDER_COLOR," !important;
       color:",TEXT_PRIMARY," !important;width:80px;}
+    .fm-query:empty{display:none;}
   "))),
   tags$script(HTML("
     function tabSetEnabled(tabId, enabled) {
@@ -534,27 +535,27 @@ ui <- page_navbar(
         div(class="col-lg-8",
           navset_card_tab(
             nav_panel(value="inner_mod_dem", "🗺️ DEM",
-              div(id="tip_mod_dem", class="tip-box mb-2","Zoom con rueda o selección. Botón 🏠 para restablecer."),
+              div(id="tip_mod_dem", class="tip-box mb-2","Zoom con rueda o botones +/−; arrastrar para desplazar. Mapa base: ícono de capas. Valor del píxel bajo el cursor."),
               div(class="row g-2",
                 div(class="col-md-6",
                   tags$small(id="lbl_dem_raw", style=paste0("color:",ACCENT_PRIMARY,";font-weight:600;"),"DEM bruto"),
-                  plotlyOutput("plot_dem_bruto",height="640px")),
+                  uiOutput("plot_dem_bruto")),
                 div(class="col-md-6",
                   tags$small(id="lbl_dem_smooth", style=paste0("color:",ACCENT_PRIMARY,";font-weight:600;"),"DEM suavizado"),
-                  plotlyOutput("plot_dem_suav",height="640px"))
+                  uiOutput("plot_dem_suav"))
               )
             ),
             nav_panel(value="inner_mod_contours", "📏 Curvas nivel",
              div(id="tip_mod_contours", class="tip-box mb-2","Curvas de nivel graficadas sobre el DEM"),
-              plotOutput("plot_curvas",height="640px")
+              uiOutput("plot_curvas")
             ),
             nav_panel(value="inner_mod_hillshade", "🌓 Relieve sombreado",
               div(id="tip_mod_hillshade", class="tip-box mb-2","Sombreado del relieve según ángulo solar."),
-              plotlyOutput("plot_hillshade",height="640px")
+              uiOutput("plot_hillshade")
             ),
             nav_panel(value="inner_mod_chm", "🌿 CHM — Modelo de altura de copas",
               div(id="tip_mod_chm", class="tip-box mb-2","Gris=suelo · Azul=baja · Verde=media · Amarillo=alta · Rojo=emergentes"),
-              plotlyOutput("plot_chm",height="640px")
+              uiOutput("plot_chm")
             ),
             nav_panel(value="inner_mod_profile", "📊 Perfil vertical",
              div(id="tip_mod_profile", class="tip-box mb-2","Distribución vertical de las alturas en la nube de puntos"),
@@ -662,8 +663,8 @@ ui <- page_navbar(
         # Columna derecha: Visualizaciones
           navset_card_tab(
             nav_panel(value="inner_arb_map", "📍 Mapa de ápices",
-              div(id="tip_arb_apex", class="tip-box mb-2","Cruces rojas = ápices sobre CHM. Zoom con rueda o selección."),
-              plotlyOutput("plot_arb_chm",height="480px")
+              div(id="tip_arb_apex", class="tip-box mb-2","Círculos rojos = ápices sobre el CHM (pasá el cursor para ver la altura). Zoom con rueda o botones +/−."),
+              uiOutput("plot_arb_chm")
             ),
             nav_panel(value="inner_arb_dist", "📊 Distribución",
               plotOutput("plot_hist_arb",height="480px"),
@@ -672,7 +673,7 @@ ui <- page_navbar(
             ),
             nav_panel(value="inner_arb_canopy", "🌳 Cobertura de copas",
               div(id="tip_arb_canopy", class="tip-box mb-2","Análisis del área cubierta por las copas usando el CHM y el umbral de altura configurado."),
-              plotlyOutput("plot_canopy_coverage",height="480px"),
+              uiOutput("plot_canopy_coverage"),
               hr(),
               div(class="row g-2",
                 div(class="col-6",

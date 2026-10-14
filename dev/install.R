@@ -71,6 +71,8 @@ pkgs_cran <- c(
   "bslib",
   "DT",
   "plotly",
+  "leaflet",      # mapas web con fondo cartográfico
+  "leafem",       # consulta de valores de raster en leaflet
   "RCSF",
   "htmlwidgets",
   "ggplot2",

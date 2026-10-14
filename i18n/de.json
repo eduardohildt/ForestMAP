@@ -234,7 +234,7 @@
       "log": "📝 Protokoll"
     },
     "tips": {
-      "dem": "Zoom mit Mausrad oder Auswahl. Schaltfläche 🏠 zum Zurücksetzen.",
+      "dem": "Zoom mit Mausrad oder +/−-Schaltflächen; ziehen zum Verschieben. Hintergrundkarte: Ebenen-Symbol. Pixelwert unter dem Cursor.",
       "contours": "Auf dem DEM dargestellte Höhenlinien",
       "hillshade": "Reliefschattierung entsprechend dem Sonnenwinkel.",
       "chm": "Grau=Boden · Blau=niedrig · Grün=mittel · Gelb=hoch · Rot=überragend",
@@ -286,7 +286,7 @@
       "log": "📝 Protokoll"
     },
     "tips": {
-      "apex": "Rote Kreuze = Gipfel über dem CHM. Zoom mit Mausrad oder Auswahl.",
+      "apex": "Rote Kreise = Gipfel über dem CHM (Cursor darüber für die Höhe). Zoom mit Mausrad oder +/−-Schaltflächen.",
       "canopy": "Analyse der von Baumkronen bedeckten Fläche anhand des CHM und der konfigurierten Höhenschwelle."
     },
     "log": {
@@ -329,7 +329,7 @@
     "function_6": "Beschreibender Bericht im HTML-Format",
     "version_label": "Version:",
     "updated_label": "Letzte Aktualisierung:",
-    "updated_value": "September 2026",
+    "updated_value": "Oktober 2026",
     "contact_label": "Kontakt:",
     "lidr_ref_title": "lidR-Paket",
     "csf_ref_title": "CSF-Algorithmus (Boden)",
@@ -649,5 +649,16 @@
     "canopy_cover": "Kronendeckung",
     "report_html": "Analysebericht",
     "report_pdf": "Analysebericht"
+  },
+  "map": {
+    "layer": {
+      "ign": "IGN Argentinien (Argenmap)",
+      "osm": "OpenStreetMap",
+      "satellite": "Satellit (Sentinel-2)"
+    },
+    "offline_notice": "Hintergrundkarte nicht verfügbar (offline)",
+    "popup": {
+      "contour": "Höhenlinie: %s m"
+    }
   }
 }

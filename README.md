@@ -13,7 +13,7 @@
 **Autor:** Dr. Eduardo Hildt\
 **Institución:** INTA EEA Montecarlo - Grupo Forestal\
 **Email:** [hildt.eduardo\@inta.gob.ar](mailto:hildt.eduardo@inta.gob.ar)\
-**Versión:** 2026.9 — Last Update: Septiembre 2026
+**Versión:** 2026.10 — Last Update: Octubre 2026
 
 [Español](#español) | [English](#english) | [Português](#português) | [Deutsch](#deutsch) | [Français](#français) | [Italiano](#italiano) | [Svenska](#svenska)
 

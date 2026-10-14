@@ -20,7 +20,7 @@ if (interactive()) {
 }
 
 # Verificar paquetes críticos
-required <- c("shiny", "lidR", "terra", "sf", "RCSF", "plotly")
+required <- c("shiny", "lidR", "terra", "sf", "RCSF", "plotly", "leaflet", "leafem")
 missing <- required[!sapply(required, requireNamespace, quietly = TRUE)]
 
 if (length(missing) > 0) {
